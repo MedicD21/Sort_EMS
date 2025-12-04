@@ -68,7 +68,7 @@ async def list_items(
                 location_name = location.name
         
         # Get current stock (sum across all locations)
-        current_stock = db.query(func.sum(InventoryCurrent.quantity)).filter(
+        current_stock = db.query(func.sum(InventoryCurrent.quantity_on_hand)).filter(
             InventoryCurrent.item_id == item.id
         ).scalar() or 0
         
@@ -77,14 +77,14 @@ async def list_items(
             "name": item.name,
             "description": item.description,
             "category_id": item.category_id,
-            "sku": item.sku,
-            "barcode": item.barcode,
+            "sku": item.item_code,  # Using item_code as sku
+            "barcode": item.item_code,  # Using item_code as barcode
             "unit_of_measure": item.unit_of_measure,
-            "unit_cost": item.unit_cost,
+            "unit_cost": float(item.cost_per_unit) if item.cost_per_unit else None,
             "is_controlled_substance": item.is_controlled_substance,
-            "requires_prescription": item.requires_prescription,
-            "reorder_point": item.reorder_point,
-            "reorder_quantity": item.reorder_quantity,
+            "requires_prescription": False,  # Not in model, default to False
+            "reorder_point": None,  # Not in Item model
+            "reorder_quantity": None,  # Not in Item model
             "created_at": item.created_at,
             "updated_at": item.updated_at,
             "current_stock": int(current_stock),

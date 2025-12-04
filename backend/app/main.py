@@ -10,7 +10,7 @@ from app.core.database import engine, Base
 from app.models import *
 
 # Import API routers
-from app.api.v1 import auth, items
+from app.api.v1 import auth, items, locations, inventory, rfid, orders, reports, users
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -53,6 +53,12 @@ async def health_check():
 # Include API routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(items.router, prefix="/api/v1/items", tags=["Items"])
+app.include_router(locations.router, prefix="/api/v1/locations", tags=["Locations"])
+app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Inventory"])
+app.include_router(rfid.router, prefix="/api/v1/rfid", tags=["RFID/Scanning"])
+app.include_router(orders.router, prefix="/api/v1/orders", tags=["Purchase Orders"])
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 # from app.api import auth, users, items, locations, rfid, orders, reports
 # app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
 # app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])

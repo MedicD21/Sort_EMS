@@ -250,12 +250,26 @@ def main():
     create_default_categories()
     
     # Step 4: Import Excel data
-    excel_file = r"c:\Users\DScha\OneDrive\Desktop\Sort_EMS\Medic 4 supply closet 71625.xlsx"
-    if os.path.exists(excel_file):
+    # Try multiple possible paths
+    excel_paths = [
+        "/Users/dustinschaaf/Desktop/Sort_EMS/Sort_EMS/Medic 4 supply closet 71625.xlsx",
+        r"c:\Users\DScha\OneDrive\Desktop\Sort_EMS\Medic 4 supply closet 71625.xlsx",
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "Medic 4 supply closet 71625.xlsx")
+    ]
+    
+    excel_file = None
+    for path in excel_paths:
+        if os.path.exists(path):
+            excel_file = path
+            break
+    
+    if excel_file:
         print(f"\nStep 4: Importing data from {os.path.basename(excel_file)}...")
         import_excel_data(excel_file)
     else:
-        print(f"\nWarning: Excel file not found at {excel_file}")
+        print(f"\nWarning: Excel file not found. Searched paths:")
+        for path in excel_paths:
+            print(f"  - {path}")
     
     print("\n" + "="*60)
     print("Migration Complete!")
