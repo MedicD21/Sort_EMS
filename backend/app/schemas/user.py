@@ -55,3 +55,8 @@ class TokenPayload(BaseModel):
     sub: UUID
     exp: datetime
     type: str
+
+
+class TokenRefresh(BaseModel):
+    """Schema for token refresh request"""
+    refresh_token: str

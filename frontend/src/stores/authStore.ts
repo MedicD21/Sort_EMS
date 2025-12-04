@@ -27,8 +27,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       await authService.login(credentials);
-      const user = await authService.getCurrentUser();
-      set({ user, isAuthenticated: true, isLoading: false });
+      set({ isAuthenticated: true, isLoading: false });
+      // Load user data in background after login succeeds
+      authService
+        .getCurrentUser()
+        .then((user) => {
+          set({ user });
+        })
+        .catch((error) => {
+          console.error("Failed to load user after login:", error);
+        });
     } catch (error: any) {
       const errorMessage = error.response?.data?.detail || "Login failed";
       set({ error: errorMessage, isLoading: false, isAuthenticated: false });

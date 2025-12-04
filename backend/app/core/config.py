@@ -16,10 +16,10 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite:///./ems_supply.db"
     
     # Security & Authentication
-    SECRET_KEY: str
+    SECRET_KEY: str = "your-secret-key-change-in-production-use-openssl-rand-hex-32"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7

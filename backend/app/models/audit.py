@@ -1,9 +1,9 @@
 """
 Compliance and Audit models for HIPAA, CAAS, and pharmacy board compliance
 """
-from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Enum as SQLEnum
+from sqlalchemy import Column, String, ForeignKey, DateTime, Integer, Enum as SQLEnum, JSON
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.dialects.postgresql import UUID
 import enum
 from datetime import datetime
 from app.models.base import BaseModel
@@ -32,7 +32,7 @@ class AuditLog(BaseModel):
     entity_type = Column(String(100), nullable=False, index=True)
     entity_id = Column(UUID(as_uuid=True), nullable=True)
     action = Column(SQLEnum(AuditAction), nullable=False)
-    changes = Column(JSONB, nullable=True)  # Before/after values
+    changes = Column(JSON, nullable=True)  # Before/after values
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)

@@ -10,9 +10,19 @@ export const authService = {
    * Login user
    */
   async login(credentials: LoginCredentials): Promise<AuthTokens> {
+    // OAuth2 expects form data, not JSON
+    const formData = new URLSearchParams();
+    formData.append("username", credentials.username);
+    formData.append("password", credentials.password);
+
     const response = await apiClient.post<AuthTokens>(
       ENDPOINTS.LOGIN,
-      credentials
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
     );
     const { access_token, refresh_token } = response.data;
 

@@ -9,6 +9,9 @@ from app.core.database import engine, Base
 # Import all models to register them with SQLAlchemy
 from app.models import *
 
+# Import API routers
+from app.api.v1 import auth, items
+
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
@@ -47,7 +50,9 @@ async def health_check():
     return {"status": "healthy"}
 
 
-# TODO: Include API routers
+# Include API routers
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(items.router, prefix="/api/v1/items", tags=["Items"])
 # from app.api import auth, users, items, locations, rfid, orders, reports
 # app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
 # app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])
