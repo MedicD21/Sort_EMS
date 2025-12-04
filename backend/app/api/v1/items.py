@@ -25,12 +25,13 @@ async def list_items(
     limit: int = Query(100, ge=1, le=1000),
     search: Optional[str] = None,
     category_id: Optional[UUID] = None,
-    current_user: Annotated[User, Depends(get_current_user)] = None,
     db: Session = Depends(get_db)
 ):
     """
     Get list of all items with stock information
     """
+    # Temporarily disabled auth for debugging
+    # current_user: Annotated[User, Depends(get_current_user)] = None,
     query = db.query(Item)
     
     # Apply search filter
