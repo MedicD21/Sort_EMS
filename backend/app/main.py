@@ -10,7 +10,7 @@ from app.core.database import engine, Base
 from app.models import *
 
 # Import API routers
-from app.api.v1 import auth, items, locations, inventory, rfid, orders, reports, users, config, inventory_items, categories
+from app.api.v1 import auth, items, locations, inventory, rfid, orders, reports, users, config, inventory_items, categories, employees, assets, forms
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -62,6 +62,9 @@ app.include_router(orders.router, prefix="/api/v1/orders", tags=["Purchase Order
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(config.router, prefix="/api/v1/config", tags=["System Configuration"])
+app.include_router(employees.router, prefix="/api/v1/employees", tags=["Employees"])
+app.include_router(assets.router, prefix="/api/v1/assets", tags=["Assets"])
+app.include_router(forms.router, prefix="/api/v1/forms", tags=["Forms"])
 # from app.api import auth, users, items, locations, rfid, orders, reports
 # app.include_router(auth.router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["auth"])
 # app.include_router(users.router, prefix=f"{settings.API_V1_PREFIX}/users", tags=["users"])

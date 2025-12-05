@@ -20,6 +20,7 @@ class InventoryItem(Base):
     rfid_tag = Column(String(255), unique=True, nullable=False, index=True)
     expiration_date = Column(TIMESTAMP, nullable=True)
     lot_number = Column(String(100), nullable=True)
+    truck_location = Column(String(100), nullable=True)  # Where on truck: "Bag A", "Shelf 1", etc.
     received_date = Column(DateTime, default=datetime.utcnow, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

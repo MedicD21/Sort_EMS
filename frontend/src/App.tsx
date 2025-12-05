@@ -17,6 +17,8 @@ import ScannerPage from "./pages/ScannerPage";
 import OrdersPage from "./pages/OrdersPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import AssetManagementPage from "./pages/AssetManagementPage";
+import FormsPage from "./pages/FormsPage";
 
 // Components
 import Layout from "./components/Layout";
@@ -119,6 +121,8 @@ function App() {
               <Route path="inventory" element={<InventoryPage />} />
               <Route path="items" element={<ItemManagementPage />} />
               <Route path="categories" element={<CategoryManagementPage />} />
+              <Route path="assets" element={<AssetManagementPage />} />
+              <Route path="forms" element={<FormsPage />} />
               <Route path="scanner" element={<ScannerPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />

@@ -12,6 +12,7 @@ class InventoryItemBase(BaseModel):
     rfid_tag: str
     expiration_date: Optional[datetime] = None
     lot_number: Optional[str] = None
+    truck_location: Optional[str] = None  # Where on truck: "Bag A", "Shelf 1", etc.
 
 
 class InventoryItemCreate(InventoryItemBase):
@@ -28,6 +29,7 @@ class InventoryItemBulkCreate(BaseModel):
     quantity: int
     expiration_date: Optional[datetime] = None
     lot_number: Optional[str] = None
+    truck_location: Optional[str] = None  # For truck locations
     received_date: Optional[datetime] = None
     rfid_tag_prefix: Optional[str] = None  # If provided, generates tags like PREFIX-001, PREFIX-002, etc.
 
@@ -36,6 +38,7 @@ class InventoryItemUpdate(BaseModel):
     """Schema for updating an individual inventory item"""
     expiration_date: Optional[datetime] = None
     lot_number: Optional[str] = None
+    truck_location: Optional[str] = None
     location_id: Optional[UUID] = None
 
 

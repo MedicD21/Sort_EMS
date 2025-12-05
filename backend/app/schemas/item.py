@@ -38,7 +38,12 @@ class ItemBase(BaseModel):
 
 
 class ItemCreate(ItemBase):
-    pass
+    """Schema for creating items - maps sku to item_code"""
+    
+    @property
+    def item_code(self) -> Optional[str]:
+        """Map sku to item_code for database"""
+        return self.sku
 
 
 class ItemUpdate(BaseModel):

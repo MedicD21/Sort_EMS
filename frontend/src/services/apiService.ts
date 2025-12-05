@@ -508,3 +508,204 @@ export const configApi = {
   validateOrder: (params: { quantity: number }) =>
     apiClient.get("/api/v1/config/validate-order", { params }),
 };
+
+// ============================================================================
+// EMPLOYEES
+// ============================================================================
+
+export interface Employee {
+  id: string;
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone?: string;
+  department?: string;
+  position?: string;
+  is_active: boolean;
+  hire_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const employeesApi = {
+  list: (params?: {
+    skip?: number;
+    limit?: number;
+    is_active?: boolean;
+    department?: string;
+    search?: string;
+  }) => apiClient.get<Employee[]>("/api/v1/employees", { params }),
+
+  get: (id: string) => apiClient.get<Employee>(`/api/v1/employees/${id}`),
+
+  create: (data: Partial<Employee>) =>
+    apiClient.post<Employee>("/api/v1/employees", data),
+
+  update: (id: string, data: Partial<Employee>) =>
+    apiClient.put<Employee>(`/api/v1/employees/${id}`, data),
+
+  delete: (id: string) => apiClient.delete(`/api/v1/employees/${id}`),
+
+  hardDelete: (id: string) => apiClient.delete(`/api/v1/employees/${id}/hard`),
+};
+
+// ============================================================================
+// ASSETS
+// ============================================================================
+
+export interface Asset {
+  id: string;
+  asset_tag: string;
+  name: string;
+  description?: string;
+  category: string;
+  manufacturer?: string;
+  model?: string;
+  serial_number?: string;
+  purchase_date?: string;
+  purchase_price?: number;
+  warranty_expiration?: string;
+  condition: string;
+  location?: string;
+  status: string;
+  notes?: string;
+  is_active: boolean;
+  employee_id?: string;
+  employee_name?: string;
+  assigned_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const assetsApi = {
+  list: (params?: {
+    skip?: number;
+    limit?: number;
+    category?: string;
+    status?: string;
+    condition?: string;
+    employee_id?: string;
+    is_active?: boolean;
+    search?: string;
+  }) => apiClient.get<Asset[]>("/api/v1/assets", { params }),
+
+  get: (id: string) => apiClient.get<Asset>(`/api/v1/assets/${id}`),
+
+  create: (data: Partial<Asset>) =>
+    apiClient.post<Asset>("/api/v1/assets", data),
+
+  update: (id: string, data: Partial<Asset>) =>
+    apiClient.put<Asset>(`/api/v1/assets/${id}`, data),
+
+  delete: (id: string) => apiClient.delete(`/api/v1/assets/${id}`),
+
+  hardDelete: (id: string) => apiClient.delete(`/api/v1/assets/${id}/hard`),
+
+  assignToEmployee: (assetId: string, employeeId: string) =>
+    apiClient.post(`/api/v1/assets/${assetId}/assign/${employeeId}`),
+
+  unassign: (assetId: string) =>
+    apiClient.post(`/api/v1/assets/${assetId}/unassign`),
+};
+
+// ============================================================================
+// FORMS
+// ============================================================================
+
+export interface FormFieldDefinition {
+  id: string;
+  type: string;
+  label: string;
+  required: boolean;
+  placeholder?: string;
+  default_value?: any;
+  options?: string[];
+  validation?: Record<string, any>;
+  help_text?: string;
+}
+
+export interface FormTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  fields: FormFieldDefinition[];
+  is_active: boolean;
+  requires_signature: boolean;
+  created_by?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FormSubmission {
+  id: string;
+  template_id: string;
+  template_name?: string;
+  submitted_by?: string;
+  submitted_by_name?: string;
+  data: Record<string, any>;
+  signature?: string;
+  signature_name?: string;
+  signature_date?: string;
+  location_id?: string;
+  notes?: string;
+  status: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const formsApi = {
+  // Templates
+  listTemplates: (params?: {
+    skip?: number;
+    limit?: number;
+    category?: string;
+    is_active?: boolean;
+    search?: string;
+  }) => apiClient.get<FormTemplate[]>("/api/v1/forms/templates", { params }),
+
+  getTemplate: (id: string) =>
+    apiClient.get<FormTemplate>(`/api/v1/forms/templates/${id}`),
+
+  createTemplate: (data: Partial<FormTemplate>) =>
+    apiClient.post<FormTemplate>("/api/v1/forms/templates", data),
+
+  updateTemplate: (id: string, data: Partial<FormTemplate>) =>
+    apiClient.put<FormTemplate>(`/api/v1/forms/templates/${id}`, data),
+
+  deleteTemplate: (id: string) =>
+    apiClient.delete(`/api/v1/forms/templates/${id}`),
+
+  // Submissions
+  listSubmissions: (params?: {
+    skip?: number;
+    limit?: number;
+    template_id?: string;
+    status?: string;
+    submitted_by?: string;
+    location_id?: string;
+    start_date?: string;
+    end_date?: string;
+  }) =>
+    apiClient.get<FormSubmission[]>("/api/v1/forms/submissions", { params }),
+
+  getSubmission: (id: string) =>
+    apiClient.get<FormSubmission>(`/api/v1/forms/submissions/${id}`),
+
+  createSubmission: (data: Partial<FormSubmission>) =>
+    apiClient.post<FormSubmission>("/api/v1/forms/submissions", data),
+
+  updateSubmission: (id: string, data: Partial<FormSubmission>) =>
+    apiClient.put<FormSubmission>(`/api/v1/forms/submissions/${id}`, data),
+
+  deleteSubmission: (id: string) =>
+    apiClient.delete(`/api/v1/forms/submissions/${id}`),
+
+  reviewSubmission: (id: string, status: string) =>
+    apiClient.post(`/api/v1/forms/submissions/${id}/review`, null, {
+      params: { status },
+    }),
+};

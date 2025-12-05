@@ -49,8 +49,8 @@ async def list_items(
     elif station:
         # Get both cabinet and truck for this station
         station_num = station.replace("station_", "")
-        cabinet_name = f"Station {station_num} Cabinet"
-        truck_name = f"Station {station_num} Truck"
+        cabinet_name = f"Station {station_num}"  # Fixed: matches actual DB names
+        truck_name = f"Truck {station_num}"      # Fixed: matches actual DB names
         
         locations_to_sum = db.query(Location).filter(
             Location.name.in_([cabinet_name, truck_name])
@@ -65,8 +65,7 @@ async def list_items(
             or_(
                 Item.name.ilike(f"%{search}%"),
                 Item.description.ilike(f"%{search}%"),
-                Item.sku.ilike(f"%{search}%"),
-                Item.barcode.ilike(f"%{search}%")
+                Item.item_code.ilike(f"%{search}%")
             )
         )
     
@@ -242,7 +241,20 @@ async def create_item(
     """
     Create a new item
     """
-    item = Item(**item_data.model_dump())
+    # Convert schema data to dict
+    # Exclude fields that don't exist in Item model
+    data = item_data.model_dump(exclude={
+        'sku', 'barcode', 'requires_prescription', 
+        'reorder_point', 'reorder_quantity', 'unit_cost'
+    })
+    
+    # Map schema fields to model fields
+    if item_data.sku:
+        data['item_code'] = item_data.sku
+    if item_data.unit_cost is not None:
+        data['cost_per_unit'] = item_data.unit_cost
+    
+    item = Item(**data)
     db.add(item)
     db.commit()
     db.refresh(item)
@@ -263,15 +275,37 @@ async def update_item(
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    # Update only provided fields
+    # Get all update data
     update_data = item_data.model_dump(exclude_unset=True)
     print(f"DEBUG: Received update data: {update_data}")
     
-    # Handle current_stock separately - update inventory table
+    # Extract fields that don't belong to Item model
     current_stock = update_data.pop('current_stock', None)
     location_id_for_update = update_data.pop('location_id', None)
     expiration_date = update_data.pop('expiration_date', None)
-    print(f"DEBUG: Current stock from update data: {current_stock}, location_id: {location_id_for_update}")
+    par_level = update_data.pop('par_level', None)
+    reorder_level = update_data.pop('reorder_level', None)
+    
+    # Remove fields that don't exist in Item model
+    update_data.pop('barcode', None)
+    update_data.pop('requires_prescription', None)
+    update_data.pop('reorder_point', None)
+    update_data.pop('reorder_quantity', None)
+    update_data.pop('rfid_tag', None)  # RFID is in separate table
+    
+    # Map schema fields to model fields
+    sku_value = update_data.pop('sku', None)
+    if sku_value is not None:
+        update_data['item_code'] = sku_value
+    
+    unit_cost_value = update_data.pop('unit_cost', None)
+    if unit_cost_value is not None:
+        update_data['cost_per_unit'] = unit_cost_value
+    
+    print(f"DEBUG: Mapped update data for Item model: {update_data}")
+    print(f"DEBUG: Stock update - current_stock: {current_stock}, location_id: {location_id_for_update}")
+    
+    # Update inventory if current_stock or expiration_date provided
     if current_stock is not None or expiration_date is not None:
         if location_id_for_update:
             # Update inventory for specific location
@@ -281,33 +315,44 @@ async def update_item(
             ).first()
             
             if inventory_record:
-                print(f"DEBUG: Updating inventory record from {inventory_record.quantity_on_hand} to {current_stock}")
+                print(f"DEBUG: Updating existing inventory from {inventory_record.quantity_on_hand} to {current_stock}")
                 if current_stock is not None:
                     inventory_record.quantity_on_hand = current_stock
                 if expiration_date is not None:
+                    # Parse expiration date if it's a string
+                    if isinstance(expiration_date, str):
+                        from dateutil import parser
+                        expiration_date = parser.parse(expiration_date)
                     inventory_record.expiration_date = expiration_date
             else:
                 # Create inventory record for this location
+                print(f"DEBUG: Creating new inventory record with quantity {current_stock}")
+                exp_date = None
+                if expiration_date:
+                    if isinstance(expiration_date, str):
+                        from dateutil import parser
+                        exp_date = parser.parse(expiration_date)
+                    else:
+                        exp_date = expiration_date
+                
                 new_inventory = InventoryCurrent(
                     item_id=item_id,
                     location_id=location_id_for_update,
                     quantity_on_hand=current_stock if current_stock is not None else 0,
                     quantity_allocated=0,
-                    expiration_date=expiration_date
+                    expiration_date=exp_date
                 )
                 db.add(new_inventory)
         else:
-            # No location specified, update first record (fallback)
+            # No location specified - update first record (fallback)
             inventory_record = db.query(InventoryCurrent).filter(
                 InventoryCurrent.item_id == item_id
             ).first()
-            if inventory_record:
+            if inventory_record and current_stock is not None:
+                print(f"DEBUG: Updating inventory (no location specified) from {inventory_record.quantity_on_hand} to {current_stock}")
                 inventory_record.quantity_on_hand = current_stock
     
-    # Handle par_level and reorder_level separately - update par_level table
-    par_level = update_data.pop('par_level', None)
-    reorder_level = update_data.pop('reorder_level', None)
-    
+    # Update par levels if provided
     if par_level is not None or reorder_level is not None:
         if location_id_for_update:
             # Update par level for specific location
@@ -315,22 +360,25 @@ async def update_item(
                 ParLevel.item_id == item_id,
                 ParLevel.location_id == location_id_for_update
             ).first()
+            
             if par_level_record:
+                print(f"DEBUG: Updating existing par level")
                 if par_level is not None:
                     par_level_record.par_quantity = par_level
                 if reorder_level is not None:
                     par_level_record.reorder_quantity = reorder_level
             else:
                 # Create par level for this location
+                print(f"DEBUG: Creating new par level record")
                 new_par = ParLevel(
                     item_id=item_id,
                     location_id=location_id_for_update,
-                    par_quantity=par_level or 0,
-                    reorder_quantity=reorder_level or 0
+                    par_quantity=par_level if par_level is not None else 0,
+                    reorder_quantity=reorder_level if reorder_level is not None else 0
                 )
                 db.add(new_par)
         else:
-            # No location specified, update first record (fallback)
+            # No location specified - update first record (fallback)
             par_level_record = db.query(ParLevel).filter(ParLevel.item_id == item_id).first()
             if par_level_record:
                 if par_level is not None:
@@ -338,12 +386,24 @@ async def update_item(
                 if reorder_level is not None:
                     par_level_record.reorder_quantity = reorder_level
     
-    # Update remaining item fields
+    # Update Item model fields
+    print(f"DEBUG: Updating Item model with fields: {list(update_data.keys())}")
     for field, value in update_data.items():
-        setattr(item, field, value)
+        if hasattr(item, field):
+            setattr(item, field, value)
+        else:
+            print(f"WARNING: Item model does not have field '{field}', skipping")
     
-    db.commit()
-    db.refresh(item)
+    # Commit all changes
+    try:
+        db.commit()
+        db.refresh(item)
+        print(f"DEBUG: Successfully updated item {item_id}")
+    except Exception as e:
+        db.rollback()
+        print(f"ERROR: Failed to commit update: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to update item: {str(e)}")
+    
     return item
 
 

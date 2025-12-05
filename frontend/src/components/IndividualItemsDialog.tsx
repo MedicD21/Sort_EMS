@@ -59,6 +59,7 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
     rfid_tag: "",
     expiration_date: "",
     lot_number: "",
+    truck_location: "",
   });
 
   // Bulk add form
@@ -67,6 +68,7 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
     expiration_date: "",
     lot_number: "",
     rfid_tag_prefix: "",
+    truck_location: "",
   });
 
   const loadIndividualItems = async () => {
@@ -118,9 +120,15 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
         rfid_tag: newItem.rfid_tag,
         expiration_date: newItem.expiration_date || undefined,
         lot_number: newItem.lot_number || undefined,
+        truck_location: newItem.truck_location || undefined,
       });
 
-      setNewItem({ rfid_tag: "", expiration_date: "", lot_number: "" });
+      setNewItem({
+        rfid_tag: "",
+        expiration_date: "",
+        lot_number: "",
+        truck_location: "",
+      });
       setShowAddForm(false);
       loadIndividualItems();
       if (onUpdate) onUpdate();
@@ -143,6 +151,7 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
         expiration_date: bulkAdd.expiration_date || undefined,
         lot_number: bulkAdd.lot_number || undefined,
         rfid_tag_prefix: bulkAdd.rfid_tag_prefix || undefined,
+        truck_location: bulkAdd.truck_location || undefined,
       });
 
       setBulkAdd({
@@ -150,6 +159,7 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
         expiration_date: "",
         lot_number: "",
         rfid_tag_prefix: "",
+        truck_location: "",
       });
       setShowBulkAdd(false);
       loadIndividualItems();
@@ -266,6 +276,18 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
                 size="small"
                 fullWidth
               />
+              {locationName?.startsWith("Truck") && (
+                <TextField
+                  label="Truck Location (e.g., Bag A, Shelf 1)"
+                  value={newItem.truck_location}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, truck_location: e.target.value })
+                  }
+                  size="small"
+                  fullWidth
+                  placeholder="Bag A, Shelf 1, etc."
+                />
+              )}
               <Box display="flex" gap={1}>
                 <Button
                   variant="contained"
@@ -329,6 +351,18 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
                 helperText="If provided, generates tags like PREFIX-001, PREFIX-002, etc."
                 fullWidth
               />
+              {locationName?.startsWith("Truck") && (
+                <TextField
+                  label="Truck Location (e.g., Bag A, Shelf 1)"
+                  value={bulkAdd.truck_location}
+                  onChange={(e) =>
+                    setBulkAdd({ ...bulkAdd, truck_location: e.target.value })
+                  }
+                  size="small"
+                  fullWidth
+                  placeholder="Bag A, Shelf 1, etc."
+                />
+              )}
               <Box display="flex" gap={1}>
                 <Button
                   variant="contained"

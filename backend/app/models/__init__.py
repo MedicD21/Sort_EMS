@@ -18,6 +18,9 @@ from app.models.order import (
 )
 from app.models.audit import AuditLog, ControlledSubstanceLog, AuditAction, SubstanceAction
 from app.models.notification import Notification, NotificationType, NotificationSeverity
+from app.models.employee import Employee
+from app.models.asset import Asset
+from app.models.form import FormTemplate, FormSubmission
 
 __all__ = [
     "BaseModel",
@@ -33,6 +36,7 @@ __all__ = [
     "TagStatus",
     "MovementType",
     "InventoryCurrent",
+    "InventoryItem",
     "Vendor",
     "PurchaseOrder",
     "PurchaseOrderItem",
@@ -45,4 +49,8 @@ __all__ = [
     "Notification",
     "NotificationType",
     "NotificationSeverity",
+    "Employee",
+    "Asset",
+    "FormTemplate",
+    "FormSubmission",
 ]

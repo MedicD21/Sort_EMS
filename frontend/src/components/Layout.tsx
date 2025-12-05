@@ -36,6 +36,8 @@ import {
   Person,
   Category,
   LocalOffer,
+  Devices,
+  Assignment,
 } from "@mui/icons-material";
 import { useAuthStore } from "../stores/authStore";
 
@@ -52,6 +54,8 @@ const navItems: NavItem[] = [
   { text: "Inventory", icon: <Inventory />, path: "/inventory" },
   { text: "Item Management", icon: <Category />, path: "/items" },
   { text: "Categories", icon: <LocalOffer />, path: "/categories" },
+  { text: "Asset Management", icon: <Devices />, path: "/assets" },
+  { text: "Forms", icon: <Assignment />, path: "/forms" },
   { text: "Scanner", icon: <QrCodeScanner />, path: "/scanner" },
   { text: "Orders", icon: <ShoppingCart />, path: "/orders" },
   { text: "Reports", icon: <Assessment />, path: "/reports" },

@@ -41,12 +41,15 @@ import {
   locationsApi,
   Location,
   inventoryApi,
+  categoriesApi,
+  Category,
 } from "../services/apiService";
 import { IndividualItemsDialog } from "../components/IndividualItemsDialog";
 
 export default function InventoryPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedStation, setSelectedStation] = useState<string>("all");
   const [selectedSubLocation, setSelectedSubLocation] = useState<string>("all");
   const [loading, setLoading] = useState(true);
@@ -61,6 +64,7 @@ export default function InventoryPage() {
     name: "",
     rfid_tag: "",
     supply_station_location: "",
+    category_id: "",
     current_stock: 0,
     par_level: 0,
     reorder_level: 0,
@@ -82,6 +86,7 @@ export default function InventoryPage() {
     to_location_id: "",
     quantity: 0,
     notes: "",
+    truck_location: "", // For when transferring TO a truck
   });
   const [scanInput, setScanInput] = useState("");
   const [availableTransferLocations, setAvailableTransferLocations] = useState<
@@ -112,6 +117,7 @@ export default function InventoryPage() {
 
   useEffect(() => {
     fetchLocations();
+    fetchCategories();
     fetchItems();
   }, [selectedStation, selectedSubLocation]);
 
@@ -121,6 +127,15 @@ export default function InventoryPage() {
       setLocations(response.data);
     } catch (err: any) {
       console.error("Error fetching locations:", err);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await categoriesApi.list();
+      setCategories(response.data);
+    } catch (err: any) {
+      console.error("Error fetching categories:", err);
     }
   };
 
@@ -151,7 +166,7 @@ export default function InventoryPage() {
               `Filtering by station: ${selectedStation} (will sum cabinet + truck)`
             );
           } else if (selectedSubLocation === "cabinet") {
-            const locationName = `Station ${stationNum} Cabinet`;
+            const locationName = `Station ${stationNum}`; // Fixed: actual DB name
             const matchingLoc = locations.find(
               (loc) => loc.name === locationName
             );
@@ -164,7 +179,7 @@ export default function InventoryPage() {
               console.warn(`Location not found: ${locationName}`);
             }
           } else if (selectedSubLocation === "truck") {
-            const locationName = `Station ${stationNum} Truck`;
+            const locationName = `Truck ${stationNum}`; // Fixed: actual DB name
             const matchingLoc = locations.find(
               (loc) => loc.name === locationName
             );
@@ -238,12 +253,16 @@ export default function InventoryPage() {
   };
 
   const handleEditClick = (item: Item) => {
+    // Block editing in Master View (overview only)
+    if (selectedStation === "all") {
+      setError(
+        "Cannot edit items in Master View. Please select a specific location (Supply Station, Station Cabinet, or Truck)."
+      );
+      return;
+    }
+
     // Don't allow editing when viewing Cabinet + Truck combined (can't update two locations at once)
-    if (
-      selectedStation !== "all" &&
-      selectedStation !== "supply_station" &&
-      selectedSubLocation === "all"
-    ) {
+    if (selectedStation !== "supply_station" && selectedSubLocation === "all") {
       setError(
         "Cannot edit items in combined Cabinet + Truck view. Please select a specific location (Cabinet or Truck)."
       );
@@ -255,6 +274,7 @@ export default function InventoryPage() {
       name: item.name,
       rfid_tag: item.rfid_tag || "",
       supply_station_location: item.sku || "",
+      category_id: item.category_id || "",
       current_stock: item.current_stock,
       par_level: item.par_level || 0,
       reorder_level: item.reorder_level || 0,
@@ -273,20 +293,20 @@ export default function InventoryPage() {
       setError(null);
 
       // Determine the location_id to update:
-      // If item has location_id, use it. Otherwise, must have a specific location selected.
+      // Priority: 1) Item's existing location_id, 2) Currently selected location
       let locationIdToUpdate = editingItem.location_id;
 
+      // If item doesn't have a location_id, try to get from current view
       if (!locationIdToUpdate && selectedStation !== "all") {
-        // Find the current selected location
         let locationName = "";
         if (selectedStation === "supply_station") {
           locationName = "Supply Station";
         } else {
           const stationNum = selectedStation.replace("station_", "");
           if (selectedSubLocation === "cabinet") {
-            locationName = `Station ${stationNum} Cabinet`;
+            locationName = `Station ${stationNum}`; // Fixed: removed " Cabinet"
           } else if (selectedSubLocation === "truck") {
-            locationName = `Station ${stationNum} Truck`;
+            locationName = `Truck ${stationNum}`; // Fixed: format matches DB
           }
         }
 
@@ -300,30 +320,30 @@ export default function InventoryPage() {
         }
       }
 
-      if (!locationIdToUpdate) {
-        setError("Please select a specific location to update stock");
-        return;
-      }
-
+      // In Master View, item should have location_id from API
+      // If still no location_id, only update item details (not inventory)
       console.log("Updating item with location_id:", locationIdToUpdate);
       console.log("Current stock value:", editForm.current_stock);
+      console.log("editingItem.location_id:", editingItem.location_id);
 
-      // Build update object - only include current_stock if it actually changed
+      // Build update object - ALWAYS include all fields
       const updateData: any = {
         name: editForm.name,
-        rfid_tag: editForm.rfid_tag,
         sku: editForm.supply_station_location,
+        unit_cost: editForm.unit_cost,
+        category_id: editForm.category_id || undefined,
+        current_stock: editForm.current_stock,
         par_level: editForm.par_level,
         reorder_level: editForm.reorder_level,
-        unit_cost: editForm.unit_cost,
-        location_id: locationIdToUpdate,
         expiration_date: editForm.expiration_date || undefined,
       };
 
-      // Only include current_stock if it was modified
-      if (editForm.current_stock !== editingItem.current_stock) {
-        updateData.current_stock = editForm.current_stock;
+      // Include location_id if available
+      if (locationIdToUpdate) {
+        updateData.location_id = locationIdToUpdate;
       }
+
+      console.log("Sending update data:", updateData);
 
       await itemsApi.update(editingItem.id.toString(), updateData);
       setSuccess("Item updated successfully");
@@ -344,48 +364,40 @@ export default function InventoryPage() {
       } else {
         const stationNum = selectedStation.replace("station_", "");
         if (selectedSubLocation === "cabinet") {
-          currentLocationName = `Station ${stationNum} Cabinet`;
+          currentLocationName = `Station ${stationNum}`; // Fixed: actual DB name
         } else if (selectedSubLocation === "truck") {
-          currentLocationName = `Station ${stationNum} Truck`;
+          currentLocationName = `Truck ${stationNum}`; // Fixed: actual DB name
         }
       }
     }
 
     // Determine valid transfer destinations based on location rules:
-    // - Supply Station can only transfer to station cabinets
-    // - Station cabinets can only transfer to their truck
-    // - Station trucks can only transfer to their cabinet
+    // - ONLY allow transfers between Cabinet ↔ Truck (same station number)
+    // - Supply Station and other transfers are NOT allowed
     const validLocations: Location[] = [];
 
-    if (currentLocationName === "Supply Station") {
-      // Supply station can transfer to any station cabinet
-      validLocations.push(
-        ...locations.filter(
-          (loc) =>
-            loc.name.includes("Cabinet") && loc.name.startsWith("Station")
-        )
-      );
-    } else if (currentLocationName?.includes("Cabinet")) {
-      // Cabinet can only transfer to its truck
+    if (currentLocationName?.startsWith("Station ")) {
+      // Station cabinet can only transfer to its truck
       const stationMatch = currentLocationName.match(/Station (\d+)/);
       if (stationMatch) {
         const stationNum = stationMatch[1];
         const truck = locations.find(
-          (loc) => loc.name === `Station ${stationNum} Truck`
+          (loc) => loc.name === `Truck ${stationNum}`
         );
         if (truck) validLocations.push(truck);
       }
-    } else if (currentLocationName?.includes("Truck")) {
-      // Truck can only transfer to its cabinet
-      const stationMatch = currentLocationName.match(/Station (\d+)/);
-      if (stationMatch) {
-        const stationNum = stationMatch[1];
+    } else if (currentLocationName?.startsWith("Truck ")) {
+      // Truck can only transfer back to its station cabinet
+      const truckMatch = currentLocationName.match(/Truck (\d+)/);
+      if (truckMatch) {
+        const stationNum = truckMatch[1];
         const cabinet = locations.find(
-          (loc) => loc.name === `Station ${stationNum} Cabinet`
+          (loc) => loc.name === `Station ${stationNum}`
         );
         if (cabinet) validLocations.push(cabinet);
       }
     }
+    // Supply Station transfers are disabled
 
     setAvailableTransferLocations(validLocations);
     setTransferItem(item);
@@ -439,9 +451,9 @@ export default function InventoryPage() {
       } else {
         const stationNum = selectedStation.replace("station_", "");
         if (selectedSubLocation === "cabinet") {
-          locationName = `Station ${stationNum}`;
+          locationName = `Station ${stationNum}`; // Fixed: actual DB name
         } else if (selectedSubLocation === "truck") {
-          locationName = `Station ${stationNum} Truck`;
+          locationName = `Truck ${stationNum}`; // Fixed: actual DB name
         }
       }
 
@@ -1053,6 +1065,27 @@ export default function InventoryPage() {
               />
             </Grid>
             <Grid item xs={12} md={6}>
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  value={editForm.category_id}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, category_id: e.target.value })
+                  }
+                  label="Category"
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {categories.map((category) => (
+                    <MenuItem key={category.id} value={category.id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 label="RFID Tag"
@@ -1166,8 +1199,12 @@ export default function InventoryPage() {
           <Grid container spacing={2} sx={{ mt: 1 }}>
             {/* RFID/QR Scan Section */}
             <Grid item xs={12}>
-              <Paper elevation={2} sx={{ p: 2, backgroundColor: "#f5f5f5" }}>
-                <Typography variant="subtitle2" gutterBottom>
+              <Paper elevation={2} sx={{ p: 2, backgroundColor: "#2a2a2a" }}>
+                <Typography
+                  variant="subtitle2"
+                  gutterBottom
+                  sx={{ color: "#b0bec5" }}
+                >
                   Scan RFID or QR Code
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>
@@ -1182,6 +1219,16 @@ export default function InventoryPage() {
                       }
                     }}
                     autoFocus
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        backgroundColor: "#1e1e1e",
+                        color: "#fff",
+                      },
+                      "& .MuiInputBase-input::placeholder": {
+                        color: "#757575",
+                        opacity: 1,
+                      },
+                    }}
                   />
                   <Button
                     variant="contained"
@@ -1200,21 +1247,29 @@ export default function InventoryPage() {
                 <Grid item xs={12}>
                   <Paper
                     elevation={1}
-                    sx={{ p: 2, backgroundColor: "#e3f2fd" }}
+                    sx={{
+                      p: 2,
+                      backgroundColor: "#1e3a5f",
+                      borderLeft: "4px solid #2196f3",
+                    }}
                   >
-                    <Typography variant="h6" gutterBottom>
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      sx={{ color: "#fff" }}
+                    >
                       {transferItem.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "#b0bec5" }}>
                       Current Location:{" "}
                       {transferItem.location_name || "Unknown"}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" sx={{ color: "#b0bec5" }}>
                       Available: {transferItem.current_stock}{" "}
                       {transferItem.unit_of_measure}
                     </Typography>
                     {transferItem.rfid_tag && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" sx={{ color: "#90caf9" }}>
                         RFID: {transferItem.rfid_tag}
                       </Typography>
                     )}
@@ -1272,6 +1327,29 @@ export default function InventoryPage() {
                     helperText={`Max: ${transferItem.current_stock}`}
                   />
                 </Grid>
+
+                {/* Show truck location field when transferring TO a truck */}
+                {transferForm.to_location_id &&
+                  locations
+                    .find((loc) => loc.id === transferForm.to_location_id)
+                    ?.name.startsWith("Truck") && (
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Truck Location (Required)"
+                        value={transferForm.truck_location}
+                        onChange={(e) =>
+                          setTransferForm({
+                            ...transferForm,
+                            truck_location: e.target.value,
+                          })
+                        }
+                        placeholder="e.g., Bag A, Shelf 1, Cabinet B"
+                        helperText="Specify where on the truck these items will be stored"
+                        required
+                      />
+                    </Grid>
+                  )}
 
                 <Grid item xs={12}>
                   <TextField
