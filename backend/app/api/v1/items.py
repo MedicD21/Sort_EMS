@@ -5,13 +5,13 @@ from typing import List, Optional, Annotated
 from uuid import UUID
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_, func
 
 from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models.user import User
-from app.models.item import Item
+from app.models.item import Item, Category
 from app.models.par_level import ParLevel
 from app.models.inventory import InventoryCurrent
 from app.models.inventory_item import InventoryItem
@@ -57,7 +57,7 @@ async def list_items(
         ).all()
         location_uuids = [loc.id for loc in locations_to_sum]
     
-    query = db.query(Item)
+    query = db.query(Item).options(joinedload(Item.category))
     
     # Apply search filter
     if search:
@@ -80,8 +80,8 @@ async def list_items(
     # Enrich with stock information
     result = []
     for item in items:
-        # Category name is not stored separately, skip for now
-        category_name = None
+        # Get category name from relationship
+        category_name = item.category.name if item.category else None
         
         # Get par level and stock for specific location(s) or all locations
         if location_uuids:

@@ -1,260 +1,229 @@
 # EMS Supply Tracking System
 
-A comprehensive, HIPAA & CAAS compliant supply tracking system for EMS operations with RFID/QR integration, multi-level inventory management, and automated ordering.
+A comprehensive inventory management system designed specifically for Emergency Medical Services (EMS) supply stations, vehicles, and equipment tracking.
 
-## Features
+## 🚀 Features
 
-- **Multi-Level Inventory Tracking**: Supply Station → Station Cabinets → Vehicles
-- **RFID/QR Code Integration**: Individual item tracking with scanners
-- **Automated Ordering**: Smart reordering based on par levels
-- **Role-Based Access Control**: Admin and User roles with different permissions
-- **Compliance Ready**: HIPAA, CAAS, and Ohio Pharmacy Board compliant
-- **Real-Time Alerts**: Low stock, expiration warnings, and system notifications
-- **Comprehensive Audit Logging**: Full activity tracking for compliance
-- **Controlled Substance Tracking**: Special handling for pharmacy compliance
-- **Mobile-Responsive**: PWA for use on iPads, Windows desktops, and Android devices
+### ✅ Implemented
 
-## Technology Stack
+- **Item Master Management**: Complete CRUD operations for EMS supplies and equipment
+  - 26 sample items across 9 EMS categories
+  - CSV import/export functionality
+  - Multi-select bulk editing
+  - Category-based organization with color coding
+- **Category System**: 15 pre-configured EMS categories
+
+  - Airway Management
+  - Breathing & Oxygen
+  - Cardiac Care
+  - Trauma Supplies
+  - IV & Fluids
+  - Medications (including controlled substances)
+  - Diagnostic Equipment
+  - Infection Control
+  - OB/GYN
+  - Pediatric Equipment
+  - Burns
+  - Extraction & Rescue
+  - Communication
+  - Documentation
+  - General Supplies
+
+- **Inventory Management**: Real-time stock tracking
+
+  - Location-based inventory (Supply Stations, Cabinets, Vehicles)
+  - Par level management
+  - Low stock alerts
+  - RFID tag scanning support
+  - Individual item tracking with expiration dates
+
+- **User Interface**: Modern, responsive dark mode interface
+  - Material-UI components
+  - Real-time search and filtering
+  - Mobile-friendly design
+  - Color-coded status indicators
+
+### 🚧 In Progress
+
+- Order management system
+- Reporting and analytics
+- Advanced RFID scanning workflows
+- User authentication and role-based access
+
+## 🛠️ Tech Stack
 
 ### Backend
 
-- **FastAPI** (Python) - High-performance async API framework
-- **PostgreSQL** - Relational database
-- **SQLAlchemy** - ORM for database operations
-- **JWT** - Secure authentication
-- **Celery + Redis** - Background task processing
+- **Framework**: FastAPI (Python 3.14)
+- **Database**: SQLite with SQLAlchemy ORM
+- **API**: RESTful with automatic OpenAPI documentation
 
-### Frontend (Coming Next)
+### Frontend
 
-- **React 18** with TypeScript
-- **Material-UI** - Enterprise UI components
-- **Redux Toolkit** - State management
-- **PWA** - Offline support and mobile installation
+- **Framework**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Library**: Material-UI (MUI)
+- **State Management**: Zustand
+- **Data Fetching**: React Query
+- **Routing**: React Router v6
 
-## Quick Start
+## 📦 Installation & Running
 
-### Prerequisites
+### Quick Start (Recommended)
 
-- Python 3.11+
-- PostgreSQL 14+
-- Redis (optional, for background tasks)
-- Docker & Docker Compose (recommended)
-
-### Option 1: Docker Compose (Recommended)
-
-1. **Clone and navigate to the project**
-
-   ```powershell
-   cd c:\Users\DScha\OneDrive\Desktop\Sort_EMS
-   ```
-
-2. **Start the database services**
-
-   ```powershell
-   docker-compose up -d postgres redis pgadmin
-   ```
-
-3. **Access pgAdmin**
-
-   - URL: http://localhost:5050
-   - Email: admin@emscompany.com
-   - Password: admin
-
-4. **Create environment file**
-
-   ```powershell
-   cp backend\.env.example backend\.env
-   ```
-
-   Edit `backend\.env` with your settings.
-
-5. **Install Python dependencies**
-
-   ```powershell
-   cd backend
-   pip install -r requirements.txt
-   ```
-
-6. **Run database migrations (coming soon)**
-
-   ```powershell
-   alembic upgrade head
-   ```
-
-7. **Start the backend server**
-
-   ```powershell
-   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
-
-8. **Access the API**
-   - API: http://localhost:8000
-   - Interactive Docs: http://localhost:8000/docs
-   - ReDoc: http://localhost:8000/redoc
-
-### Option 2: Local Setup (Windows)
-
-1. **Install PostgreSQL**
-
-   - Download from https://www.postgresql.org/download/windows/
-   - Create database: `ems_supply_db`
-   - Create user: `ems_user` with password
-
-2. **Install Redis** (optional)
-
-   - Download from https://github.com/microsoftarchive/redis/releases
-   - Or use WSL2 for Redis
-
-3. **Set up Python environment**
-
-   ```powershell
-   cd backend
-   python -m venv .venv
-   .\.venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-4. **Configure environment**
-
-   ```powershell
-   cp .env.example .env
-   # Edit .env with your database credentials
-   ```
-
-5. **Run the application**
-   ```powershell
-   uvicorn app.main:app --reload
-   ```
-
-## Project Structure
-
-```
-Sort_EMS/
-├── backend/
-│   ├── app/
-│   │   ├── api/          # API route handlers
-│   │   ├── core/         # Core configuration
-│   │   ├── models/       # SQLAlchemy models
-│   │   ├── schemas/      # Pydantic schemas
-│   │   ├── services/     # Business logic
-│   │   ├── utils/        # Helper functions
-│   │   └── main.py       # FastAPI application
-│   ├── migrations/       # Alembic migrations
-│   ├── requirements.txt  # Python dependencies
-│   ├── Dockerfile        # Docker configuration
-│   └── .env.example      # Environment template
-├── frontend/             # React application (coming next)
-├── docs/                 # Additional documentation
-├── docker-compose.yml    # Docker services
-├── ARCHITECTURE.md       # Technical architecture
-└── README.md            # This file
+```bash
+# Interactive menu with Docker or Local options
+./run.sh
 ```
 
-## Database Schema
+### Option 1: Docker Compose (Recommended for Stability)
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for complete database schema documentation.
+```bash
+# Start everything with auto-restart
+docker-compose up -d --build
 
-Key entities:
+# View logs
+docker-compose logs -f
 
-- **Users** - Authentication and authorization
-- **Locations** - Supply stations, cabinets, vehicles
-- **Items** - Supply catalog
-- **RFID Tags** - Individual item tracking
-- **Inventory Current** - Real-time stock levels
-- **Par Levels** - Stock level configurations
-- **Purchase Orders** - Ordering and restocking
-- **Audit Logs** - Compliance tracking
+# Stop
+docker-compose down
+```
 
-## API Endpoints (Coming Soon)
+**Advantages:**
 
-- `/api/v1/auth/*` - Authentication
-- `/api/v1/users/*` - User management
-- `/api/v1/items/*` - Item catalog
-- `/api/v1/locations/*` - Location management
-- `/api/v1/rfid/*` - RFID scanning operations
-- `/api/v1/inventory/*` - Inventory management
-- `/api/v1/orders/*` - Purchase orders
-- `/api/v1/reports/*` - Analytics and reporting
-- `/api/v1/notifications/*` - Alerts and notifications
+- ✅ Auto-restart on crash
+- ✅ Isolated environment
+- ✅ No dependency conflicts
+- ✅ One command to start/stop
 
-## Development Roadmap
+### Option 2: Local Development (Recommended for Active Development)
 
-### Phase 1: Foundation ✅ (Current)
+#### Backend Setup
 
-- [x] Project setup
-- [x] Database schema design
-- [x] Core models implementation
-- [ ] Database migrations
-- [ ] Authentication system
+```bash
+cd backend
 
-### Phase 2: Core Inventory (Next)
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-- [ ] RFID/QR scanning APIs
-- [ ] Inventory movement tracking
-- [ ] Par level management
-- [ ] Current inventory state
+# Install dependencies
+pip install -r requirements.txt
 
-### Phase 3: Ordering System
+# Initialize database
+python rebuild_database.py
 
-- [ ] Auto-ordering logic
-- [ ] Purchase order management
-- [ ] Vendor management
-- [ ] Notification system
+# Seed sample data (optional)
+python seed_sample_items.py
 
-### Phase 4: Frontend Development
+# Start server
+uvicorn app.main:app --reload --port 8000
+```
 
-- [ ] React application setup
-- [ ] User authentication UI
-- [ ] Inventory management UI
-- [ ] Scanner integration
-- [ ] Dashboard and analytics
+### Frontend Setup
 
-### Phase 5: Compliance & Testing
+```bash
+cd frontend
 
-- [ ] Audit logging
-- [ ] Controlled substance tracking
-- [ ] Security hardening
-- [ ] Comprehensive testing
+# Install dependencies
+npm install
 
-### Phase 6: Deployment
+# Start development server
+npm run dev
+```
 
-- [ ] Production environment
-- [ ] Data migration from Excel
-- [ ] User training
-- [ ] Go-live
+**Advantages:**
 
-## Data Migration
+- ✅ Faster hot-reload
+- ✅ Direct log access
+- ✅ Better for debugging
+- ✅ Easier development workflow
 
-Your existing supply data from `Medic 4 supply closet 71625.xlsx` will be migrated to the new system. Migration scripts will:
+### Access Points
 
-1. Import item catalog
-2. Set up locations
-3. Configure par levels
-4. Create initial inventory records
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
 
-## Security & Compliance
+## 📊 Database Schema
 
-- **HIPAA Compliant**: Encrypted data, audit logs, access controls
-- **CAAS Compliant**: Complete inventory tracking and verification
-- **Pharmacy Board**: Controlled substance tracking with witness verification
-- **Security Features**:
-  - JWT authentication
-  - Password hashing (bcrypt)
-  - Role-based access control
-  - Comprehensive audit logging
-  - HTTPS/TLS encryption
-  - Session management
+### Core Tables
 
-## Support & Documentation
+- **items**: Master item data with categories
+- **categories**: EMS supply categories with color coding
+- **locations**: Supply stations, cabinets, and vehicles
+- **inventory_current**: Current stock levels by location
+- **inventory_items**: Individual trackable items with RFID/expiration
+- **par_levels**: Min/max stock levels per location
+- **users**: System users and authentication
+- **purchase_orders**: Procurement tracking
+- **audit_logs**: System activity tracking
 
-- **API Documentation**: http://localhost:8000/docs (when running)
-- **Architecture**: See [ARCHITECTURE.md](ARCHITECTURE.md)
-- **Issues**: Contact your development team
+## 🎯 Quick Start
 
-## License
+1. **Start Backend**:
 
-Proprietary - Internal use only
+   ```bash
+   cd backend
+   source venv/bin/activate
+   uvicorn app.main:app --reload --port 8000
+   ```
 
----
+2. **Start Frontend**:
 
-**Built with ❤️ for EMS professionals**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+3. **Access the App**: Open http://localhost:3000
+
+4. **Explore Features**:
+   - Navigate to "Items" to see the master item list
+   - Navigate to "Categories" to manage supply categories
+   - Navigate to "Inventory" to view stock levels by location
+
+## 📝 API Endpoints
+
+### Items
+
+- `GET /api/v1/items/` - List all items with stock info
+- `GET /api/v1/items/{id}` - Get specific item
+- `POST /api/v1/items/` - Create new item
+- `PUT /api/v1/items/{id}` - Update item
+- `DELETE /api/v1/items/{id}` - Delete item
+
+### Categories
+
+- `GET /api/v1/categories/` - List all categories
+- `GET /api/v1/categories/{id}` - Get specific category
+- `POST /api/v1/categories/` - Create category
+- `PUT /api/v1/categories/{id}` - Update category
+- `DELETE /api/v1/categories/{id}` - Delete category
+
+### Inventory
+
+- `GET /api/v1/inventory/` - Get inventory by location
+- `POST /api/v1/inventory/transfer` - Transfer stock between locations
+- `POST /api/v1/inventory/adjust` - Adjust stock levels
+
+Full API documentation available at http://localhost:8000/docs
+
+## 🔒 Security
+
+- JWT-based authentication (currently disabled for development)
+- Role-based access control (planned)
+- Audit logging for all operations
+- Controlled substance tracking
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+## 🤝 Contributing
+
+This is a private project. For questions or contributions, contact the development team.
+
+## 📞 Support
+
+For issues or questions, please create an issue in the GitHub repository.

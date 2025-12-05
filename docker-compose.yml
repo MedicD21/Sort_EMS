@@ -1,92 +1,75 @@
 version: "3.8"
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:16-alpine
-    container_name: ems_postgres
-    environment:
-      POSTGRES_USER: ems_user
-      POSTGRES_PASSWORD: ems_password_change_in_production
-      POSTGRES_DB: ems_supply_db
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ems_backend
     ports:
-      - "5432:5432"
+      - "8000:8000"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - ems_network
-    restart: unless-stopped
-
-  # Redis (for Celery task queue)
-  redis:
-    image: redis:7-alpine
-    container_name: ems_redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - ems_network
-    restart: unless-stopped
-
-  # pgAdmin (Database management UI)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: ems_pgadmin
+      - ./backend:/app
+      - ./backend/ems_supply.db:/app/ems_supply.db
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@emscompany.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=sqlite:///./ems_supply.db
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ems_frontend
     ports:
-      - "5050:80"
-    networks:
-      - ems_network
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    command: npm run dev -- --host 0.0.0.0
     restart: unless-stopped
     depends_on:
-      - postgres
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+# For production with PostgreSQL, uncomment these services:
+# postgres:
+#   image: postgres:16-alpine
+#   container_name: ems_postgres
+#   environment:
+#     POSTGRES_USER: ems_user
+#     POSTGRES_PASSWORD: ems_password_change_in_production
+#     POSTGRES_DB: ems_supply_db
+#   ports:
+#     - "5432:5432"
+#   volumes:
+#     - postgres_data:/var/lib/postgresql/data
+#   restart: unless-stopped
 
-  # FastAPI Backend (uncomment when ready to run)
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: ems_backend
-  #   environment:
-  #     DATABASE_URL: postgresql://ems_user:ems_password_change_in_production@postgres:5432/ems_supply_db
-  #     REDIS_URL: redis://redis:6379/0
-  #     SECRET_KEY: your-secret-key-here-change-in-production-min-32-chars
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./backend:/app
-  #   networks:
-  #     - ems_network
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #   restart: unless-stopped
-  #   command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# redis:
+#   image: redis:7-alpine
+#   container_name: ems_redis
+#   ports:
+#     - "6379:6379"
+#   volumes:
+#     - redis_data:/data
+#   restart: unless-stopped
 
-  # React Frontend (uncomment when ready to run)
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   container_name: ems_frontend
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   networks:
-  #     - ems_network
-  #   depends_on:
-  #     - backend
-  #   restart: unless-stopped
-
-volumes:
-  postgres_data:
-  redis_data:
-
-networks:
-  ems_network:
-    driver: bridge
+# volumes:
+#   postgres_data:
+#   redis_data:
