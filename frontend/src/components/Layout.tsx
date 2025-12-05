@@ -1,7 +1,7 @@
 /**
  * Main layout component with sidebar navigation
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
@@ -22,6 +22,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -38,8 +39,10 @@ import {
   LocalOffer,
   Devices,
   Assignment,
+  DateRange,
 } from "@mui/icons-material";
 import { useAuthStore } from "../stores/authStore";
+import { inventoryApi, ExpiringItem } from "../services/apiService";
 
 const drawerWidth = 240;
 
@@ -56,6 +59,11 @@ const navItems: NavItem[] = [
   { text: "Categories", icon: <LocalOffer />, path: "/categories" },
   { text: "Asset Management", icon: <Devices />, path: "/assets" },
   { text: "Forms", icon: <Assignment />, path: "/forms" },
+  {
+    text: "Expiration Alerts",
+    icon: <DateRange />,
+    path: "/expiration-alerts",
+  },
   { text: "Scanner", icon: <QrCodeScanner />, path: "/scanner" },
   { text: "Orders", icon: <ShoppingCart />, path: "/orders" },
   { text: "Reports", icon: <Assessment />, path: "/reports" },
@@ -65,11 +73,32 @@ const navItems: NavItem[] = [
 export default function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [expiringCount, setExpiringCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const { user, logout } = useAuthStore();
+
+  // Fetch expiring items count on mount and every 5 minutes
+  useEffect(() => {
+    const fetchExpiringCount = async () => {
+      try {
+        const response = await inventoryApi.expiringItems({
+          days_ahead: 30,
+          limit: 1000,
+        });
+        setExpiringCount(response.data.length);
+      } catch (error) {
+        console.error("Error fetching expiring items:", error);
+      }
+    };
+
+    fetchExpiringCount();
+    const interval = setInterval(fetchExpiringCount, 5 * 60 * 1000); // Every 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -144,11 +173,17 @@ export default function Layout() {
             {navItems.find((item) => item.path === location.pathname)?.text ||
               "EMS Supply Tracking"}
           </Typography>
-          <IconButton color="inherit" sx={{ mr: 1 }}>
-            <Badge badgeContent={0} color="error">
-              <Notifications />
-            </Badge>
-          </IconButton>
+          <Tooltip title={`${expiringCount} items expiring in next 30 days`}>
+            <IconButton
+              color="inherit"
+              sx={{ mr: 1 }}
+              onClick={() => navigate("/expiration-alerts")}
+            >
+              <Badge badgeContent={expiringCount} color="error">
+                <Notifications />
+              </Badge>
+            </IconButton>
+          </Tooltip>
           <IconButton onClick={handleMenuOpen} color="inherit">
             <Avatar sx={{ width: 32, height: 32, bgcolor: "secondary.main" }}>
               {user?.first_name?.[0] || "U"}

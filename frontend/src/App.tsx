@@ -19,6 +19,7 @@ import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AssetManagementPage from "./pages/AssetManagementPage";
 import FormsPage from "./pages/FormsPage";
+import ExpirationAlertsPage from "./pages/ExpirationAlertsPage";
 
 // Components
 import Layout from "./components/Layout";
@@ -123,6 +124,10 @@ function App() {
               <Route path="categories" element={<CategoryManagementPage />} />
               <Route path="assets" element={<AssetManagementPage />} />
               <Route path="forms" element={<FormsPage />} />
+              <Route
+                path="expiration-alerts"
+                element={<ExpirationAlertsPage />}
+              />
               <Route path="scanner" element={<ScannerPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />

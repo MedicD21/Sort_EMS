@@ -11,7 +11,7 @@ from ...models.asset import Asset
 from ...models.employee import Employee
 from ...schemas.asset import AssetCreate, AssetUpdate, AssetResponse
 
-router = APIRouter(prefix="/assets", tags=["assets"])
+router = APIRouter()
 
 
 @router.post("/", response_model=AssetResponse, status_code=201)

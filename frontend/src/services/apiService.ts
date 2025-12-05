@@ -173,6 +173,20 @@ export interface Transfer {
   notes?: string;
 }
 
+export interface ExpiringItem {
+  id: number;
+  item_id: string;
+  location_id: string;
+  rfid_tag: string;
+  expiration_date: string;
+  lot_number?: string;
+  days_until_expiration: number;
+  item_name: string;
+  item_code: string;
+  location_name: string;
+  category_name?: string;
+}
+
 export const inventoryApi = {
   list: (params?: {
     location_id?: string;
@@ -191,6 +205,26 @@ export const inventoryApi = {
     location_id?: string;
     item_id?: string;
   }) => apiClient.get("/api/v1/inventory/movements", { params }),
+
+  bulkUpdateParLevels: (data: {
+    item_ids: string[];
+    location_ids: string[];
+    par_level?: number;
+    reorder_level?: number;
+  }) => apiClient.post("/api/v1/inventory/bulk-par-levels", data),
+
+  expiringItems: (params?: {
+    days_ahead?: number;
+    location_id?: string;
+    skip?: number;
+    limit?: number;
+  }) => apiClient.get("/api/v1/inventory/expiring-items", { params }),
+
+  expiredItems: (params?: {
+    location_id?: string;
+    skip?: number;
+    limit?: number;
+  }) => apiClient.get("/api/v1/inventory/expired-items", { params }),
 };
 
 // ============================================================================
@@ -707,5 +741,56 @@ export const formsApi = {
   reviewSubmission: (id: string, status: string) =>
     apiClient.post(`/api/v1/forms/submissions/${id}/review`, null, {
       params: { status },
+    }),
+};
+
+// ============================================================================
+// CSV IMPORT
+// ============================================================================
+
+export interface CSVImportConflict {
+  item_code: string;
+  existing_item_name: string;
+  new_item_name: string;
+  existing_item_id: string;
+  row_number: number;
+}
+
+export interface CSVImportPreviewResponse {
+  total_rows: number;
+  new_items: number;
+  conflicts: CSVImportConflict[];
+  errors: Array<{ row: number; field?: string; error: string }>;
+}
+
+export interface CSVImportRequest {
+  conflict_resolution: "skip" | "replace";
+  item_codes_to_replace?: string[];
+}
+
+export interface CSVImportResult {
+  total_rows: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  errors: Array<{ row: number; error: string }>;
+}
+
+export const csvImportApi = {
+  preview: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return apiClient.post<CSVImportPreviewResponse>(
+      "/api/v1/csv-import/preview",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+  },
+
+  execute: (cacheKey: string, request: CSVImportRequest) =>
+    apiClient.post<CSVImportResult>("/api/v1/csv-import/execute", request, {
+      params: { cache_key: cacheKey },
     }),
 };

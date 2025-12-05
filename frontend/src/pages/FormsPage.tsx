@@ -125,6 +125,11 @@ export default function FormsPage() {
   const [submissionData, setSubmissionData] = useState<Record<string, any>>({});
   const sigPadRef = useRef<SignatureCanvas>(null);
 
+  // Number pad state
+  const [numPadOpen, setNumPadOpen] = useState(false);
+  const [numPadValue, setNumPadValue] = useState("");
+  const [numPadFieldId, setNumPadFieldId] = useState<string | null>(null);
+
   // View submission state
   const [viewSubmissionOpen, setViewSubmissionOpen] = useState(false);
   const [viewingSubmission, setViewingSubmission] =
@@ -274,6 +279,36 @@ export default function FormsPage() {
     }
   };
 
+  // ========== NUMBER PAD HANDLERS ==========
+
+  const handleNumPadInput = (digit: string) => {
+    if (digit === "C") {
+      setNumPadValue("");
+    } else if (digit === "DEL") {
+      setNumPadValue(numPadValue.slice(0, -1));
+    } else {
+      setNumPadValue(numPadValue + digit);
+    }
+  };
+
+  const handleNumPadConfirm = () => {
+    if (numPadFieldId) {
+      setSubmissionData({
+        ...submissionData,
+        [numPadFieldId]: numPadValue,
+      });
+    }
+    setNumPadOpen(false);
+    setNumPadValue("");
+    setNumPadFieldId(null);
+  };
+
+  const openNumPad = (fieldId: string, currentValue: string) => {
+    setNumPadFieldId(fieldId);
+    setNumPadValue(currentValue || "");
+    setNumPadOpen(true);
+  };
+
   // ========== FORM SUBMISSION ==========
 
   const handleFillForm = (template: FormTemplate) => {
@@ -358,22 +393,19 @@ export default function FormsPage() {
         return (
           <TextField
             fullWidth
-            type="number"
             label={field.label}
             placeholder={field.placeholder}
             required={field.required}
             value={submissionData[field.id] || ""}
-            onChange={(e) =>
-              setSubmissionData({
-                ...submissionData,
-                [field.id]: e.target.value,
-              })
-            }
+            onClick={() => openNumPad(field.id, submissionData[field.id] || "")}
+            InputProps={{
+              readOnly: true,
+            }}
             helperText={
               field.help_text ||
               (field.type === "drug_security_tag"
                 ? "Enter security tag number"
-                : "")
+                : "Click to open number pad")
             }
           />
         );
@@ -1082,6 +1114,111 @@ export default function FormsPage() {
             </>
           )}
           <Button onClick={() => setViewSubmissionOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Number Pad Dialog */}
+      <Dialog
+        open={numPadOpen}
+        onClose={() => setNumPadOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Enter Number</DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 2 }}>
+            {/* Display */}
+            <TextField
+              fullWidth
+              value={numPadValue}
+              InputProps={{
+                readOnly: true,
+                style: { fontSize: "2rem", textAlign: "center" },
+              }}
+              sx={{ mb: 2 }}
+            />
+
+            {/* Number Pad */}
+            <Grid container spacing={1}>
+              {["7", "8", "9"].map((num) => (
+                <Grid item xs={4} key={num}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => handleNumPadInput(num)}
+                    sx={{ height: 60, fontSize: "1.5rem" }}
+                  >
+                    {num}
+                  </Button>
+                </Grid>
+              ))}
+              {["4", "5", "6"].map((num) => (
+                <Grid item xs={4} key={num}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => handleNumPadInput(num)}
+                    sx={{ height: 60, fontSize: "1.5rem" }}
+                  >
+                    {num}
+                  </Button>
+                </Grid>
+              ))}
+              {["1", "2", "3"].map((num) => (
+                <Grid item xs={4} key={num}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => handleNumPadInput(num)}
+                    sx={{ height: 60, fontSize: "1.5rem" }}
+                  >
+                    {num}
+                  </Button>
+                </Grid>
+              ))}
+              <Grid item xs={4}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color="error"
+                  onClick={() => handleNumPadInput("C")}
+                  sx={{ height: 60, fontSize: "1.2rem" }}
+                >
+                  Clear
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  onClick={() => handleNumPadInput("0")}
+                  sx={{ height: 60, fontSize: "1.5rem" }}
+                >
+                  0
+                </Button>
+              </Grid>
+              <Grid item xs={4}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => handleNumPadInput("DEL")}
+                  sx={{ height: 60, fontSize: "1rem" }}
+                >
+                  ⌫
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setNumPadOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleNumPadConfirm}
+            variant="contained"
+            size="large"
+          >
+            Confirm
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

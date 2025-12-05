@@ -34,7 +34,14 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import { itemsApi, categoriesApi, Category } from "../services/apiService";
+import {
+  itemsApi,
+  categoriesApi,
+  Category,
+  csvImportApi,
+  CSVImportPreviewResponse,
+  CSVImportConflict,
+} from "../services/apiService";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -61,7 +68,15 @@ export default function ItemManagementPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
-  const [importPreviewData, setImportPreviewData] = useState<any[]>([]);
+  const [importPreviewData, setImportPreviewData] =
+    useState<CSVImportPreviewResponse | null>(null);
+  const [importCacheKey, setImportCacheKey] = useState<string>("");
+  const [conflictResolution, setConflictResolution] = useState<
+    "skip" | "replace"
+  >("skip");
+  const [selectedConflicts, setSelectedConflicts] = useState<Set<string>>(
+    new Set()
+  );
   const [bulkEditDialogOpen, setBulkEditDialogOpen] = useState(false);
   const [bulkEditData, setBulkEditData] = useState({
     category_id: "",
@@ -337,113 +352,99 @@ export default function ItemManagementPage() {
   };
 
   // CSV Import
-  const handleImportFileChange = (
+  const handleImportFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const file = event.target.files?.[0];
+    const file = event.target?.files?.[0];
     if (file) {
       setImportFile(file);
-      parseCSVFile(file);
-    }
-  };
-
-  const parseCSVFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const lines = text.split("\n").filter((line) => line.trim());
-      if (lines.length < 2) return;
-
-      const headers = lines[0]
-        .split(",")
-        .map((h) => h.trim().replace(/^"|"$/g, ""));
-      const data = lines.slice(1).map((line) => {
-        const values = parseCSVLine(line);
-        const row: any = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index]?.replace(/^"|"$/g, "") || "";
-        });
-        return row;
-      });
-
-      setImportPreviewData(data);
-    };
-    reader.readAsText(file);
-  };
-
-  const parseCSVLine = (line: string): string[] => {
-    const result: string[] = [];
-    let current = "";
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-      if (char === '"') {
-        inQuotes = !inQuotes;
-      } else if (char === "," && !inQuotes) {
-        result.push(current);
-        current = "";
-      } else {
-        current += char;
+      try {
+        const response = await csvImportApi.preview(file);
+        setImportPreviewData(response.data);
+        // Extract cache key from response headers or generate from timestamp
+        const cacheKey = `${response.data.total_rows}_${Date.now()}`;
+        setImportCacheKey(cacheKey);
+        setConflictResolution("skip");
+        setSelectedConflicts(new Set());
+      } catch (error: any) {
+        console.error("Failed to preview CSV:", error);
+        alert(error.response?.data?.detail || "Failed to preview CSV file");
       }
     }
-    result.push(current);
-    return result;
   };
 
   const handleImportCSV = async () => {
-    try {
-      for (const row of importPreviewData) {
-        const itemData = {
-          name: row["Name"],
-          sku: row["Item Code"],
-          description: row["Description"] || undefined,
-          category_id: row["Category ID"] || undefined,
-          unit_of_measure: row["Unit of Measure"] || "EA",
-          unit_cost: row["Unit Cost"]
-            ? parseFloat(row["Unit Cost"])
-            : undefined,
-          barcode: row["Barcode"] || row["Item Code"],
-          manufacturer: row["Manufacturer"] || undefined,
-          manufacturer_part_number:
-            row["Manufacturer Part Number"] || undefined,
-          supplier_name: row["Supplier Name"] || undefined,
-          supplier_contact: row["Supplier Contact"] || undefined,
-          supplier_email: row["Supplier Email"] || undefined,
-          supplier_phone: row["Supplier Phone"] || undefined,
-          supplier_website: row["Supplier Website"] || undefined,
-          supplier_account_number: row["Supplier Account Number"] || undefined,
-          minimum_order_quantity: row["Minimum Order Quantity"]
-            ? parseInt(row["Minimum Order Quantity"])
-            : undefined,
-          order_unit: row["Order Unit"] || undefined,
-          lead_time_days: row["Lead Time Days"]
-            ? parseInt(row["Lead Time Days"])
-            : undefined,
-          preferred_vendor: row["Preferred Vendor"] || undefined,
-          alternate_vendor: row["Alternate Vendor"] || undefined,
-          is_controlled_substance: row["Controlled Substance"] === "TRUE",
-          requires_prescription: row["Requires Prescription"] === "TRUE",
-          requires_expiration_tracking:
-            row["Requires Expiration Tracking"] === "TRUE",
-          is_active: row["Active"] !== "FALSE",
-        };
+    if (!importFile || !importPreviewData) return;
 
-        if (row["ID"]) {
-          await itemsApi.update(row["ID"], itemData);
-        } else {
-          await itemsApi.create(itemData);
-        }
+    try {
+      // Re-upload to get cache key
+      const previewResponse = await csvImportApi.preview(importFile);
+      const timestamp = Date.now();
+      const userId = localStorage.getItem("userId") || "unknown";
+      const cacheKey = `${userId}_${timestamp / 1000}`;
+
+      // Determine which items to replace based on resolution strategy
+      let itemCodesToReplace: string[] | undefined;
+      if (conflictResolution === "skip" && selectedConflicts.size > 0) {
+        itemCodesToReplace = Array.from(selectedConflicts);
+      } else if (
+        conflictResolution === "replace" &&
+        selectedConflicts.size > 0
+      ) {
+        // If replace mode, exclude unselected items
+        const allConflictCodes = new Set(
+          previewResponse.data.conflicts.map((c) => c.item_code)
+        );
+        itemCodesToReplace = Array.from(allConflictCodes).filter(
+          (code) => !selectedConflicts.has(code)
+        );
       }
+
+      const result = await csvImportApi.execute(cacheKey, {
+        conflict_resolution: conflictResolution,
+        item_codes_to_replace: itemCodesToReplace,
+      });
+
+      alert(
+        `Import complete!\n` +
+          `Created: ${result.data.created}\n` +
+          `Updated: ${result.data.updated}\n` +
+          `Skipped: ${result.data.skipped}\n` +
+          `Errors: ${result.data.errors.length}`
+      );
 
       setImportDialogOpen(false);
       setImportFile(null);
-      setImportPreviewData([]);
+      setImportPreviewData(null);
+      setImportCacheKey("");
       loadItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to import items:", error);
-      alert("Import failed. Check console for details.");
+      alert(
+        error.response?.data?.detail ||
+          "Import failed. Check console for details."
+      );
     }
+  };
+
+  const handleConflictToggle = (itemCode: string) => {
+    const newSet = new Set(selectedConflicts);
+    if (newSet.has(itemCode)) {
+      newSet.delete(itemCode);
+    } else {
+      newSet.add(itemCode);
+    }
+    setSelectedConflicts(newSet);
+  };
+
+  const handleConflictSelectAll = () => {
+    if (!importPreviewData) return;
+    const allCodes = importPreviewData.conflicts.map((c) => c.item_code);
+    setSelectedConflicts(new Set(allCodes));
+  };
+
+  const handleConflictDeselectAll = () => {
+    setSelectedConflicts(new Set());
   };
 
   // Multi-select handlers
@@ -827,7 +828,9 @@ export default function ItemManagementPage() {
                   </MenuItem>
                   {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
                         <Box
                           sx={{
                             width: 16,
@@ -1161,43 +1164,121 @@ export default function ItemManagementPage() {
               </Button>
             </label>
           </Box>
-          {importPreviewData.length > 0 && (
-            <>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Preview ({importPreviewData.length} rows):
+
+          {importPreviewData && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Import Summary
               </Typography>
-              <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
-                <Table size="small" stickyHeader>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Item Code</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Supplier</TableCell>
-                      <TableCell>Unit Cost</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {importPreviewData.slice(0, 10).map((row, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell>{row["Item Code"]}</TableCell>
-                        <TableCell>{row["Name"]}</TableCell>
-                        <TableCell>{row["Supplier Name"]}</TableCell>
-                        <TableCell>{row["Unit Cost"]}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              {importPreviewData.length > 10 && (
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  Showing first 10 of {importPreviewData.length} rows
-                </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                Total rows: {importPreviewData.total_rows} | New items:{" "}
+                {importPreviewData.new_items} | Conflicts:{" "}
+                {importPreviewData.conflicts.length} | Errors:{" "}
+                {importPreviewData.errors.length}
+              </Typography>
+
+              {importPreviewData.errors.length > 0 && (
+                <Paper sx={{ p: 2, mb: 2, bgcolor: "#ffebee" }}>
+                  <Typography variant="subtitle2" color="error" gutterBottom>
+                    Validation Errors
+                  </Typography>
+                  {importPreviewData.errors.slice(0, 5).map((err, idx) => (
+                    <Typography key={idx} variant="caption" display="block">
+                      Row {err.row}: {err.field && `${err.field} - `}
+                      {err.error}
+                    </Typography>
+                  ))}
+                  {importPreviewData.errors.length > 5 && (
+                    <Typography variant="caption" color="text.secondary">
+                      ...and {importPreviewData.errors.length - 5} more errors
+                    </Typography>
+                  )}
+                </Paper>
               )}
-            </>
+
+              {importPreviewData.conflicts.length > 0 && (
+                <>
+                  <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                    Conflicts Detected ({importPreviewData.conflicts.length})
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    The following item codes already exist. Choose how to handle
+                    them:
+                  </Typography>
+
+                  <Box sx={{ mb: 2 }}>
+                    <TextField
+                      select
+                      fullWidth
+                      label="Conflict Resolution"
+                      value={conflictResolution}
+                      onChange={(e) =>
+                        setConflictResolution(
+                          e.target.value as "skip" | "replace"
+                        )
+                      }
+                      size="small"
+                    >
+                      <MenuItem value="skip">
+                        Skip conflicting items (keep existing)
+                      </MenuItem>
+                      <MenuItem value="replace">
+                        Replace conflicting items (update existing)
+                      </MenuItem>
+                    </TextField>
+                  </Box>
+
+                  <Box sx={{ mb: 1 }}>
+                    <Button size="small" onClick={handleConflictSelectAll}>
+                      Select All
+                    </Button>
+                    <Button size="small" onClick={handleConflictDeselectAll}>
+                      Deselect All
+                    </Button>
+                  </Box>
+
+                  <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
+                    <Table size="small" stickyHeader>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell padding="checkbox">
+                            {conflictResolution === "skip"
+                              ? "Replace?"
+                              : "Skip?"}
+                          </TableCell>
+                          <TableCell>Item Code</TableCell>
+                          <TableCell>Existing Item</TableCell>
+                          <TableCell>New Item</TableCell>
+                          <TableCell>Row</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {importPreviewData.conflicts.map((conflict) => (
+                          <TableRow key={conflict.item_code}>
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                checked={selectedConflicts.has(
+                                  conflict.item_code
+                                )}
+                                onChange={() =>
+                                  handleConflictToggle(conflict.item_code)
+                                }
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <strong>{conflict.item_code}</strong>
+                            </TableCell>
+                            <TableCell>{conflict.existing_item_name}</TableCell>
+                            <TableCell>{conflict.new_item_name}</TableCell>
+                            <TableCell>{conflict.row_number}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </>
+              )}
+            </Box>
           )}
         </DialogContent>
         <DialogActions>
@@ -1205,7 +1286,9 @@ export default function ItemManagementPage() {
             onClick={() => {
               setImportDialogOpen(false);
               setImportFile(null);
-              setImportPreviewData([]);
+              setImportPreviewData(null);
+              setImportCacheKey("");
+              setSelectedConflicts(new Set());
             }}
           >
             Cancel
@@ -1213,9 +1296,16 @@ export default function ItemManagementPage() {
           <Button
             onClick={handleImportCSV}
             variant="contained"
-            disabled={importPreviewData.length === 0}
+            disabled={!importPreviewData || importPreviewData.errors.length > 0}
           >
-            Import {importPreviewData.length} Items
+            Import{" "}
+            {importPreviewData
+              ? importPreviewData.new_items +
+                (conflictResolution === "replace"
+                  ? importPreviewData.conflicts.length
+                  : 0)
+              : 0}{" "}
+            Items
           </Button>
         </DialogActions>
       </Dialog>

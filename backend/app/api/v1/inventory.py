@@ -14,10 +14,12 @@ from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models.user import User
 from app.models.inventory import InventoryCurrent
+from app.models.par_level import ParLevel
 from app.models.rfid import InventoryMovement, MovementType
 from app.models.item import Item
 from app.models.location import Location
 from app.models.audit import AuditLog, AuditAction
+from app.models.inventory_item import InventoryItem
 
 router = APIRouter()
 
@@ -56,6 +58,13 @@ class InventoryTransferRequest(BaseModel):
     to_location_id: UUID
     quantity: int
     notes: Optional[str] = None
+
+
+class BulkParLevelUpdate(BaseModel):
+    item_ids: List[UUID]
+    location_ids: List[UUID]
+    par_level: Optional[int] = None
+    reorder_level: Optional[int] = None
 
 
 class InventoryMovementResponse(BaseModel):
@@ -403,3 +412,220 @@ async def get_low_stock_items(
         current_user=current_user,
         db=db
     )
+
+
+@router.post("/bulk-par-levels")
+async def bulk_update_par_levels(
+    update_data: BulkParLevelUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Bulk update par levels for multiple items across multiple locations
+    """
+    if not update_data.par_level and not update_data.reorder_level:
+        raise HTTPException(status_code=400, detail="Must provide at least one value to update")
+    
+    updated_count = 0
+    created_count = 0
+    
+    for item_id in update_data.item_ids:
+        # Verify item exists
+        item = db.query(Item).filter(Item.id == item_id).first()
+        if not item:
+            continue
+        
+        for location_id in update_data.location_ids:
+            # Verify location exists
+            location = db.query(Location).filter(Location.id == location_id).first()
+            if not location:
+                continue
+            
+            # Find or create par level
+            par_level = db.query(ParLevel).filter(
+                ParLevel.item_id == item_id,
+                ParLevel.location_id == location_id
+            ).first()
+            
+            if par_level:
+                # Update existing
+                if update_data.par_level is not None:
+                    par_level.par_quantity = update_data.par_level
+                if update_data.reorder_level is not None:
+                    par_level.reorder_quantity = update_data.reorder_level
+                par_level.updated_at = datetime.utcnow()
+                updated_count += 1
+            else:
+                # Create new
+                par_level = ParLevel(
+                    item_id=item_id,
+                    location_id=location_id,
+                    par_quantity=update_data.par_level if update_data.par_level is not None else 0,
+                    reorder_quantity=update_data.reorder_level if update_data.reorder_level is not None else 0
+                )
+                db.add(par_level)
+                created_count += 1
+    
+    db.commit()
+    
+    return {
+        "message": "Par levels updated successfully",
+        "updated": updated_count,
+        "created": created_count,
+        "total_items": len(update_data.item_ids),
+        "total_locations": len(update_data.location_ids)
+    }
+
+
+class ExpiringItemResponse(BaseModel):
+    id: int
+    item_id: UUID
+    location_id: UUID
+    rfid_tag: str
+    expiration_date: datetime
+    lot_number: Optional[str]
+    days_until_expiration: int
+    
+    # Enriched data
+    item_name: str
+    item_code: str
+    location_name: str
+    category_name: Optional[str]
+    
+    class Config:
+        from_attributes = True
+
+
+@router.get("/expiring-items", response_model=List[ExpiringItemResponse])
+async def get_expiring_items(
+    days_ahead: int = Query(30, ge=1, le=365, description="Number of days to look ahead"),
+    location_id: Optional[UUID] = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get items expiring within the specified number of days
+    
+    Args:
+        days_ahead: Number of days to look ahead (default 30)
+        location_id: Filter by specific location
+        skip: Number of records to skip
+        limit: Maximum number of records to return
+    
+    Returns:
+        List of expiring items with enriched data
+    """
+    from datetime import timedelta
+    
+    # Calculate cutoff date
+    cutoff_date = datetime.utcnow() + timedelta(days=days_ahead)
+    
+    # Build query
+    query = db.query(InventoryItem).filter(
+        InventoryItem.expiration_date.isnot(None),
+        InventoryItem.expiration_date <= cutoff_date,
+        InventoryItem.expiration_date >= datetime.utcnow()  # Exclude already expired
+    )
+    
+    if location_id:
+        query = query.filter(InventoryItem.location_id == location_id)
+    
+    # Order by expiration date (soonest first)
+    query = query.order_by(InventoryItem.expiration_date)
+    
+    items = query.offset(skip).limit(limit).all()
+    
+    # Enrich with item and location data
+    results = []
+    for inv_item in items:
+        item = db.query(Item).filter(Item.id == inv_item.item_id).first()
+        location = db.query(Location).filter(Location.id == inv_item.location_id).first()
+        
+        if not item or not location:
+            continue
+        
+        # Calculate days until expiration
+        days_until = (inv_item.expiration_date - datetime.utcnow()).days
+        
+        result = ExpiringItemResponse(
+            id=inv_item.id,
+            item_id=inv_item.item_id,
+            location_id=inv_item.location_id,
+            rfid_tag=inv_item.rfid_tag,
+            expiration_date=inv_item.expiration_date,
+            lot_number=inv_item.lot_number,
+            days_until_expiration=days_until,
+            item_name=item.name,
+            item_code=item.item_code,
+            location_name=location.name,
+            category_name=item.category.name if item.category else None
+        )
+        results.append(result)
+    
+    return results
+
+
+@router.get("/expired-items", response_model=List[ExpiringItemResponse])
+async def get_expired_items(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    location_id: Optional[UUID] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get items that have already expired
+    
+    Args:
+        location_id: Filter by specific location
+        skip: Number of records to skip
+        limit: Maximum number of records to return
+    
+    Returns:
+        List of expired items with enriched data
+    """
+    # Build query for expired items
+    query = db.query(InventoryItem).filter(
+        InventoryItem.expiration_date.isnot(None),
+        InventoryItem.expiration_date < datetime.utcnow()
+    )
+    
+    if location_id:
+        query = query.filter(InventoryItem.location_id == location_id)
+    
+    # Order by expiration date (oldest first)
+    query = query.order_by(InventoryItem.expiration_date)
+    
+    items = query.offset(skip).limit(limit).all()
+    
+    # Enrich with item and location data
+    results = []
+    for inv_item in items:
+        item = db.query(Item).filter(Item.id == inv_item.item_id).first()
+        location = db.query(Location).filter(Location.id == inv_item.location_id).first()
+        
+        if not item or not location:
+            continue
+        
+        # Calculate days since expiration (negative number)
+        days_until = (inv_item.expiration_date - datetime.utcnow()).days
+        
+        result = ExpiringItemResponse(
+            id=inv_item.id,
+            item_id=inv_item.item_id,
+            location_id=inv_item.location_id,
+            rfid_tag=inv_item.rfid_tag,
+            expiration_date=inv_item.expiration_date,
+            lot_number=inv_item.lot_number,
+            days_until_expiration=days_until,
+            item_name=item.name,
+            item_code=item.item_code,
+            location_name=location.name,
+            category_name=item.category.name if item.category else None
+        )
+        results.append(result)
+    
+    return results
+

@@ -10,7 +10,7 @@ from ...core.database import get_db
 from ...models.employee import Employee
 from ...schemas.employee import EmployeeCreate, EmployeeUpdate, EmployeeResponse
 
-router = APIRouter(prefix="/employees", tags=["employees"])
+router = APIRouter()
 
 
 @router.post("/", response_model=EmployeeResponse, status_code=201)

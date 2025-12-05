@@ -28,6 +28,13 @@ import {
   DialogActions,
   Button,
   Grid,
+  Checkbox,
+  FormControlLabel,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -98,6 +105,14 @@ export default function InventoryPage() {
   const [scannedItems, setScannedItems] = useState<Map<string, number>>(
     new Map()
   );
+
+  // Bulk Par Level Edit state
+  const [bulkParDialogOpen, setBulkParDialogOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [bulkParForm, setBulkParForm] = useState({
+    location_type: "cabinet" as "cabinet" | "truck",
+    item_par_levels: {} as Record<string, { par_level: string; reorder_level: string }>,
+  });
   const [scanResultsOpen, setScanResultsOpen] = useState(false);
   const [scanResults, setScanResults] = useState<{
     toBeOrdered: Item[];
@@ -408,6 +423,107 @@ export default function InventoryPage() {
     });
     setScanInput("");
     setTransferDialogOpen(true);
+  };
+
+  // Bulk Par Level handlers
+  const handleToggleItemSelection = (itemId: string) => {
+    const newSelection = new Set(selectedItems);
+    if (newSelection.has(itemId)) {
+      newSelection.delete(itemId);
+    } else {
+      newSelection.add(itemId);
+    }
+    setSelectedItems(newSelection);
+  };
+
+  const handleSelectAllItems = () => {
+    if (selectedItems.size === filteredItems.length) {
+      setSelectedItems(new Set());
+    } else {
+      setSelectedItems(new Set(filteredItems.map((item) => item.id)));
+    }
+  };
+
+  const handleOpenBulkParDialog = () => {
+    if (selectedItems.size === 0) {
+      alert("Please select at least one item");
+      return;
+    }
+    
+    // Initialize par levels for each selected item
+    const itemParLevels: Record<string, { par_level: string; reorder_level: string }> = {};
+    selectedItems.forEach((itemId) => {
+      itemParLevels[itemId] = { par_level: "", reorder_level: "" };
+    });
+    
+    setBulkParForm({
+      location_type: "cabinet",
+      item_par_levels: itemParLevels,
+    });
+    setBulkParDialogOpen(true);
+  };
+
+  const handleBulkParSubmit = async () => {
+    try {
+      // Determine location IDs based on location type (cabinet or truck)
+      const locationIds = locations
+        .filter((loc) => {
+          if (bulkParForm.location_type === "cabinet") {
+            // Match "Station 1" through "Station 11" (cabinets)
+            return /^Station \d+$/.test(loc.name);
+          } else {
+            // Match "Truck 1" through "Truck 11" (trucks)
+            return /^Truck \d+$/.test(loc.name);
+          }
+        })
+        .map((loc) => loc.id);
+
+      if (locationIds.length === 0) {
+        alert("No locations found for the selected type");
+        return;
+      }
+
+      // Prepare updates for each item
+      const updates = [];
+      for (const itemId of selectedItems) {
+        const itemValues = bulkParForm.item_par_levels[itemId];
+        if (itemValues && (itemValues.par_level || itemValues.reorder_level)) {
+          const data = {
+            item_ids: [itemId],
+            location_ids: locationIds,
+            par_level: itemValues.par_level ? parseInt(itemValues.par_level) : undefined,
+            reorder_level: itemValues.reorder_level ? parseInt(itemValues.reorder_level) : undefined,
+          };
+          updates.push(inventoryApi.bulkUpdateParLevels(data));
+        }
+      }
+
+      if (updates.length === 0) {
+        alert("Please enter at least one par or reorder level");
+        return;
+      }
+
+      // Execute all updates
+      const results = await Promise.all(updates);
+      const totalCreated = results.reduce((sum, r) => sum + r.data.created, 0);
+      const totalUpdated = results.reduce((sum, r) => sum + r.data.updated, 0);
+
+      setSuccess(
+        `Updated par levels for ${updates.length} items across all ${bulkParForm.location_type === "cabinet" ? "cabinets" : "trucks"}. ` +
+          `Created: ${totalCreated}, Updated: ${totalUpdated}`
+      );
+
+      setBulkParDialogOpen(false);
+      setBulkParForm({
+        location_type: "cabinet",
+        item_par_levels: {},
+      });
+      setSelectedItems(new Set());
+      fetchItems();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Failed to update par levels");
+      console.error("Error updating par levels:", err);
+    }
   };
 
   const handleScanSubmit = async () => {
@@ -740,7 +856,15 @@ export default function InventoryPage() {
         </Grid>
 
         {/* RFID Scanning Controls */}
-        <Box sx={{ mb: 3, display: "flex", gap: 2, alignItems: "center" }}>
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
           {!isScanning ? (
             <Button
               variant="contained"
@@ -779,6 +903,23 @@ export default function InventoryPage() {
           >
             Refresh
           </Button>
+
+          {selectedItems.size > 0 && (
+            <Chip
+              label={`${selectedItems.size} items selected`}
+              color="primary"
+              onDelete={() => setSelectedItems(new Set())}
+            />
+          )}
+
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleOpenBulkParDialog}
+            disabled={selectedItems.size === 0}
+          >
+            Bulk Edit Par Levels ({selectedItems.size})
+          </Button>
         </Box>
 
         {loading ? (
@@ -793,39 +934,76 @@ export default function InventoryPage() {
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <strong>Item Name</strong>
+                  <TableRow sx={{ backgroundColor: "#1a1a1a" }}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={
+                          selectedItems.size > 0 &&
+                          selectedItems.size === filteredItems.length
+                        }
+                        indeterminate={
+                          selectedItems.size > 0 &&
+                          selectedItems.size < filteredItems.length
+                        }
+                        onChange={handleSelectAllItems}
+                      />
                     </TableCell>
-                    <TableCell>
-                      <strong>RFID Tag</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Stock Location
                     </TableCell>
-                    <TableCell>
-                      <strong>Supply Station Loc</strong>
+                    <TableCell sx={{ fontSize: "1rem", fontWeight: 600 }}>
+                      Item Name
                     </TableCell>
-                    <TableCell>
-                      <strong>Category</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Category
                     </TableCell>
-                    <TableCell>
-                      <strong>Current Location</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Current Location
                     </TableCell>
-                    <TableCell align="right">
-                      <strong>Current Stock</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Current Stock
                     </TableCell>
-                    <TableCell align="right">
-                      <strong>Par Level</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Par Level
                     </TableCell>
-                    <TableCell align="right">
-                      <strong>Reorder Level</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Reorder Level
                     </TableCell>
-                    <TableCell>
-                      <strong>Status</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Status
                     </TableCell>
-                    <TableCell>
-                      <strong>Expiration</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Expiration
                     </TableCell>
-                    <TableCell align="center">
-                      <strong>Actions</strong>
+                    <TableCell
+                      align="center"
+                      sx={{ fontSize: "1rem", fontWeight: 600 }}
+                    >
+                      Actions
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -885,13 +1063,29 @@ export default function InventoryPage() {
                           },
                         }}
                       >
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedItems.has(item.id)}
+                            onChange={() => handleToggleItemSelection(item.id)}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
+                          <Typography
+                            variant="body1"
+                            fontWeight="medium"
+                            sx={{ fontSize: "0.95rem" }}
+                          >
+                            {item.sku || "—"}
+                          </Typography>
+                        </TableCell>
                         <TableCell>
                           <Typography
-                            variant="body2"
+                            variant="body1"
                             fontWeight="medium"
                             sx={{
                               cursor: "pointer",
                               color: "#64b5f6",
+                              fontSize: "0.95rem",
                               "&:hover": {
                                 textDecoration: "underline",
                               },
@@ -913,71 +1107,77 @@ export default function InventoryPage() {
                               variant="caption"
                               color="text.secondary"
                               display="block"
+                              sx={{ fontSize: "0.8rem" }}
                             >
                               {item.description}
                             </Typography>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           <Typography
-                            variant="body2"
-                            sx={{ fontFamily: "monospace" }}
+                            variant="body1"
+                            sx={{ fontSize: "0.95rem" }}
                           >
-                            {item.rfid_tag || "—"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
-                            {item.sku || "—"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
                             {item.category_name || "—"}
                           </Typography>
                         </TableCell>
-                        <TableCell>
-                          <Typography variant="body2">
+                        <TableCell align="center">
+                          <Typography
+                            variant="body1"
+                            sx={{ fontSize: "0.95rem" }}
+                          >
                             {item.location_name || "—"}
                           </Typography>
                         </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2" fontWeight="medium">
+                        <TableCell align="center">
+                          <Typography
+                            variant="body1"
+                            fontWeight="medium"
+                            sx={{ fontSize: "1rem" }}
+                          >
                             {item.current_stock} {item.unit_of_measure}
                           </Typography>
                         </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2">
+                        <TableCell align="center">
+                          <Typography
+                            variant="body1"
+                            sx={{ fontSize: "0.95rem" }}
+                          >
                             {item.par_level !== null &&
                             item.par_level !== undefined
                               ? item.par_level
                               : "—"}
                           </Typography>
                         </TableCell>
-                        <TableCell align="right">
-                          <Typography variant="body2">
+                        <TableCell align="center">
+                          <Typography
+                            variant="body1"
+                            sx={{ fontSize: "0.95rem" }}
+                          >
                             {item.reorder_level !== null &&
                             item.reorder_level !== undefined
                               ? item.reorder_level
                               : "—"}
                           </Typography>
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           {status && (
                             <Chip
                               label={status.label}
                               color={status.color}
-                              size="small"
+                              size="medium"
+                              sx={{ fontSize: "0.85rem", fontWeight: 500 }}
                             />
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell align="center">
                           {expirationChips.length > 0 ? (
                             <div
                               style={{
                                 display: "flex",
                                 gap: "4px",
                                 flexWrap: "wrap",
+                                justifyContent: "center",
                               }}
                             >
                               {expirationChips.map((chip, idx) => (
@@ -985,10 +1185,11 @@ export default function InventoryPage() {
                                   key={idx}
                                   label={chip.text}
                                   color={chip.color as any}
-                                  size="small"
+                                  size="medium"
                                   variant="filled"
                                   sx={{
                                     fontWeight: "bold",
+                                    fontSize: "0.85rem",
                                     ...(chip.color === "error" && {
                                       backgroundColor: "#ef5350",
                                       color: "#fff",
@@ -1002,27 +1203,31 @@ export default function InventoryPage() {
                               ))}
                             </div>
                           ) : (
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography
+                              variant="body1"
+                              color="text.secondary"
+                              sx={{ fontSize: "0.95rem" }}
+                            >
                               —
                             </Typography>
                           )}
                         </TableCell>
                         <TableCell align="center">
                           <IconButton
-                            size="small"
+                            size="medium"
                             onClick={() => handleEditClick(item)}
                             title="Edit Item"
                             color="primary"
                           >
-                            <EditIcon fontSize="small" />
+                            <EditIcon fontSize="medium" />
                           </IconButton>
                           <IconButton
-                            size="small"
+                            size="medium"
                             onClick={() => handleTransferClick(item)}
                             title="Transfer to Another Location"
                             color="secondary"
                           >
-                            <TransferIcon fontSize="small" />
+                            <TransferIcon fontSize="medium" />
                           </IconButton>
                         </TableCell>
                       </TableRow>
@@ -1030,8 +1235,12 @@ export default function InventoryPage() {
                   })}
                   {filteredItems.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={10} align="center">
-                        <Typography variant="body2" color="text.secondary">
+                      <TableCell colSpan={11} align="center">
+                        <Typography
+                          variant="body1"
+                          color="text.secondary"
+                          sx={{ py: 3, fontSize: "1rem" }}
+                        >
                           No items found
                         </Typography>
                       </TableCell>
@@ -1666,6 +1875,120 @@ export default function InventoryPage() {
           onUpdate={fetchItems}
         />
       )}
+
+      {/* Bulk Par Level Edit Dialog */}
+      <Dialog
+        open={bulkParDialogOpen}
+        onClose={() => setBulkParDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Bulk Edit Par Levels - {selectedItems.size} Items Selected
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              Set par and reorder levels for each item. Values will be applied to all{" "}
+              {bulkParForm.location_type === "cabinet" ? "cabinets" : "trucks"}.
+            </Typography>
+
+            {/* Location Type Selector */}
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Apply To</InputLabel>
+              <Select
+                value={bulkParForm.location_type}
+                label="Apply To"
+                onChange={(e) =>
+                  setBulkParForm({
+                    ...bulkParForm,
+                    location_type: e.target.value as "cabinet" | "truck",
+                  })
+                }
+              >
+                <MenuItem value="cabinet">All Cabinets (Station 1-11)</MenuItem>
+                <MenuItem value="truck">All Trucks (Truck 1-11)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Divider sx={{ mb: 2 }} />
+
+            {/* List each selected item with its own inputs */}
+            <Paper sx={{ maxHeight: 400, overflow: "auto", p: 2 }}>
+              {Array.from(selectedItems).map((itemId) => {
+                const item = items.find((i) => i.id === itemId);
+                if (!item) return null;
+
+                return (
+                  <Box key={itemId} sx={{ mb: 3, pb: 2, borderBottom: "1px solid #eee" }}>
+                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+                      {item.name}
+                      <Chip
+                        label={item.category_name || "No Category"}
+                        size="small"
+                        sx={{ ml: 1 }}
+                      />
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Par Level"
+                          type="number"
+                          value={bulkParForm.item_par_levels[itemId]?.par_level || ""}
+                          onChange={(e) =>
+                            setBulkParForm({
+                              ...bulkParForm,
+                              item_par_levels: {
+                                ...bulkParForm.item_par_levels,
+                                [itemId]: {
+                                  ...bulkParForm.item_par_levels[itemId],
+                                  par_level: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          label="Reorder Level"
+                          type="number"
+                          value={bulkParForm.item_par_levels[itemId]?.reorder_level || ""}
+                          onChange={(e) =>
+                            setBulkParForm({
+                              ...bulkParForm,
+                              item_par_levels: {
+                                ...bulkParForm.item_par_levels,
+                                [itemId]: {
+                                  ...bulkParForm.item_par_levels[itemId],
+                                  reorder_level: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                        />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                );
+              })}
+            </Paper>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setBulkParDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleBulkParSubmit}
+            variant="contained"
+          >
+            Update Par Levels
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

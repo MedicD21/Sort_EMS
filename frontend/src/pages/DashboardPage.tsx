@@ -27,11 +27,15 @@ import {
   ShoppingCart,
   TrendingUp,
   TrendingDown,
+  DateRange,
+  Error as ErrorIcon,
 } from "@mui/icons-material";
 import {
   reportsApi,
   InventorySummary,
   LowStockItem,
+  inventoryApi,
+  ExpiringItem,
 } from "../services/apiService";
 
 // Stats card component
@@ -108,6 +112,8 @@ function StatsCard({
 export default function DashboardPage() {
   const [summary, setSummary] = useState<InventorySummary | null>(null);
   const [lowStock, setLowStock] = useState<LowStockItem[]>([]);
+  const [expiringItems, setExpiringItems] = useState<ExpiringItem[]>([]);
+  const [expiredItems, setExpiredItems] = useState<ExpiringItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -120,13 +126,18 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
 
-      const [summaryRes, lowStockRes] = await Promise.all([
-        reportsApi.inventorySummary(),
-        reportsApi.lowStock(),
-      ]);
+      const [summaryRes, lowStockRes, expiringRes, expiredRes] =
+        await Promise.all([
+          reportsApi.inventorySummary(),
+          reportsApi.lowStock(),
+          inventoryApi.expiringItems({ days_ahead: 30, limit: 10 }),
+          inventoryApi.expiredItems({ limit: 10 }),
+        ]);
 
       setSummary(summaryRes.data);
       setLowStock(lowStockRes.data);
+      setExpiringItems(expiringRes.data);
+      setExpiredItems(expiredRes.data);
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to load dashboard data");
       console.error("Error fetching dashboard data:", err);
@@ -199,18 +210,18 @@ export default function DashboardPage() {
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Total Locations"
-            value={stats.locations}
-            icon={<EventAvailable sx={{ color: "white", fontSize: 32 }} />}
-            color="info.main"
+            title="Expiring Soon"
+            value={expiringItems.length}
+            icon={<DateRange sx={{ color: "white", fontSize: 32 }} />}
+            color="warning.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Total Value"
-            value={`$${stats.totalValue.toLocaleString()}`}
-            icon={<ShoppingCart sx={{ color: "white", fontSize: 32 }} />}
-            color="success.main"
+            title="Expired Items"
+            value={expiredItems.length}
+            icon={<ErrorIcon sx={{ color: "white", fontSize: 32 }} />}
+            color="error.main"
           />
         </Grid>
       </Grid>
@@ -339,6 +350,150 @@ export default function DashboardPage() {
           </TableContainer>
         )}
       </Paper>
+
+      {/* Expiring Items Section */}
+      <Grid container spacing={3} sx={{ mt: 3 }}>
+        {/* Expiring Soon */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="bold">
+              Expiring Soon (Next 30 Days)
+            </Typography>
+            {expiringItems.length === 0 ? (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No items expiring soon.
+                </Typography>
+              </Box>
+            ) : (
+              <TableContainer sx={{ mt: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Item</TableCell>
+                      <TableCell>Location</TableCell>
+                      <TableCell>Expiration</TableCell>
+                      <TableCell>Days Left</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {expiringItems.slice(0, 5).map((item) => (
+                      <TableRow
+                        key={item.id}
+                        sx={{
+                          backgroundColor:
+                            item.days_until_expiration <= 7
+                              ? "rgba(211, 47, 47, 0.08)"
+                              : item.days_until_expiration <= 14
+                              ? "rgba(237, 108, 2, 0.08)"
+                              : "inherit",
+                        }}
+                      >
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            {item.item_name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.location_name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {new Date(
+                              item.expiration_date
+                            ).toLocaleDateString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={`${item.days_until_expiration} days`}
+                            color={
+                              item.days_until_expiration <= 7
+                                ? "error"
+                                : item.days_until_expiration <= 14
+                                ? "warning"
+                                : "info"
+                            }
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Paper>
+        </Grid>
+
+        {/* Expired Items */}
+        <Grid item xs={12} md={6}>
+          <Paper elevation={2} sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom fontWeight="bold">
+              Expired Items
+            </Typography>
+            {expiredItems.length === 0 ? (
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                  No expired items found.
+                </Typography>
+              </Box>
+            ) : (
+              <TableContainer sx={{ mt: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Item</TableCell>
+                      <TableCell>Location</TableCell>
+                      <TableCell>Expiration</TableCell>
+                      <TableCell>Days Ago</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {expiredItems.slice(0, 5).map((item) => (
+                      <TableRow
+                        key={item.id}
+                        sx={{
+                          backgroundColor: "rgba(211, 47, 47, 0.08)",
+                        }}
+                      >
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            {item.item_name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.location_name}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {new Date(
+                              item.expiration_date
+                            ).toLocaleDateString()}
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={`${Math.abs(
+                              item.days_until_expiration
+                            )} days ago`}
+                            color="error"
+                            size="small"
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
     </Box>
   );
 }
