@@ -104,6 +104,52 @@ export interface Item {
   category?: Category;
 }
 
+export interface InventoryItem {
+  id: number;
+  item_id: string;
+  location_id: string;
+  rfid_tag: string;
+  expiration_date?: string;
+  lot_number?: string;
+  received_date: string;
+  created_at: string;
+  updated_at: string;
+  item_name?: string;
+  location_name?: string;
+}
+
+export interface InventoryItemListResponse {
+  items: InventoryItem[];
+  total_count: number;
+  expiring_soon_count: number;
+  earliest_expiration?: string;
+}
+
+export interface InventoryItemCreate {
+  item_id: string;
+  location_id: string;
+  rfid_tag: string;
+  expiration_date?: string;
+  lot_number?: string;
+  received_date?: string;
+}
+
+export interface InventoryItemBulkCreate {
+  item_id: string;
+  location_id: string;
+  quantity: number;
+  expiration_date?: string;
+  lot_number?: string;
+  received_date?: string;
+  rfid_tag_prefix?: string;
+}
+
+export interface InventoryItemUpdate {
+  expiration_date?: string;
+  lot_number?: string;
+  location_id?: string;
+}
+
 export interface RFIDTag {
   id: string;
   tag_id: string;

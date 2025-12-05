@@ -1,6 +1,7 @@
 /**
  * Dashboard Page
  */
+import { useState, useEffect } from "react";
 import {
   Grid,
   Paper,
@@ -9,6 +10,15 @@ import {
   Card,
   CardContent,
   LinearProgress,
+  CircularProgress,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
 } from "@mui/material";
 import {
   Inventory2,
@@ -18,6 +28,11 @@ import {
   TrendingUp,
   TrendingDown,
 } from "@mui/icons-material";
+import {
+  reportsApi,
+  InventorySummary,
+  LowStockItem,
+} from "../services/apiService";
 
 // Stats card component
 interface StatsCardProps {
@@ -91,12 +106,63 @@ function StatsCard({
 }
 
 export default function DashboardPage() {
-  // TODO: Fetch real data from API
+  const [summary, setSummary] = useState<InventorySummary | null>(null);
+  const [lowStock, setLowStock] = useState<LowStockItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [summaryRes, lowStockRes] = await Promise.all([
+        reportsApi.inventorySummary(),
+        reportsApi.lowStock(),
+      ]);
+
+      setSummary(summaryRes.data);
+      setLowStock(lowStockRes.data);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Failed to load dashboard data");
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert severity="error" sx={{ mb: 2 }}>
+        {error}
+      </Alert>
+    );
+  }
+
   const stats = {
-    totalItems: 179,
-    lowStock: 12,
-    expiringSoon: 5,
-    pendingOrders: 3,
+    totalItems: summary?.total_items || 0,
+    lowStock: summary?.items_below_par || 0,
+    locations: summary?.total_locations || 0,
+    totalValue: summary?.total_value || 0,
   };
 
   return (
@@ -129,22 +195,20 @@ export default function DashboardPage() {
             value={stats.lowStock}
             icon={<Warning sx={{ color: "white", fontSize: 32 }} />}
             color="warning.main"
-            trend="down"
-            trendValue="3 from yesterday"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Expiring Soon"
-            value={stats.expiringSoon}
+            title="Total Locations"
+            value={stats.locations}
             icon={<EventAvailable sx={{ color: "white", fontSize: 32 }} />}
-            color="error.main"
+            color="info.main"
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatsCard
-            title="Pending Orders"
-            value={stats.pendingOrders}
+            title="Total Value"
+            value={`$${stats.totalValue.toLocaleString()}`}
             icon={<ShoppingCart sx={{ color: "white", fontSize: 32 }} />}
             color="success.main"
           />
@@ -202,11 +266,78 @@ export default function DashboardPage() {
         <Typography variant="h6" gutterBottom fontWeight="bold">
           Low Stock Alerts
         </Typography>
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            Items below par level will be displayed here...
-          </Typography>
-        </Box>
+        {lowStock.length === 0 ? (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              No items below par level.
+            </Typography>
+          </Box>
+        ) : (
+          <TableContainer sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Item Name</TableCell>
+                  <TableCell>Location</TableCell>
+                  <TableCell align="right">Current Qty</TableCell>
+                  <TableCell align="right">Par Level</TableCell>
+                  <TableCell align="right">Reorder Level</TableCell>
+                  <TableCell>Status</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {lowStock.map((item) => {
+                  const stockPercent = item.par_level
+                    ? (item.current_quantity / item.par_level) * 100
+                    : 0;
+                  const severity =
+                    stockPercent < 25
+                      ? "error"
+                      : stockPercent < 50
+                      ? "warning"
+                      : "info";
+
+                  return (
+                    <TableRow key={item.item_id}>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="medium">
+                          {item.item_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {item.location_name}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {item.current_quantity}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {item.par_level}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2">
+                          {item.reorder_level}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={`${stockPercent.toFixed(0)}% of par`}
+                          color={severity}
+                          size="small"
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Paper>
     </Box>
   );

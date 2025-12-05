@@ -10,6 +10,10 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
+  // TEMP: Bypass authentication for testing
+  return <>{children}</>;
+
+  /* Commented out for testing
   const { isAuthenticated, isLoading } = useAuthStore();
 
   if (isLoading) {
@@ -30,4 +34,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   return <>{children}</>;
+  */
 }

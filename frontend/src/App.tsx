@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import InventoryPage from "./pages/InventoryPage";
+import ItemManagementPage from "./pages/ItemManagementPage";
+import CategoryManagementPage from "./pages/CategoryManagementPage";
 import ScannerPage from "./pages/ScannerPage";
 import OrdersPage from "./pages/OrdersPage";
 import ReportsPage from "./pages/ReportsPage";
@@ -23,31 +25,36 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Store
 import { useAuthStore } from "./stores/authStore";
 
-// Create MUI theme
+// Create MUI theme with dark mode
 const theme = createTheme({
   palette: {
+    mode: "dark",
     primary: {
-      main: "#1976d2",
-      light: "#42a5f5",
-      dark: "#1565c0",
+      main: "#64b5f6",
+      light: "#90caf9",
+      dark: "#42a5f5",
     },
     secondary: {
-      main: "#dc004e",
-      light: "#e33371",
-      dark: "#9a0036",
+      main: "#f48fb1",
+      light: "#f8bbd0",
+      dark: "#ec407a",
     },
     error: {
-      main: "#f44336",
+      main: "#ef5350",
     },
     warning: {
-      main: "#ff9800",
+      main: "#ffa726",
     },
     success: {
-      main: "#4caf50",
+      main: "#66bb6a",
     },
     background: {
-      default: "#f5f5f5",
-      paper: "#ffffff",
+      default: "#121212",
+      paper: "#1e1e1e",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "rgba(255, 255, 255, 0.7)",
     },
   },
   typography: {
@@ -110,6 +117,8 @@ function App() {
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="inventory" element={<InventoryPage />} />
+              <Route path="items" element={<ItemManagementPage />} />
+              <Route path="categories" element={<CategoryManagementPage />} />
               <Route path="scanner" element={<ScannerPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />

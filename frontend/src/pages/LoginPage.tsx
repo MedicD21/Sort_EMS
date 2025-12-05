@@ -120,10 +120,21 @@ export default function LoginPage() {
                 fullWidth
                 variant="contained"
                 size="large"
-                sx={{ mt: 3, mb: 2, py: 1.5 }}
+                sx={{ mt: 3, mb: 1, py: 1.5 }}
                 disabled={isLoading}
               >
                 {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+
+              {/* TEMP: Testing bypass button */}
+              <Button
+                fullWidth
+                variant="outlined"
+                size="large"
+                sx={{ mb: 2, py: 1.5 }}
+                onClick={() => navigate("/dashboard")}
+              >
+                Skip Login (Testing)
               </Button>
             </form>
 

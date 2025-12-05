@@ -8,6 +8,7 @@ from app.models.item import Item, Category
 from app.models.par_level import ParLevel
 from app.models.rfid import RFIDTag, InventoryMovement, TagStatus, MovementType
 from app.models.inventory import InventoryCurrent
+from app.models.inventory_item import InventoryItem
 from app.models.order import (
     Vendor,
     PurchaseOrder,

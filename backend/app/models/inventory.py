@@ -27,6 +27,7 @@ class InventoryCurrent(BaseModel):
     quantity_on_hand = Column(Integer, nullable=False, default=0)
     quantity_allocated = Column(Integer, nullable=False, default=0)
     # quantity_available = quantity_on_hand - quantity_allocated (computed)
+    expiration_date = Column(DateTime, nullable=True)
     last_counted_at = Column(DateTime, nullable=True)
     last_counted_by = Column(
         UUID(as_uuid=True),

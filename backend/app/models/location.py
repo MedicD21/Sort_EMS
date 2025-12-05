@@ -42,6 +42,7 @@ class Location(BaseModel):
     )
     par_levels = relationship("ParLevel", back_populates="location")
     inventory_current = relationship("InventoryCurrent", back_populates="location")
+    inventory_items = relationship("InventoryItem", back_populates="location")
     rfid_tags = relationship("RFIDTag", back_populates="current_location")
     movements_from = relationship(
         "InventoryMovement",
