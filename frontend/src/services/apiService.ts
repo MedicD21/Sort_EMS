@@ -471,38 +471,57 @@ export interface Vendor {
   updated_at?: string;
 }
 
-export interface PurchaseOrder {
+export interface PurchaseOrderItem {
   id: string;
-  order_number: string;
-  vendor_id: string;
-  vendor_name?: string;
-  status: "pending" | "ordered" | "received" | "cancelled";
-  order_date?: string;
-  expected_delivery_date?: string;
-  total_amount?: number;
-  notes?: string;
+  item_id: string;
+  item_name?: string;
+  quantity_ordered: number;
+  quantity_received: number;
+  unit_cost?: number;
+  total_cost?: number;
 }
 
-export interface OrderItem {
+export interface PurchaseOrder {
+  id: string;
+  po_number: string;
+  vendor_id: string;
+  vendor_name?: string;
+  status: "pending" | "ordered" | "partial" | "received" | "cancelled";
+  order_date: string;
+  expected_delivery_date?: string;
+  received_date?: string;
+  total_cost?: number;
+  items: PurchaseOrderItem[];
+  created_at: string;
+}
+
+export interface OrderItemCreate {
   item_id: string;
-  quantity: number;
-  unit_cost: number;
+  quantity_ordered: number;
+  unit_cost?: number;
 }
 
 export interface CreateOrder {
   vendor_id: string;
-  items: OrderItem[];
+  po_number: string;
+  items: OrderItemCreate[];
   expected_delivery_date?: string;
-  notes?: string;
+}
+
+export interface UpdateOrder {
+  status?: "pending" | "ordered" | "partial" | "received" | "cancelled";
+  expected_delivery_date?: string;
+  received_date?: string;
+}
+
+export interface ReceiveOrderItem {
+  item_id: string;
+  quantity_received: number;
+  location_id: string;
 }
 
 export interface ReceiveOrder {
-  location_id: string;
-  received_items: Array<{
-    item_id: string;
-    quantity_received: number;
-  }>;
-  notes?: string;
+  items: ReceiveOrderItem[];
 }
 
 export const ordersApi = {
@@ -520,19 +539,32 @@ export const ordersApi = {
       apiClient.delete<{ message: string }>(`/api/v1/orders/vendors/${id}`),
   },
 
-  list: (params?: { status?: string; vendor_id?: string }) =>
-    apiClient.get<PurchaseOrder[]>("/api/v1/orders", { params }),
+  list: (params?: {
+    status?: string;
+    vendor_id?: string;
+    from_date?: string;
+    to_date?: string;
+    skip?: number;
+    limit?: number;
+  }) => apiClient.get<PurchaseOrder[]>("/api/v1/orders", { params }),
 
   get: (id: string) => apiClient.get<PurchaseOrder>(`/api/v1/orders/${id}`),
 
   create: (data: CreateOrder) =>
     apiClient.post<PurchaseOrder>("/api/v1/orders", data),
 
-  update: (id: string, data: Partial<PurchaseOrder>) =>
+  update: (id: string, data: UpdateOrder) =>
     apiClient.put<PurchaseOrder>(`/api/v1/orders/${id}`, data),
 
   receive: (id: string, data: ReceiveOrder) =>
-    apiClient.post(`/api/v1/orders/${id}/receive`, data),
+    apiClient.post<{
+      message: string;
+      order_status: string;
+      fully_received: boolean;
+    }>(`/api/v1/orders/${id}/receive`, data),
+
+  cancel: (id: string) =>
+    apiClient.delete<{ message: string }>(`/api/v1/orders/${id}`),
 };
 
 // ============================================================================

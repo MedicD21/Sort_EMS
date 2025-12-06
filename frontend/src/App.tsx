@@ -14,7 +14,7 @@ import InventoryPage from "./pages/InventoryPage";
 import ItemManagementPage from "./pages/ItemManagementPage";
 import CategoryManagementPage from "./pages/CategoryManagementPage";
 import ScannerPage from "./pages/ScannerPage";
-import OrdersPage from "./pages/OrdersPage";
+import PurchaseOrdersPage from "./pages/PurchaseOrdersPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
 import AssetManagementPage from "./pages/AssetManagementPage";
@@ -133,7 +133,7 @@ function App() {
               <Route path="restock-orders" element={<RestockOrdersPage />} />
               <Route path="vendors" element={<VendorManagementPage />} />
               <Route path="scanner" element={<ScannerPage />} />
-              <Route path="orders" element={<OrdersPage />} />
+              <Route path="orders" element={<PurchaseOrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
