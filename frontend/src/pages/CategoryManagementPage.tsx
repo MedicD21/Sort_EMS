@@ -312,14 +312,17 @@ export default function CategoryManagementPage() {
               <TextField
                 fullWidth
                 label="Sort Order"
-                type="number"
+                type="text"
+                inputMode="numeric"
                 value={formData.sort_order}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, "");
                   setFormData({
                     ...formData,
-                    sort_order: parseInt(e.target.value) || 0,
-                  })
-                }
+                    sort_order: parseInt(val) || 0,
+                  });
+                }}
+                inputProps={{ pattern: "[0-9]*" }}
               />
             </Grid>
             <Grid item xs={12}>

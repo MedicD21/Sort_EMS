@@ -225,6 +225,75 @@ export const inventoryApi = {
     skip?: number;
     limit?: number;
   }) => apiClient.get("/api/v1/inventory/expired-items", { params }),
+
+  createRestockOrder: (data: {
+    location_ids: string[];
+    vendor_id?: string;
+    notes?: string;
+  }) => apiClient.post("/api/v1/inventory/create-restock-order", data),
+};
+
+// ============================================================================
+// INTERNAL ORDERS (Restock Orders)
+// ============================================================================
+
+export interface InternalOrder {
+  id: string;
+  order_number: string;
+  status: string;
+  order_date: string;
+  completed_date?: string;
+  total_items: number;
+  total_quantity: number;
+  created_by_name?: string;
+  location_summary: string;
+  notes?: string;
+}
+
+export interface InternalOrderDetail {
+  id: string;
+  order_number: string;
+  status: string;
+  order_date: string;
+  completed_date?: string;
+  created_by_name?: string;
+  notes?: string;
+  items: Array<{
+    item_id: string;
+    item_name: string;
+    item_code: string;
+    total_quantity: number;
+    locations: Array<{
+      location_id: string;
+      location_name: string;
+      quantity_needed: number;
+      quantity_delivered: number;
+      current_stock: number;
+      par_level: number;
+    }>;
+  }>;
+}
+
+export const internalOrdersApi = {
+  list: (params?: { status?: string; skip?: number; limit?: number }) =>
+    apiClient.get<InternalOrder[]>("/api/v1/internal-orders", { params }),
+
+  get: (orderId: string) =>
+    apiClient.get<InternalOrderDetail>(`/api/v1/internal-orders/${orderId}`),
+
+  updateStatus: (orderId: string, status: string) =>
+    apiClient.patch(`/api/v1/internal-orders/${orderId}/status`, null, {
+      params: { status },
+    }),
+
+  bulkUpdateStatus: (orderIds: string[], status: string) =>
+    apiClient.patch(`/api/v1/internal-orders/bulk-status`, {
+      order_ids: orderIds,
+      status,
+    }),
+
+  delete: (orderId: string) =>
+    apiClient.delete(`/api/v1/internal-orders/${orderId}`),
 };
 
 // ============================================================================
@@ -233,25 +302,155 @@ export const inventoryApi = {
 
 export interface ScanData {
   tag_id: string;
+  scanner_location_id?: string;
+  scan_type?: "barcode" | "rfid";
 }
 
 export interface LinkTagData {
   tag_id: string;
   item_id: string;
   location_id: string;
+  lot_number?: string;
+  expiration_date?: string;
 }
 
 export interface MoveByScanData {
   tag_id: string;
   to_location_id: string;
+  quantity?: number;
+  notes?: string;
+}
+
+export interface ReceiveStockData {
+  barcode: string;
+  quantity: number;
+  location_id?: string;
+  lot_number?: string;
+  expiration_date?: string;
+  purchase_order_id?: string;
+}
+
+export interface BatchScanItem {
+  barcode: string;
+  quantity: number;
+}
+
+export interface BatchScanData {
+  items: BatchScanItem[];
+  location_id: string;
+  scan_type?: "receive" | "count" | "transfer";
+}
+
+export interface InventoryCountResult {
+  item_id?: string;
+  item_name: string;
+  item_code?: string;
+  barcode?: string;
+  scanned_quantity: number;
+  system_quantity: number;
+  par_level?: number;
+  reorder_level?: number;
+  variance: number;
+  status:
+    | "ok"
+    | "low"
+    | "critical"
+    | "over"
+    | "under"
+    | "missing"
+    | "not_found";
+}
+
+export interface RFIDScanResult {
+  success: boolean;
+  tag_info?: {
+    id: string;
+    tag_id: string;
+    item_id: string;
+    current_location_id?: string;
+    status: string;
+    lot_number?: string;
+    expiration_date?: string;
+    item_name: string;
+    item_code: string;
+    location_name?: string;
+    unit_of_measure: string;
+  };
+  item_info?: {
+    name: string;
+    code: string;
+    description?: string;
+    current_location?: string;
+    quantity_on_hand?: number;
+    is_controlled_substance?: boolean;
+    expiration_date?: string;
+    lot_number?: string;
+  };
+  message: string;
+  suggested_action?: string;
+}
+
+export interface ReceiveStockResult {
+  success: boolean;
+  message: string;
+  item?: {
+    id: string;
+    name: string;
+    item_code: string;
+    unit_of_measure: string;
+    quantity_received: number;
+    new_quantity_on_hand: number;
+  };
+  location?: string;
+  movement_id?: string;
+  suggested_action?: string;
 }
 
 export const rfidApi = {
-  scan: (data: ScanData) => apiClient.post("/api/v1/rfid/scan", data),
+  // Basic scanning
+  scan: (data: ScanData) =>
+    apiClient.post<RFIDScanResult>("/api/v1/rfid/scan", data),
 
   linkTag: (data: LinkTagData) => apiClient.post("/api/v1/rfid/link", data),
 
   moveItem: (data: MoveByScanData) => apiClient.post("/api/v1/rfid/move", data),
+
+  // Stock receiving (Supply Station workflow)
+  receiveStock: (data: ReceiveStockData) =>
+    apiClient.post<ReceiveStockResult>("/api/v1/rfid/receive-stock", data),
+
+  batchReceive: (data: BatchScanData) =>
+    apiClient.post("/api/v1/rfid/batch-receive", data),
+
+  // Inventory counting
+  inventoryCount: (locationId: string, scannedItems: Record<string, number>) =>
+    apiClient.post<{
+      location: string;
+      total_items_scanned: number;
+      total_items_in_system: number;
+      items_with_variance: number;
+      results: InventoryCountResult[];
+    }>("/api/v1/rfid/inventory-count", scannedItems, {
+      params: { location_id: locationId },
+    }),
+
+  adjustInventory: (
+    locationId: string,
+    adjustments: Array<{ item_id: string; new_quantity: number }>,
+    reason?: string
+  ) =>
+    apiClient.post("/api/v1/rfid/adjust-inventory", adjustments, {
+      params: {
+        location_id: locationId,
+        reason: reason || "Inventory count adjustment",
+      },
+    }),
+
+  // Tag management
+  getTagInfo: (tagId: string) => apiClient.get(`/api/v1/rfid/${tagId}`),
+
+  getItemTags: (itemId: string, status?: string) =>
+    apiClient.get(`/api/v1/rfid/item/${itemId}/tags`, { params: { status } }),
 };
 
 // ============================================================================
@@ -264,7 +463,12 @@ export interface Vendor {
   contact_name?: string;
   email?: string;
   phone?: string;
+  address?: string;
+  website?: string;
+  notes?: string;
   is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface PurchaseOrder {
@@ -303,9 +507,17 @@ export interface ReceiveOrder {
 
 export const ordersApi = {
   vendors: {
-    list: () => apiClient.get<Vendor[]>("/api/v1/orders/vendors"),
+    list: (activeOnly: boolean = true) =>
+      apiClient.get<Vendor[]>("/api/v1/orders/vendors", {
+        params: { active_only: activeOnly },
+      }),
+    get: (id: string) => apiClient.get<Vendor>(`/api/v1/orders/vendors/${id}`),
     create: (data: Partial<Vendor>) =>
       apiClient.post<Vendor>("/api/v1/orders/vendors", data),
+    update: (id: string, data: Partial<Vendor>) =>
+      apiClient.put<Vendor>(`/api/v1/orders/vendors/${id}`, data),
+    delete: (id: string) =>
+      apiClient.delete<{ message: string }>(`/api/v1/orders/vendors/${id}`),
   },
 
   list: (params?: { status?: string; vendor_id?: string }) =>

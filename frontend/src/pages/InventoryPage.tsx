@@ -1,7 +1,8 @@
 /**
  * Inventory Page
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -35,12 +36,20 @@ import {
   ListItem,
   ListItemText,
   ListItemButton,
+  Snackbar,
+  Tabs,
+  Tab,
+  Autocomplete,
 } from "@mui/material";
 import {
   Search as SearchIcon,
   Edit as EditIcon,
   SwapHoriz as TransferIcon,
   Refresh as RefreshIcon,
+  ShoppingCart,
+  QrCodeScanner,
+  LocalShipping,
+  Inventory as InventoryIcon,
 } from "@mui/icons-material";
 import {
   itemsApi,
@@ -50,6 +59,8 @@ import {
   inventoryApi,
   categoriesApi,
   Category,
+  rfidApi,
+  ReceiveStockResult,
 } from "../services/apiService";
 import { IndividualItemsDialog } from "../components/IndividualItemsDialog";
 
@@ -111,7 +122,10 @@ export default function InventoryPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [bulkParForm, setBulkParForm] = useState({
     location_type: "cabinet" as "cabinet" | "truck",
-    item_par_levels: {} as Record<string, { par_level: string; reorder_level: string }>,
+    item_par_levels: {} as Record<
+      string,
+      { par_level: string; reorder_level: string }
+    >,
   });
   const [scanResultsOpen, setScanResultsOpen] = useState(false);
   const [scanResults, setScanResults] = useState<{
@@ -119,6 +133,18 @@ export default function InventoryPage() {
     ok: Item[];
     par: Item[];
   }>({ toBeOrdered: [], ok: [], par: [] });
+
+  // Restock Order state
+  const [restockDialogOpen, setRestockDialogOpen] = useState(false);
+  const [restockLocationType, setRestockLocationType] = useState<
+    "cabinet" | "truck"
+  >("cabinet");
+
+  // Single Station Restock Request state
+  const [stationRestockDialogOpen, setStationRestockDialogOpen] =
+    useState(false);
+  const [selectedRestockStation, setSelectedRestockStation] =
+    useState<string>("");
 
   // Individual Items dialog state
   const [individualItemsDialogOpen, setIndividualItemsDialogOpen] =
@@ -130,11 +156,130 @@ export default function InventoryPage() {
     locationName: string;
   } | null>(null);
 
+  // Receive Stock dialog state (for Supply Station receiving)
+  const [receiveStockDialogOpen, setReceiveStockDialogOpen] = useState(false);
+  const [receivedItems, setReceivedItems] = useState<ReceiveStockResult[]>([]);
+  const [receiveQuantity, setReceiveQuantity] = useState(1);
+  const [receiveScanInput, setReceiveScanInput] = useState("");
+  const [isReceiving, setIsReceiving] = useState(false);
+  const [receiveMode, setReceiveMode] = useState<"scanner" | "manual">(
+    "scanner"
+  );
+  const [manualSelectedItem, setManualSelectedItem] = useState<string>("");
+  const [manualItemSearch, setManualItemSearch] = useState("");
+
+  // Inventory Count mode (scanner vs manual)
+  const [inventoryCountMode, setInventoryCountMode] = useState<
+    "scanner" | "manual"
+  >("scanner");
+  const [manualCountItem, setManualCountItem] = useState<string>("");
+  const [manualCountQty, setManualCountQty] = useState(1);
+  const [manualCountSearch, setManualCountSearch] = useState("");
+
+  // Scanner input buffer for keyboard wedge scanners
+  const scannerBuffer = useRef<string>("");
+  const scannerTimeout = useRef<NodeJS.Timeout | null>(null);
+  const lastScanTime = useRef<number>(0);
+
+  // Audio feedback for scanning
+  const playBeep = useCallback((success: boolean) => {
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = success ? 1000 : 400;
+      oscillator.type = "sine";
+      gainNode.gain.value = 0.1;
+
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + (success ? 0.1 : 0.3));
+    } catch (e) {
+      // Audio not supported
+    }
+  }, []);
+
   useEffect(() => {
     fetchLocations();
     fetchCategories();
     fetchItems();
   }, [selectedStation, selectedSubLocation]);
+
+  // Keyboard listener for scanner input during scanning mode
+  useEffect(() => {
+    if (!isScanning && !receiveStockDialogOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input field
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        return;
+      }
+
+      const now = Date.now();
+
+      // If it's Enter key, process the buffer
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (scannerBuffer.current.length > 0) {
+          const scannedCode = scannerBuffer.current;
+          scannerBuffer.current = "";
+
+          if (isScanning) {
+            handleScanItem(scannedCode);
+          } else if (receiveStockDialogOpen) {
+            handleReceiveScan(scannedCode);
+          }
+        }
+        return;
+      }
+
+      // Only accept printable characters
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+
+        // If more than 100ms since last keystroke, start new buffer
+        // (Manual typing is slow, scanner is fast)
+        if (now - lastScanTime.current > 100) {
+          scannerBuffer.current = "";
+        }
+
+        scannerBuffer.current += e.key;
+        lastScanTime.current = now;
+
+        // Clear any pending timeout
+        if (scannerTimeout.current) {
+          clearTimeout(scannerTimeout.current);
+        }
+
+        // Set timeout to process buffer if no Enter received
+        scannerTimeout.current = setTimeout(() => {
+          if (scannerBuffer.current.length >= 3) {
+            const scannedCode = scannerBuffer.current;
+            scannerBuffer.current = "";
+
+            if (isScanning) {
+              handleScanItem(scannedCode);
+            } else if (receiveStockDialogOpen) {
+              handleReceiveScan(scannedCode);
+            }
+          }
+        }, 50);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      if (scannerTimeout.current) {
+        clearTimeout(scannerTimeout.current);
+      }
+    };
+  }, [isScanning, receiveStockDialogOpen]);
 
   const fetchLocations = async () => {
     try {
@@ -449,13 +594,16 @@ export default function InventoryPage() {
       alert("Please select at least one item");
       return;
     }
-    
+
     // Initialize par levels for each selected item
-    const itemParLevels: Record<string, { par_level: string; reorder_level: string }> = {};
+    const itemParLevels: Record<
+      string,
+      { par_level: string; reorder_level: string }
+    > = {};
     selectedItems.forEach((itemId) => {
       itemParLevels[itemId] = { par_level: "", reorder_level: "" };
     });
-    
+
     setBulkParForm({
       location_type: "cabinet",
       item_par_levels: itemParLevels,
@@ -491,8 +639,12 @@ export default function InventoryPage() {
           const data = {
             item_ids: [itemId],
             location_ids: locationIds,
-            par_level: itemValues.par_level ? parseInt(itemValues.par_level) : undefined,
-            reorder_level: itemValues.reorder_level ? parseInt(itemValues.reorder_level) : undefined,
+            par_level: itemValues.par_level
+              ? parseInt(itemValues.par_level)
+              : undefined,
+            reorder_level: itemValues.reorder_level
+              ? parseInt(itemValues.reorder_level)
+              : undefined,
           };
           updates.push(inventoryApi.bulkUpdateParLevels(data));
         }
@@ -509,8 +661,9 @@ export default function InventoryPage() {
       const totalUpdated = results.reduce((sum, r) => sum + r.data.updated, 0);
 
       setSuccess(
-        `Updated par levels for ${updates.length} items across all ${bulkParForm.location_type === "cabinet" ? "cabinets" : "trucks"}. ` +
-          `Created: ${totalCreated}, Updated: ${totalUpdated}`
+        `Updated par levels for ${updates.length} items across all ${
+          bulkParForm.location_type === "cabinet" ? "cabinets" : "trucks"
+        }. ` + `Created: ${totalCreated}, Updated: ${totalUpdated}`
       );
 
       setBulkParDialogOpen(false);
@@ -523,6 +676,115 @@ export default function InventoryPage() {
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to update par levels");
       console.error("Error updating par levels:", err);
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleCreateRestockOrder = async () => {
+    try {
+      setError(null);
+
+      // Get all location IDs based on type selected
+      const selectedLocations = locations.filter((loc) => {
+        if (restockLocationType === "cabinet") {
+          return /^Station \d+$/.test(loc.name);
+        } else {
+          return /^Truck \d+$/.test(loc.name);
+        }
+      });
+
+      if (selectedLocations.length === 0) {
+        setError("No locations found for the selected type");
+        return;
+      }
+
+      const response = await inventoryApi.createRestockOrder({
+        location_ids: selectedLocations.map((loc) => loc.id),
+      });
+
+      // Handle new response format with multiple orders (one per location)
+      const orders = response.data.orders || [];
+
+      if (orders.length === 0) {
+        setError("No items below par level found at the selected locations");
+        return;
+      }
+
+      let messageLines = [
+        response.data.message || `Created ${orders.length} restock order(s)`,
+        "",
+      ];
+
+      orders.forEach((order: any) => {
+        messageLines.push(
+          `✓ ${order.order_number} - ${order.location}: ${order.total_items} items (${order.total_quantity} units)`
+        );
+      });
+
+      setSuccess(messageLines.join("\n"));
+      setRestockDialogOpen(false);
+
+      // Navigate to restock orders page after a brief delay
+      setTimeout(() => {
+        navigate("/restock-orders");
+      }, 2000);
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Failed to create restock order");
+      console.error("Error creating restock order:", err);
+    }
+  };
+
+  const handleCreateSingleStationRestockOrder = async () => {
+    try {
+      setError(null);
+
+      if (!selectedRestockStation) {
+        setError("Please select a station");
+        return;
+      }
+
+      // Find the selected location
+      const selectedLocation = locations.find(
+        (loc) => loc.id === selectedRestockStation
+      );
+
+      if (!selectedLocation) {
+        setError("Invalid station selected");
+        return;
+      }
+
+      const response = await inventoryApi.createRestockOrder({
+        location_ids: [selectedRestockStation],
+      });
+
+      // Handle response
+      const orders = response.data.orders || [];
+
+      if (orders.length === 0) {
+        setError(`No items below par level found at ${selectedLocation.name}`);
+        return;
+      }
+
+      const order = orders[0];
+      setSuccess(
+        `✓ Restock request submitted for ${selectedLocation.name}\n\n` +
+          `Order #: ${order.order_number}\n` +
+          `Items: ${order.total_items}\n` +
+          `Total Units Needed: ${order.total_quantity}`
+      );
+      setStationRestockDialogOpen(false);
+      setSelectedRestockStation("");
+
+      // Navigate to restock orders page after a brief delay
+      setTimeout(() => {
+        navigate("/restock-orders");
+      }, 2500);
+    } catch (err: any) {
+      setError(
+        err.response?.data?.detail || "Failed to submit restock request"
+      );
+      console.error("Error creating single station restock order:", err);
     }
   };
 
@@ -685,7 +947,10 @@ export default function InventoryPage() {
     setIsScanning(true);
     setScannedItems(new Map());
     setError(null);
-    setSuccess("Scanning mode active - scan items with RFID gun");
+    setSuccess(
+      "Scanning mode active - scan items with barcode scanner. Press any item barcode to count."
+    );
+    playBeep(true);
   };
 
   const handleStopScanning = () => {
@@ -730,7 +995,117 @@ export default function InventoryPage() {
     newScannedItems.set(rfidCode, currentCount + 1);
     setScannedItems(newScannedItems);
     setSuccess(`Scanned: ${rfidCode} (Count: ${currentCount + 1})`);
+    playBeep(true);
   };
+
+  // Handle manual count entry during inventory scanning
+  const handleManualCountAdd = () => {
+    if (!manualCountItem || manualCountQty < 1) return;
+
+    const selectedItem = items.find((item) => item.id === manualCountItem);
+    if (!selectedItem) return;
+
+    // Use the item's barcode/SKU or ID as the key
+    const itemKey =
+      selectedItem.barcode ||
+      selectedItem.sku ||
+      selectedItem.rfid_tag ||
+      selectedItem.id;
+
+    const newScannedItems = new Map(scannedItems);
+    const currentCount = newScannedItems.get(itemKey) || 0;
+    newScannedItems.set(itemKey, currentCount + manualCountQty);
+    setScannedItems(newScannedItems);
+    setSuccess(
+      `Added: ${selectedItem.name} x ${manualCountQty} (Total: ${
+        currentCount + manualCountQty
+      })`
+    );
+    playBeep(true);
+
+    // Reset manual entry fields
+    setManualCountItem("");
+    setManualCountQty(1);
+    setManualCountSearch("");
+  };
+
+  // Handle receiving stock into Supply Station
+  const handleReceiveScan = async (barcode: string) => {
+    if (!barcode.trim()) return;
+
+    setIsReceiving(true);
+    try {
+      // Get Supply Station location ID
+      const supplyStation = locations.find(
+        (loc) => loc.name === "Supply Station"
+      );
+
+      const response = await rfidApi.receiveStock({
+        barcode: barcode.trim(),
+        quantity: receiveQuantity,
+        location_id: supplyStation?.id,
+      });
+
+      const result = response.data;
+
+      if (result.success) {
+        playBeep(true);
+        setSuccess(
+          `✓ Received ${result.item?.quantity_received} x ${result.item?.name}`
+        );
+        setReceivedItems((prev) => [result, ...prev]);
+        setReceiveScanInput("");
+      } else {
+        playBeep(false);
+        setError(result.message || "Item not found");
+      }
+    } catch (err: any) {
+      playBeep(false);
+      setError(err.response?.data?.detail || "Failed to receive item");
+    } finally {
+      setIsReceiving(false);
+    }
+  };
+
+  // Handle manual item receive (selecting from dropdown)
+  const handleManualReceive = async () => {
+    if (!manualSelectedItem) return;
+
+    const selectedItem = items.find((item) => item.id === manualSelectedItem);
+    if (!selectedItem) return;
+
+    // Use the item's barcode/SKU or ID to receive
+    const barcode = selectedItem.barcode || selectedItem.sku || selectedItem.id;
+    await handleReceiveScan(barcode);
+    setManualSelectedItem("");
+  };
+
+  const handleOpenReceiveStock = () => {
+    setReceiveStockDialogOpen(true);
+    setReceivedItems([]);
+    setReceiveScanInput("");
+    setReceiveQuantity(1);
+    setReceiveMode("scanner");
+    setManualSelectedItem("");
+    setManualItemSearch("");
+    setError(null);
+    setSuccess(null);
+  };
+
+  const handleCloseReceiveStock = () => {
+    setReceiveStockDialogOpen(false);
+    // Refresh inventory to show updated counts
+    fetchItems();
+  };
+
+  // Filter items for manual selection dropdown
+  const filteredManualItems = items.filter(
+    (item) =>
+      manualItemSearch === "" ||
+      item.name.toLowerCase().includes(manualItemSearch.toLowerCase()) ||
+      item.item_code?.toLowerCase().includes(manualItemSearch.toLowerCase()) ||
+      item.sku?.toLowerCase().includes(manualItemSearch.toLowerCase())
+  );
 
   const getLocationDescription = () => {
     if (selectedStation === "all") {
@@ -781,7 +1156,7 @@ export default function InventoryPage() {
       {success && (
         <Alert
           severity="success"
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, whiteSpace: "pre-line" }}
           onClose={() => setSuccess(null)}
         >
           {success}
@@ -855,72 +1230,290 @@ export default function InventoryPage() {
           </Grid>
         </Grid>
 
-        {/* RFID Scanning Controls */}
-        <Box
-          sx={{
-            mb: 3,
-            display: "flex",
-            gap: 2,
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        {/* Inventory Count Controls */}
+        <Paper sx={{ p: 2, mb: 3 }}>
           {!isScanning ? (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleStartScanning}
-              startIcon={<SearchIcon />}
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                alignItems: "center",
+                flexWrap: "wrap",
+              }}
             >
-              Check Inventory (RFID Scan)
-            </Button>
-          ) : (
-            <>
-              <Chip
-                label="SCANNING MODE ACTIVE"
-                color="success"
-                icon={<SearchIcon />}
-                sx={{ fontWeight: "bold" }}
-              />
-              <Typography variant="body2">
-                Scanned {scannedItems.size} unique items (
-                {Array.from(scannedItems.values()).reduce((a, b) => a + b, 0)}{" "}
-                total)
-              </Typography>
               <Button
                 variant="contained"
-                color="error"
-                onClick={handleStopScanning}
+                color="primary"
+                onClick={() => {
+                  handleStartScanning();
+                  setInventoryCountMode("scanner");
+                }}
+                startIcon={<QrCodeScanner />}
               >
-                Stop Scanning & View Results
+                Check Inventory (Scanner)
               </Button>
-            </>
-          )}
-          <Button
-            variant="outlined"
-            onClick={fetchItems}
-            startIcon={<RefreshIcon />}
-          >
-            Refresh
-          </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  handleStartScanning();
+                  setInventoryCountMode("manual");
+                }}
+                startIcon={<InventoryIcon />}
+              >
+                Check Inventory (Manual)
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={fetchItems}
+                startIcon={<RefreshIcon />}
+              >
+                Refresh
+              </Button>
 
-          {selectedItems.size > 0 && (
-            <Chip
-              label={`${selectedItems.size} items selected`}
-              color="primary"
-              onDelete={() => setSelectedItems(new Set())}
-            />
-          )}
+              {selectedItems.size > 0 && (
+                <Chip
+                  label={`${selectedItems.size} items selected`}
+                  color="primary"
+                  onDelete={() => setSelectedItems(new Set())}
+                />
+              )}
 
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleOpenBulkParDialog}
-            disabled={selectedItems.size === 0}
-          >
-            Bulk Edit Par Levels ({selectedItems.size})
-          </Button>
-        </Box>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleOpenBulkParDialog}
+                disabled={selectedItems.size === 0}
+              >
+                Bulk Edit Par Levels ({selectedItems.size})
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="info"
+                onClick={() => setStationRestockDialogOpen(true)}
+                startIcon={<ShoppingCart />}
+              >
+                Request Restock (My Station)
+              </Button>
+
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => setRestockDialogOpen(true)}
+                startIcon={<ShoppingCart />}
+              >
+                Create Restock Order (All)
+              </Button>
+
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={handleOpenReceiveStock}
+                startIcon={<LocalShipping />}
+              >
+                Receive Stock (Supply Station)
+              </Button>
+            </Box>
+          ) : (
+            /* Active Scanning Mode */
+            <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  alignItems: "center",
+                  mb: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Chip
+                  label={
+                    inventoryCountMode === "scanner"
+                      ? "SCANNER MODE ACTIVE"
+                      : "MANUAL COUNT MODE"
+                  }
+                  color="success"
+                  icon={
+                    inventoryCountMode === "scanner" ? (
+                      <QrCodeScanner />
+                    ) : (
+                      <InventoryIcon />
+                    )
+                  }
+                  sx={{ fontWeight: "bold" }}
+                />
+                <Typography variant="body2">
+                  Counted {scannedItems.size} unique items (
+                  {Array.from(scannedItems.values()).reduce((a, b) => a + b, 0)}{" "}
+                  total)
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleStopScanning}
+                >
+                  Stop & View Results
+                </Button>
+              </Box>
+
+              {/* Mode Tabs */}
+              <Tabs
+                value={inventoryCountMode}
+                onChange={(_, newValue) => setInventoryCountMode(newValue)}
+                sx={{ mb: 2 }}
+              >
+                <Tab
+                  value="scanner"
+                  label="Barcode Scanner"
+                  icon={<QrCodeScanner />}
+                  iconPosition="start"
+                />
+                <Tab
+                  value="manual"
+                  label="Manual Entry"
+                  icon={<InventoryIcon />}
+                  iconPosition="start"
+                />
+              </Tabs>
+
+              {inventoryCountMode === "scanner" && (
+                <Alert severity="info">
+                  Scan items with your barcode scanner. Each scan adds 1 to the
+                  count. Scanner input is automatically captured.
+                </Alert>
+              )}
+
+              {inventoryCountMode === "manual" && (
+                <Box sx={{ mt: 2 }}>
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    Search and select items to manually add to your inventory
+                    count.
+                  </Alert>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={7}>
+                      <Autocomplete
+                        options={items}
+                        getOptionLabel={(option) =>
+                          `${option.name} (${
+                            option.item_code || option.sku || "N/A"
+                          })`
+                        }
+                        value={
+                          items.find((i) => i.id === manualCountItem) || null
+                        }
+                        onChange={(_, newValue) => {
+                          setManualCountItem(newValue?.id || "");
+                        }}
+                        inputValue={manualCountSearch}
+                        onInputChange={(_, newInputValue) => {
+                          setManualCountSearch(newInputValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Search and Select Item"
+                            placeholder="Type to search items..."
+                            size="small"
+                            InputProps={{
+                              ...params.InputProps,
+                              startAdornment: (
+                                <>
+                                  <InputAdornment position="start">
+                                    <SearchIcon />
+                                  </InputAdornment>
+                                  {params.InputProps.startAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id}>
+                            <Box>
+                              <Typography variant="body2" fontWeight="bold">
+                                {option.name}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {option.item_code} |{" "}
+                                {option.category_name || "No Category"}
+                              </Typography>
+                            </Box>
+                          </li>
+                        )}
+                        isOptionEqualToValue={(option, value) =>
+                          option.id === value.id
+                        }
+                      />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <TextField
+                        fullWidth
+                        label="Qty"
+                        type="text"
+                        inputMode="numeric"
+                        size="small"
+                        value={manualCountQty}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/[^0-9]/g, "");
+                          setManualCountQty(Math.max(1, parseInt(val) || 1));
+                        }}
+                        inputProps={{ pattern: "[0-9]*", min: 1 }}
+                      />
+                    </Grid>
+                    <Grid item xs={3}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        onClick={handleManualCountAdd}
+                        disabled={!manualCountItem}
+                      >
+                        Add to Count
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  {/* Show currently counted items */}
+                  {scannedItems.size > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Items Counted:
+                      </Typography>
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {Array.from(scannedItems.entries()).map(
+                          ([key, count]) => {
+                            const item = items.find(
+                              (i) =>
+                                i.barcode === key ||
+                                i.sku === key ||
+                                i.rfid_tag === key ||
+                                i.id === key
+                            );
+                            return (
+                              <Chip
+                                key={key}
+                                label={`${item?.name || key}: ${count}`}
+                                size="small"
+                                onDelete={() => {
+                                  const newScanned = new Map(scannedItems);
+                                  newScanned.delete(key);
+                                  setScannedItems(newScanned);
+                                }}
+                              />
+                            );
+                          }
+                        )}
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              )}
+            </Box>
+          )}
+        </Paper>
 
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
@@ -1358,16 +1951,18 @@ export default function InventoryPage() {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                type="number"
+                type="text"
+                inputMode="decimal"
                 label="Unit Cost ($)"
                 value={editForm.unit_cost}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9.]/g, "");
                   setEditForm({
                     ...editForm,
-                    unit_cost: parseFloat(e.target.value) || 0,
-                  })
-                }
-                inputProps={{ step: 0.01 }}
+                    unit_cost: parseFloat(val) || 0,
+                  });
+                }}
+                inputProps={{ pattern: "[0-9.]*", step: 0.01 }}
               />
             </Grid>
             <Grid item xs={12} md={6}>
@@ -1889,7 +2484,8 @@ export default function InventoryPage() {
         <DialogContent>
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary" paragraph>
-              Set par and reorder levels for each item. Values will be applied to all{" "}
+              Set par and reorder levels for each item. Values will be applied
+              to all{" "}
               {bulkParForm.location_type === "cabinet" ? "cabinets" : "trucks"}.
             </Typography>
 
@@ -1920,8 +2516,14 @@ export default function InventoryPage() {
                 if (!item) return null;
 
                 return (
-                  <Box key={itemId} sx={{ mb: 3, pb: 2, borderBottom: "1px solid #eee" }}>
-                    <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>
+                  <Box
+                    key={itemId}
+                    sx={{ mb: 3, pb: 2, borderBottom: "1px solid #eee" }}
+                  >
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ mb: 2, fontWeight: "bold" }}
+                    >
                       {item.name}
                       <Chip
                         label={item.category_name || "No Category"}
@@ -1935,20 +2537,25 @@ export default function InventoryPage() {
                           fullWidth
                           size="small"
                           label="Par Level"
-                          type="number"
-                          value={bulkParForm.item_par_levels[itemId]?.par_level || ""}
-                          onChange={(e) =>
+                          type="text"
+                          inputMode="numeric"
+                          value={
+                            bulkParForm.item_par_levels[itemId]?.par_level || ""
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setBulkParForm({
                               ...bulkParForm,
                               item_par_levels: {
                                 ...bulkParForm.item_par_levels,
                                 [itemId]: {
                                   ...bulkParForm.item_par_levels[itemId],
-                                  par_level: e.target.value,
+                                  par_level: val,
                                 },
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                         />
                       </Grid>
                       <Grid item xs={6}>
@@ -1956,20 +2563,26 @@ export default function InventoryPage() {
                           fullWidth
                           size="small"
                           label="Reorder Level"
-                          type="number"
-                          value={bulkParForm.item_par_levels[itemId]?.reorder_level || ""}
-                          onChange={(e) =>
+                          type="text"
+                          inputMode="numeric"
+                          value={
+                            bulkParForm.item_par_levels[itemId]
+                              ?.reorder_level || ""
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setBulkParForm({
                               ...bulkParForm,
                               item_par_levels: {
                                 ...bulkParForm.item_par_levels,
                                 [itemId]: {
                                   ...bulkParForm.item_par_levels[itemId],
-                                  reorder_level: e.target.value,
+                                  reorder_level: val,
                                 },
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                         />
                       </Grid>
                     </Grid>
@@ -1981,11 +2594,392 @@ export default function InventoryPage() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setBulkParDialogOpen(false)}>Cancel</Button>
-          <Button
-            onClick={handleBulkParSubmit}
-            variant="contained"
-          >
+          <Button onClick={handleBulkParSubmit} variant="contained">
             Update Par Levels
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Create Restock Order Dialog */}
+      <Dialog
+        open={restockDialogOpen}
+        onClose={() => setRestockDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Create Restock Order</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              This will analyze all items below par level at the selected
+              locations and create a purchase order for the logistics
+              coordinator to fulfill.
+            </Typography>
+
+            <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel>Location Type</InputLabel>
+              <Select
+                value={restockLocationType}
+                label="Location Type"
+                onChange={(e) =>
+                  setRestockLocationType(e.target.value as "cabinet" | "truck")
+                }
+              >
+                <MenuItem value="cabinet">All Cabinets (Station 1-11)</MenuItem>
+                <MenuItem value="truck">All Trucks (Truck 1-11)</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Alert severity="info" sx={{ mt: 3 }}>
+              The system will check all{" "}
+              {restockLocationType === "cabinet" ? "cabinets" : "trucks"} and
+              create an order for items that are below par level.
+            </Alert>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRestockDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={handleCreateRestockOrder}
+            variant="contained"
+            color="success"
+            startIcon={<ShoppingCart />}
+          >
+            Create Order
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Single Station Restock Request Dialog */}
+      <Dialog
+        open={stationRestockDialogOpen}
+        onClose={() => setStationRestockDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Request Restock for Your Station</DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              Select your station to request a restock. The system will check
+              all items below par level and create a restock order for the
+              logistics coordinator to fulfill.
+            </Typography>
+
+            <FormControl fullWidth sx={{ mt: 2 }}>
+              <InputLabel>Select Your Station</InputLabel>
+              <Select
+                value={selectedRestockStation}
+                label="Select Your Station"
+                onChange={(e) => setSelectedRestockStation(e.target.value)}
+              >
+                {locations
+                  .filter((loc) => /^Station \d+$/.test(loc.name))
+                  .sort((a, b) => {
+                    // Sort numerically by station number
+                    const aNum = parseInt(a.name.match(/\d+/)?.[0] || "0");
+                    const bNum = parseInt(b.name.match(/\d+/)?.[0] || "0");
+                    return aNum - bNum;
+                  })
+                  .map((loc) => (
+                    <MenuItem key={loc.id} value={loc.id}>
+                      {loc.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+
+            {selectedRestockStation && (
+              <Alert severity="info" sx={{ mt: 3 }}>
+                Clicking "Submit Request" will create a restock order for{" "}
+                <strong>
+                  {locations.find((l) => l.id === selectedRestockStation)?.name}
+                </strong>{" "}
+                containing all items currently below par level.
+              </Alert>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setStationRestockDialogOpen(false);
+              setSelectedRestockStation("");
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreateSingleStationRestockOrder}
+            variant="contained"
+            color="info"
+            disabled={!selectedRestockStation}
+            startIcon={<ShoppingCart />}
+          >
+            Submit Request
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Receive Stock Dialog (Supply Station) */}
+      <Dialog
+        open={receiveStockDialogOpen}
+        onClose={handleCloseReceiveStock}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <LocalShipping color="warning" />
+          Receive Stock into Supply Station
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mt: 2 }}>
+            {/* Mode Tabs */}
+            <Tabs
+              value={receiveMode}
+              onChange={(_, newValue) => setReceiveMode(newValue)}
+              sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+            >
+              <Tab
+                value="scanner"
+                label="Barcode Scanner"
+                icon={<QrCodeScanner />}
+                iconPosition="start"
+              />
+              <Tab
+                value="manual"
+                label="Manual Entry"
+                icon={<InventoryIcon />}
+                iconPosition="start"
+              />
+            </Tabs>
+
+            {/* Scanner Mode */}
+            {receiveMode === "scanner" && (
+              <>
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  Scan item barcodes to receive them into Supply Station
+                  inventory. The scanner will automatically capture input when
+                  this dialog is open.
+                </Alert>
+
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={8}>
+                    <TextField
+                      fullWidth
+                      label="Scan or Enter Barcode"
+                      value={receiveScanInput}
+                      onChange={(e) => setReceiveScanInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") {
+                          handleReceiveScan(receiveScanInput);
+                        }
+                      }}
+                      placeholder="Barcode will appear here when scanned..."
+                      disabled={isReceiving}
+                      autoFocus
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <QrCodeScanner />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      fullWidth
+                      label="Qty"
+                      type="text"
+                      inputMode="numeric"
+                      value={receiveQuantity}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        setReceiveQuantity(Math.max(1, parseInt(val) || 1));
+                      }}
+                      inputProps={{ pattern: "[0-9]*", min: 1 }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={() => handleReceiveScan(receiveScanInput)}
+                      disabled={!receiveScanInput.trim() || isReceiving}
+                      sx={{ height: 56 }}
+                    >
+                      {isReceiving ? <CircularProgress size={24} /> : "Add"}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {/* Manual Entry Mode */}
+            {receiveMode === "manual" && (
+              <>
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  Search and select items from the list to manually add them to
+                  Supply Station inventory.
+                </Alert>
+
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item xs={8}>
+                    <Autocomplete
+                      options={filteredManualItems}
+                      getOptionLabel={(option) =>
+                        `${option.name} (${
+                          option.item_code || option.sku || "N/A"
+                        })`
+                      }
+                      value={
+                        items.find((i) => i.id === manualSelectedItem) || null
+                      }
+                      onChange={(_, newValue) => {
+                        setManualSelectedItem(newValue?.id || "");
+                      }}
+                      inputValue={manualItemSearch}
+                      onInputChange={(_, newInputValue) => {
+                        setManualItemSearch(newInputValue);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Search and Select Item"
+                          placeholder="Type to search items..."
+                          InputProps={{
+                            ...params.InputProps,
+                            startAdornment: (
+                              <>
+                                <InputAdornment position="start">
+                                  <SearchIcon />
+                                </InputAdornment>
+                                {params.InputProps.startAdornment}
+                              </>
+                            ),
+                          }}
+                        />
+                      )}
+                      renderOption={(props, option) => (
+                        <li {...props} key={option.id}>
+                          <Box>
+                            <Typography variant="body2" fontWeight="bold">
+                              {option.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {option.item_code} |{" "}
+                              {option.category_name || "No Category"} |{" "}
+                              {option.unit_of_measure}
+                            </Typography>
+                          </Box>
+                        </li>
+                      )}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      disabled={isReceiving}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      fullWidth
+                      label="Qty"
+                      type="text"
+                      inputMode="numeric"
+                      value={receiveQuantity}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, "");
+                        setReceiveQuantity(Math.max(1, parseInt(val) || 1));
+                      }}
+                      inputProps={{ pattern: "[0-9]*", min: 1 }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      onClick={handleManualReceive}
+                      disabled={!manualSelectedItem || isReceiving}
+                      sx={{ height: 56 }}
+                    >
+                      {isReceiving ? <CircularProgress size={24} /> : "Add"}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {/* Received Items List */}
+            {receivedItems.length > 0 && (
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Received Items ({receivedItems.length})
+                </Typography>
+                <TableContainer component={Paper} sx={{ maxHeight: 300 }}>
+                  <Table size="small" stickyHeader>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Item</TableCell>
+                        <TableCell align="center">Qty Received</TableCell>
+                        <TableCell align="center">New Total</TableCell>
+                        <TableCell>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {receivedItems.map((result, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight="bold">
+                              {result.item?.name || "Unknown"}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {result.item?.item_code}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Chip
+                              label={`+${result.item?.quantity_received || 0}`}
+                              color="success"
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell align="center">
+                            {result.item?.new_quantity_on_hand || 0}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={result.success ? "Received" : "Error"}
+                              color={result.success ? "success" : "error"}
+                              size="small"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ flex: 1, ml: 2 }}
+          >
+            Total items received:{" "}
+            {receivedItems.filter((r) => r.success).length}
+          </Typography>
+          <Button onClick={handleCloseReceiveStock} variant="contained">
+            Done
           </Button>
         </DialogActions>
       </Dialog>

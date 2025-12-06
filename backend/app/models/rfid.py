@@ -66,10 +66,16 @@ class InventoryMovement(BaseModel):
     """Inventory Movement model for tracking item movements"""
     __tablename__ = "inventory_movements"
     
+    # Either rfid_tag_id OR item_id should be set (for non-tagged items)
     rfid_tag_id = Column(
         UUID(as_uuid=True),
         ForeignKey("rfid_tags.id", ondelete="CASCADE"),
-        nullable=False
+        nullable=True  # Made nullable for bulk inventory movements
+    )
+    item_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("items.id", ondelete="CASCADE"),
+        nullable=True  # For tracking non-tagged inventory movements
     )
     from_location_id = Column(
         UUID(as_uuid=True),
@@ -88,11 +94,13 @@ class InventoryMovement(BaseModel):
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True
     )
+    reference_number = Column(String(100), nullable=True)  # For tracking barcodes, PO numbers, etc.
     notes = Column(String(1000), nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
     
     # Relationships
     rfid_tag = relationship("RFIDTag", back_populates="inventory_movements")
+    item = relationship("Item", back_populates="inventory_movements")
     from_location = relationship(
         "Location",
         foreign_keys=[from_location_id],

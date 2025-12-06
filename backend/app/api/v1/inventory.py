@@ -20,6 +20,8 @@ from app.models.item import Item
 from app.models.location import Location
 from app.models.audit import AuditLog, AuditAction
 from app.models.inventory_item import InventoryItem
+from app.models.order import PurchaseOrder, PurchaseOrderItem, OrderStatus, Vendor
+from app.models.internal_order import InternalOrder, InternalOrderItem, InternalOrderStatus
 
 router = APIRouter()
 
@@ -566,6 +568,189 @@ async def get_expiring_items(
     
     return results
 
+
+class RestockOrderRequest(BaseModel):
+    location_ids: List[UUID]
+    vendor_id: Optional[UUID] = None
+    notes: Optional[str] = None
+
+
+class RestockOrderItemLocation(BaseModel):
+    location_name: str
+    quantity_needed: int
+    current: int
+    par_level: int
+
+class RestockOrderItemDetail(BaseModel):
+    item_id: str
+    item_name: str
+    item_code: str
+    total_quantity: int
+    locations: dict  # Dict of location_id -> RestockOrderItemLocation
+
+class RestockOrderResponse(BaseModel):
+    order_id: str
+    po_number: str
+    total_items: int
+    total_quantity: int
+    items: List[RestockOrderItemDetail]
+    
+    class Config:
+        from_attributes = True
+
+
+@router.post("/create-restock-order")
+async def create_restock_order(
+    request: RestockOrderRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Create internal restock orders for logistics coordinator.
+    
+    Creates ONE SEPARATE ORDER PER LOCATION to allow independent fulfillment.
+    Analyzes all items at each location that are below par level.
+    
+    Args:
+        location_ids: List of location IDs to check (cabinets/trucks)
+        notes: Optional notes for the orders
+    
+    Returns:
+        List of created internal orders (one per location)
+    """
+    import uuid
+    from datetime import datetime, timedelta
+    
+    # Get location details
+    locations = db.query(Location).filter(Location.id.in_(request.location_ids)).all()
+    if not locations:
+        raise HTTPException(status_code=404, detail="No valid locations found")
+    
+    created_orders = []
+    
+    # Create a SEPARATE order for EACH location
+    for location in locations:
+        location_id = location.id
+        
+        # Find items below par level at THIS location
+        inventory_items = db.query(InventoryCurrent).filter(
+            InventoryCurrent.location_id == location_id
+        ).all()
+        
+        items_by_item_id = {}
+        total_quantity = 0
+        
+        for inv_item in inventory_items:
+            # Get par level for this item at this location
+            par_level = db.query(ParLevel).filter(
+                ParLevel.item_id == inv_item.item_id,
+                ParLevel.location_id == location_id
+            ).first()
+            
+            if par_level and inv_item.quantity_available < par_level.par_quantity:
+                # Calculate needed quantity
+                needed = par_level.par_quantity - inv_item.quantity_available
+                
+                # Get item details
+                item = db.query(Item).filter(Item.id == inv_item.item_id).first()
+                if not item:
+                    continue
+                
+                items_by_item_id[inv_item.item_id] = {
+                    'item_name': item.name,
+                    'item_code': item.item_code,
+                    'quantity_needed': needed,
+                    'current_stock': inv_item.quantity_available,
+                    'par_level': par_level.par_quantity
+                }
+                
+                total_quantity += needed
+        
+        # Skip this location if no items need restocking
+        if not items_by_item_id:
+            continue
+        
+        # Generate order number with location name
+        order_number = f"RESTOCK-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}-{location.name.replace(' ', '')}"
+        
+        # Create location details for this single location
+        location_details = [{
+            'location_id': str(location_id),
+            'location_name': location.name,
+            'items': [
+                {
+                    'item_id': str(item_id),
+                    'item_name': data['item_name'],
+                    'item_code': data['item_code'],
+                    'quantity_needed': data['quantity_needed'],
+                    'current_stock': data['current_stock'],
+                    'par_level': data['par_level']
+                }
+                for item_id, data in items_by_item_id.items()
+            ]
+        }]
+        
+        # Create internal order for THIS location
+        internal_order = InternalOrder(
+            order_number=order_number,
+            status=InternalOrderStatus.PENDING,
+            order_date=datetime.utcnow(),
+            created_by=current_user.id,
+            notes=request.notes,
+            location_details=location_details
+        )
+        db.add(internal_order)
+        db.flush()
+        
+        # Add order items for this location
+        for item_id, item_data in items_by_item_id.items():
+            order_item = InternalOrderItem(
+                order_id=internal_order.id,
+                item_id=item_id,
+                location_id=location_id,
+                quantity_needed=item_data['quantity_needed'],
+                quantity_delivered=0,
+                current_stock=item_data['current_stock'],
+                par_level=item_data['par_level']
+            )
+            db.add(order_item)
+        
+        # Create audit log for this order
+        audit_log = AuditLog(
+            user_id=current_user.id,
+            action=AuditAction.CREATE,
+            entity_type="InternalOrder",
+            entity_id=internal_order.id,
+            changes={
+                "order_number": order_number,
+                "order_type": "internal_restock",
+                "location": location.name,
+                "total_items": len(items_by_item_id),
+                "total_quantity": total_quantity
+            }
+        )
+        db.add(audit_log)
+        
+        created_orders.append({
+            "order_id": str(internal_order.id),
+            "order_number": order_number,
+            "location": location.name,
+            "total_items": len(items_by_item_id),
+            "total_quantity": total_quantity
+        })
+    
+    if not created_orders:
+        raise HTTPException(
+            status_code=400,
+            detail="No items below par level found at any of the specified locations"
+        )
+    
+    db.commit()
+    
+    return {
+        "message": f"Created {len(created_orders)} restock order(s)",
+        "orders": created_orders
+    }
 
 @router.get("/expired-items", response_model=List[ExpiringItemResponse])
 async def get_expired_items(

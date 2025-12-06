@@ -27,6 +27,8 @@ class Vendor(BaseModel):
     email = Column(String(255), nullable=True)
     phone = Column(String(50), nullable=True)
     address = Column(String(500), nullable=True)
+    website = Column(String(255), nullable=True)
+    notes = Column(String(1000), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     
     # Relationships

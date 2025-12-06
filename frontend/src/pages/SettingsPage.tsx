@@ -462,37 +462,41 @@ export default function SettingsPage() {
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Min Order Quantity"
                           value={systemConfig.auto_order.min_order_quantity}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               auto_order: {
                                 ...systemConfig.auto_order,
-                                min_order_quantity:
-                                  parseInt(e.target.value) || 1,
+                                min_order_quantity: parseInt(val) || 1,
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                         />
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Max Order Quantity"
                           value={systemConfig.auto_order.max_order_quantity}
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               auto_order: {
                                 ...systemConfig.auto_order,
-                                max_order_quantity:
-                                  parseInt(e.target.value) || 1000,
+                                max_order_quantity: parseInt(val) || 1000,
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                         />
                       </Grid>
                     </Grid>
@@ -507,21 +511,23 @@ export default function SettingsPage() {
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Max Request Quantity per Station"
                           value={
                             systemConfig.station_requests.max_request_quantity
                           }
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               station_requests: {
                                 ...systemConfig.station_requests,
-                                max_request_quantity:
-                                  parseInt(e.target.value) || 100,
+                                max_request_quantity: parseInt(val) || 100,
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                           helperText="Maximum items a station can request at once"
                         />
                       </Grid>
@@ -537,23 +543,24 @@ export default function SettingsPage() {
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Critical Stock Percentage"
                           value={
                             systemConfig.stock_alerts.alert_critical_percent
                           }
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               stock_alerts: {
                                 ...systemConfig.stock_alerts,
-                                alert_critical_percent:
-                                  parseInt(e.target.value) || 25,
+                                alert_critical_percent: parseInt(val) || 25,
                               },
-                            })
-                          }
+                            });
+                          }}
                           helperText="Alert when stock falls below this % of par level"
-                          inputProps={{ min: 0, max: 100 }}
+                          inputProps={{ pattern: "[0-9]*", min: 0, max: 100 }}
                         />
                       </Grid>
                     </Grid>
@@ -568,45 +575,50 @@ export default function SettingsPage() {
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Max Transfer Quantity"
                           value={
                             systemConfig.transfer_restrictions
                               .max_transfer_quantity
                           }
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               transfer_restrictions: {
                                 ...systemConfig.transfer_restrictions,
-                                max_transfer_quantity:
-                                  parseInt(e.target.value) || 1000,
+                                max_transfer_quantity: parseInt(val) || 1000,
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                           helperText="Maximum items that can be transferred at once"
                         />
                       </Grid>
                       <Grid item xs={12} md={6}>
                         <TextField
                           fullWidth
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           label="Require Notes Above Quantity"
                           value={
                             systemConfig.transfer_restrictions
                               .require_notes_above_quantity || ""
                           }
-                          onChange={(e) =>
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, "");
                             setSystemConfig({
                               ...systemConfig,
                               transfer_restrictions: {
                                 ...systemConfig.transfer_restrictions,
-                                require_notes_above_quantity: e.target.value
-                                  ? parseInt(e.target.value)
+                                require_notes_above_quantity: val
+                                  ? parseInt(val)
                                   : null,
                               },
-                            })
-                          }
+                            });
+                          }}
+                          inputProps={{ pattern: "[0-9]*" }}
                           helperText="Require notes for large transfers"
                         />
                       </Grid>

@@ -770,13 +770,15 @@ export default function AssetManagementPage() {
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
-                type="number"
+                type="text"
+                inputMode="decimal"
                 label="Purchase Price"
                 value={assetForm.purchase_price}
-                onChange={(e) =>
-                  setAssetForm({ ...assetForm, purchase_price: e.target.value })
-                }
-                inputProps={{ step: 0.01 }}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9.]/g, "");
+                  setAssetForm({ ...assetForm, purchase_price: val });
+                }}
+                inputProps={{ pattern: "[0-9.]*", step: 0.01 }}
               />
             </Grid>
             <Grid item xs={12} md={6}>

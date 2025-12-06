@@ -80,6 +80,7 @@ class Item(BaseModel):
     inventory_items = relationship("InventoryItem", back_populates="item")
     purchase_order_items = relationship("PurchaseOrderItem", back_populates="item")
     auto_order_rules = relationship("AutoOrderRule", back_populates="item")
+    inventory_movements = relationship("InventoryMovement", back_populates="item")
     
     def __repr__(self):
         return f"<Item {self.item_code}: {self.name}>"

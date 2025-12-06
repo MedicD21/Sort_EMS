@@ -88,6 +88,43 @@ class LinkTagRequest(BaseModel):
     expiration_date: Optional[datetime] = None
 
 
+class ReceiveStockRequest(BaseModel):
+    """Receive stock into Supply Station via barcode/RFID scan"""
+    barcode: str  # Item barcode or RFID tag
+    quantity: int = 1
+    location_id: Optional[UUID] = None  # Defaults to Supply Station
+    lot_number: Optional[str] = None
+    expiration_date: Optional[datetime] = None
+    purchase_order_id: Optional[UUID] = None  # Link to PO if applicable
+
+
+class BatchScanItem(BaseModel):
+    """Individual item in batch scan"""
+    barcode: str
+    quantity: int = 1
+
+
+class BatchScanRequest(BaseModel):
+    """Batch receive/scan multiple items"""
+    items: List[BatchScanItem]
+    location_id: UUID
+    scan_type: str = "receive"  # "receive", "count", "transfer"
+
+
+class InventoryScanResult(BaseModel):
+    """Result for inventory scanning mode"""
+    item_id: UUID
+    item_name: str
+    item_code: str
+    barcode: Optional[str]
+    scanned_quantity: int
+    system_quantity: int
+    par_level: Optional[int]
+    reorder_level: Optional[int]
+    status: str  # "ok", "low", "critical", "over"
+    variance: int
+
+
 @router.post("/scan", response_model=ScanResponse)
 async def scan_tag(
     scan_data: ScanRequest,
@@ -266,7 +303,7 @@ async def link_tag_to_item(
         movement_type=MovementType.RECEIPT,
         reference_number=link_data.tag_id,
         notes=f"RFID tag linked: {link_data.tag_id}",
-        performed_by_id=current_user.id
+        user_id=current_user.id
     )
     db.add(movement)
     
@@ -375,7 +412,7 @@ async def move_item_by_scan(
         movement_type=MovementType.TRANSFER,
         reference_number=move_data.tag_id,
         notes=f"RFID scan move: {move_data.notes or ''}",
-        performed_by_id=current_user.id
+        user_id=current_user.id
     )
     db.add(movement)
     
@@ -475,3 +512,411 @@ async def get_item_tags(
         ))
     
     return result
+
+
+@router.post("/receive-stock")
+async def receive_stock_by_scan(
+    receive_data: ReceiveStockRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Receive stock into Supply Station by scanning barcode/RFID
+    This is the primary workflow for receiving vendor shipments.
+    
+    Workflow:
+    1. Scan item barcode
+    2. System looks up item by barcode, SKU, or RFID tag
+    3. Adds quantity to Supply Station inventory
+    4. Creates receipt movement record
+    5. Optionally links to Purchase Order
+    """
+    # Find item by barcode, SKU, or RFID tag
+    item = db.query(Item).filter(
+        (Item.barcode == receive_data.barcode) |
+        (Item.sku == receive_data.barcode) |
+        (Item.rfid_tag == receive_data.barcode)
+    ).first()
+    
+    if not item:
+        # Try to find by RFID tag record
+        rfid_tag = db.query(RFIDTag).filter(
+            RFIDTag.tag_id == receive_data.barcode
+        ).first()
+        if rfid_tag:
+            item = db.query(Item).filter(Item.id == rfid_tag.item_id).first()
+    
+    if not item:
+        return {
+            "success": False,
+            "message": f"Item not found with barcode/SKU: {receive_data.barcode}",
+            "item": None,
+            "suggested_action": "create_item"
+        }
+    
+    # Default to Supply Station if no location provided
+    if receive_data.location_id:
+        location = db.query(Location).filter(Location.id == receive_data.location_id).first()
+    else:
+        location = db.query(Location).filter(Location.name == "Supply Station").first()
+    
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    # Update or create inventory record
+    inventory = db.query(InventoryCurrent).filter(
+        InventoryCurrent.item_id == item.id,
+        InventoryCurrent.location_id == location.id
+    ).first()
+    
+    if inventory:
+        inventory.quantity_on_hand += receive_data.quantity
+    else:
+        inventory = InventoryCurrent(
+            item_id=item.id,
+            location_id=location.id,
+            quantity_on_hand=receive_data.quantity,
+            quantity_allocated=0
+        )
+        db.add(inventory)
+    
+    # Create receipt movement record
+    movement = InventoryMovement(
+        item_id=item.id,
+        to_location_id=location.id,
+        quantity=receive_data.quantity,
+        movement_type=MovementType.RECEIPT,
+        reference_number=receive_data.barcode,
+        notes=f"Received via scan. Lot: {receive_data.lot_number or 'N/A'}",
+        user_id=current_user.id
+    )
+    db.add(movement)
+    
+    # If linked to PO, update PO item
+    if receive_data.purchase_order_id:
+        from app.models.order import PurchaseOrderItem
+        po_item = db.query(PurchaseOrderItem).filter(
+            PurchaseOrderItem.po_id == receive_data.purchase_order_id,
+            PurchaseOrderItem.item_id == item.id
+        ).first()
+        if po_item:
+            po_item.quantity_received += receive_data.quantity
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.CREATE,
+        entity_type="inventory_receipt",
+        entity_id=item.id,
+        description=f"Received {receive_data.quantity} x {item.name} into {location.name}",
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "message": f"Received {receive_data.quantity} x {item.name}",
+        "item": {
+            "id": str(item.id),
+            "name": item.name,
+            "item_code": item.item_code,
+            "unit_of_measure": item.unit_of_measure,
+            "quantity_received": receive_data.quantity,
+            "new_quantity_on_hand": inventory.quantity_on_hand
+        },
+        "location": location.name,
+        "movement_id": str(movement.id)
+    }
+
+
+@router.post("/batch-receive")
+async def batch_receive_stock(
+    batch_data: BatchScanRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Batch receive multiple items via scanning.
+    Useful for receiving shipments where multiple items are scanned sequentially.
+    """
+    location = db.query(Location).filter(Location.id == batch_data.location_id).first()
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    results = []
+    success_count = 0
+    error_count = 0
+    
+    for scan_item in batch_data.items:
+        # Find item
+        item = db.query(Item).filter(
+            (Item.barcode == scan_item.barcode) |
+            (Item.sku == scan_item.barcode) |
+            (Item.rfid_tag == scan_item.barcode)
+        ).first()
+        
+        if not item:
+            results.append({
+                "barcode": scan_item.barcode,
+                "success": False,
+                "message": "Item not found"
+            })
+            error_count += 1
+            continue
+        
+        # Update inventory
+        inventory = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item.id,
+            InventoryCurrent.location_id == batch_data.location_id
+        ).first()
+        
+        if inventory:
+            inventory.quantity_on_hand += scan_item.quantity
+        else:
+            inventory = InventoryCurrent(
+                item_id=item.id,
+                location_id=batch_data.location_id,
+                quantity_on_hand=scan_item.quantity,
+                quantity_allocated=0
+            )
+            db.add(inventory)
+        
+        # Create movement
+        movement = InventoryMovement(
+            item_id=item.id,
+            to_location_id=batch_data.location_id,
+            quantity=scan_item.quantity,
+            movement_type=MovementType.RECEIPT,
+            reference_number=scan_item.barcode,
+            notes=f"Batch receive",
+            user_id=current_user.id
+        )
+        db.add(movement)
+        
+        results.append({
+            "barcode": scan_item.barcode,
+            "success": True,
+            "item_name": item.name,
+            "quantity": scan_item.quantity,
+            "new_total": inventory.quantity_on_hand
+        })
+        success_count += 1
+    
+    db.commit()
+    
+    return {
+        "success": error_count == 0,
+        "message": f"Processed {len(batch_data.items)} items: {success_count} success, {error_count} errors",
+        "results": results,
+        "location": location.name
+    }
+
+
+@router.post("/inventory-count")
+async def scan_for_inventory_count(
+    location_id: UUID,
+    scanned_items: dict,  # {barcode: quantity}
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Compare scanned inventory against system records.
+    Returns variance report for each item.
+    
+    scanned_items format: {"barcode1": 5, "barcode2": 10, ...}
+    """
+    location = db.query(Location).filter(Location.id == location_id).first()
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    results = []
+    
+    # Get all inventory at this location
+    location_inventory = db.query(InventoryCurrent).filter(
+        InventoryCurrent.location_id == location_id
+    ).all()
+    
+    # Build lookup of items
+    item_ids = [inv.item_id for inv in location_inventory]
+    items = db.query(Item).filter(Item.id.in_(item_ids)).all()
+    item_map = {str(item.id): item for item in items}
+    barcode_to_item = {}
+    for item in items:
+        if item.barcode:
+            barcode_to_item[item.barcode] = item
+        if item.sku:
+            barcode_to_item[item.sku] = item
+        if item.rfid_tag:
+            barcode_to_item[item.rfid_tag] = item
+    
+    # Process scanned items
+    scanned_item_ids = set()
+    for barcode, scanned_qty in scanned_items.items():
+        item = barcode_to_item.get(barcode)
+        if not item:
+            results.append({
+                "barcode": barcode,
+                "item_name": "Unknown",
+                "scanned_quantity": scanned_qty,
+                "system_quantity": 0,
+                "variance": scanned_qty,
+                "status": "not_found"
+            })
+            continue
+        
+        scanned_item_ids.add(str(item.id))
+        
+        # Find system quantity
+        inv = next((i for i in location_inventory if i.item_id == item.id), None)
+        system_qty = inv.quantity_on_hand if inv else 0
+        
+        # Get par levels
+        from app.models.inventory import ParLevel
+        par = db.query(ParLevel).filter(
+            ParLevel.item_id == item.id,
+            ParLevel.location_id == location_id
+        ).first()
+        
+        variance = scanned_qty - system_qty
+        
+        # Determine status
+        if par and par.par_level:
+            if scanned_qty <= (par.reorder_level or 0):
+                status = "critical"
+            elif scanned_qty < par.par_level:
+                status = "low"
+            elif scanned_qty > par.par_level * 1.5:
+                status = "over"
+            else:
+                status = "ok"
+        else:
+            status = "ok" if variance == 0 else ("over" if variance > 0 else "under")
+        
+        results.append({
+            "item_id": str(item.id),
+            "item_name": item.name,
+            "item_code": item.item_code,
+            "barcode": barcode,
+            "scanned_quantity": scanned_qty,
+            "system_quantity": system_qty,
+            "par_level": par.par_level if par else None,
+            "reorder_level": par.reorder_level if par else None,
+            "variance": variance,
+            "status": status
+        })
+    
+    # Find items in system but not scanned
+    for inv in location_inventory:
+        if str(inv.item_id) not in scanned_item_ids and inv.quantity_on_hand > 0:
+            item = item_map.get(str(inv.item_id))
+            if item:
+                results.append({
+                    "item_id": str(inv.item_id),
+                    "item_name": item.name if item else "Unknown",
+                    "item_code": item.item_code if item else "N/A",
+                    "barcode": item.barcode or item.sku,
+                    "scanned_quantity": 0,
+                    "system_quantity": inv.quantity_on_hand,
+                    "variance": -inv.quantity_on_hand,
+                    "status": "missing"
+                })
+    
+    # Sort by status priority
+    status_order = {"critical": 0, "missing": 1, "low": 2, "under": 3, "over": 4, "ok": 5, "not_found": 6}
+    results.sort(key=lambda x: status_order.get(x["status"], 99))
+    
+    return {
+        "location": location.name,
+        "total_items_scanned": len(scanned_items),
+        "total_items_in_system": len(location_inventory),
+        "items_with_variance": len([r for r in results if r["variance"] != 0]),
+        "results": results
+    }
+
+
+@router.post("/adjust-inventory")
+async def adjust_inventory_after_count(
+    location_id: UUID,
+    adjustments: List[dict],  # [{item_id, new_quantity}]
+    reason: str = "Inventory count adjustment",
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Adjust inventory quantities after a physical count.
+    Creates adjustment movement records for audit trail.
+    """
+    location = db.query(Location).filter(Location.id == location_id).first()
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    adjusted_items = []
+    
+    for adj in adjustments:
+        item_id = UUID(adj["item_id"])
+        new_qty = adj["new_quantity"]
+        
+        inventory = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item_id,
+            InventoryCurrent.location_id == location_id
+        ).first()
+        
+        old_qty = inventory.quantity_on_hand if inventory else 0
+        variance = new_qty - old_qty
+        
+        if variance == 0:
+            continue
+        
+        # Update or create inventory
+        if inventory:
+            inventory.quantity_on_hand = new_qty
+        else:
+            inventory = InventoryCurrent(
+                item_id=item_id,
+                location_id=location_id,
+                quantity_on_hand=new_qty,
+                quantity_allocated=0
+            )
+            db.add(inventory)
+        
+        # Create adjustment movement
+        movement = InventoryMovement(
+            item_id=item_id,
+            from_location_id=location_id if variance < 0 else None,
+            to_location_id=location_id if variance > 0 else None,
+            quantity=abs(variance),
+            movement_type=MovementType.ADJUSTMENT,
+            notes=f"{reason}. Old: {old_qty}, New: {new_qty}",
+            user_id=current_user.id
+        )
+        db.add(movement)
+        
+        item = db.query(Item).filter(Item.id == item_id).first()
+        adjusted_items.append({
+            "item_name": item.name if item else "Unknown",
+            "old_quantity": old_qty,
+            "new_quantity": new_qty,
+            "variance": variance
+        })
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.UPDATE,
+        entity_type="inventory_adjustment",
+        entity_id=location_id,
+        description=f"Inventory adjustment at {location.name}: {len(adjusted_items)} items adjusted",
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    
+    return {
+        "success": True,
+        "message": f"Adjusted {len(adjusted_items)} items at {location.name}",
+        "adjustments": adjusted_items
+    }
+

@@ -969,14 +969,17 @@ export default function ItemManagementPage() {
                 <TextField
                   fullWidth
                   label="Cost Per Unit"
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   InputProps={{
                     startAdornment: <Typography sx={{ mr: 1 }}>$</Typography>,
                   }}
                   value={formData.cost_per_unit}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cost_per_unit: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9.]/g, "");
+                    setFormData({ ...formData, cost_per_unit: val });
+                  }}
+                  inputProps={{ pattern: "[0-9.]*" }}
                 />
               </Grid>
             </Grid>
@@ -1065,14 +1068,17 @@ export default function ItemManagementPage() {
                 <TextField
                   fullWidth
                   label="Minimum Order Quantity"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={formData.minimum_order_quantity}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "");
                     setFormData({
                       ...formData,
-                      minimum_order_quantity: e.target.value,
-                    })
-                  }
+                      minimum_order_quantity: val,
+                    });
+                  }}
+                  inputProps={{ pattern: "[0-9]*" }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -1090,11 +1096,14 @@ export default function ItemManagementPage() {
                 <TextField
                   fullWidth
                   label="Lead Time (Days)"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={formData.lead_time_days}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lead_time_days: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "");
+                    setFormData({ ...formData, lead_time_days: val });
+                  }}
+                  inputProps={{ pattern: "[0-9]*" }}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>

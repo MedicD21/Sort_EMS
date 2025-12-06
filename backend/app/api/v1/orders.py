@@ -28,12 +28,15 @@ class VendorBase(PydanticBase):
     email: Optional[str] = None
     phone: Optional[str] = None
     address: Optional[str] = None
+    website: Optional[str] = None
+    notes: Optional[str] = None
     is_active: bool = True
 
 
 class VendorResponse(VendorBase):
     id: UUID
     created_at: datetime
+    updated_at: Optional[datetime] = None
     
     class Config:
         from_attributes = True
@@ -143,6 +146,97 @@ async def create_vendor(
     db.commit()
     db.refresh(vendor)
     return vendor
+
+
+@router.get("/vendors/{vendor_id}", response_model=VendorResponse)
+async def get_vendor(
+    vendor_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get a vendor by ID"""
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    return vendor
+
+
+@router.put("/vendors/{vendor_id}", response_model=VendorResponse)
+async def update_vendor(
+    vendor_id: UUID,
+    vendor_data: VendorBase,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update a vendor"""
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    
+    # Check if new name conflicts with another vendor
+    if vendor_data.name != vendor.name:
+        existing = db.query(Vendor).filter(
+            Vendor.name == vendor_data.name,
+            Vendor.id != vendor_id
+        ).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Vendor with this name already exists")
+    
+    # Update fields
+    for field, value in vendor_data.dict().items():
+        setattr(vendor, field, value)
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.UPDATE,
+        entity_type="vendor",
+        entity_id=vendor.id,
+        description=f"Updated vendor: {vendor.name}",
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    db.refresh(vendor)
+    return vendor
+
+
+@router.delete("/vendors/{vendor_id}")
+async def delete_vendor(
+    vendor_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Delete a vendor (soft delete by setting inactive)"""
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    
+    # Check if vendor has any purchase orders
+    po_count = db.query(PurchaseOrder).filter(PurchaseOrder.vendor_id == vendor_id).count()
+    if po_count > 0:
+        # Soft delete - just mark as inactive
+        vendor.is_active = False
+        action_desc = f"Deactivated vendor: {vendor.name} (has {po_count} purchase orders)"
+    else:
+        # Hard delete if no purchase orders
+        db.delete(vendor)
+        action_desc = f"Deleted vendor: {vendor.name}"
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.DELETE,
+        entity_type="vendor",
+        entity_id=vendor.id,
+        description=action_desc,
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    return {"message": action_desc}
 
 
 @router.get("/", response_model=List[PurchaseOrderResponse])

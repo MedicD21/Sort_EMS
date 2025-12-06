@@ -2,7 +2,7 @@
  * Individual Items Dialog Component
  * Shows all individual items (with RFID tags and expiration dates) for a specific item at a location
  */
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -39,7 +39,7 @@ interface IndividualItemsDialogProps {
   onUpdate?: () => void;
 }
 
-export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
+export function IndividualItemsDialog({
   open,
   onClose,
   itemId,
@@ -47,7 +47,7 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
   locationId,
   locationName,
   onUpdate,
-}) => {
+}: IndividualItemsDialogProps) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<InventoryItemListResponse | null>(null);
   const [error, setError] = useState<string>("");
@@ -312,13 +312,15 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
             <Stack spacing={2}>
               <TextField
                 label="Quantity"
-                type="number"
+                type="text"
+                inputMode="numeric"
                 value={bulkAdd.quantity}
-                onChange={(e) =>
-                  setBulkAdd({ ...bulkAdd, quantity: parseInt(e.target.value) })
-                }
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9]/g, "");
+                  setBulkAdd({ ...bulkAdd, quantity: parseInt(val) || 1 });
+                }}
                 size="small"
-                inputProps={{ min: 1, max: 1000 }}
+                inputProps={{ pattern: "[0-9]*", min: 1, max: 1000 }}
                 fullWidth
               />
               <TextField
@@ -458,4 +460,4 @@ export const IndividualItemsDialog: React.FC<IndividualItemsDialogProps> = ({
       </DialogActions>
     </Dialog>
   );
-};
+}

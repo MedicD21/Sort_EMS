@@ -40,7 +40,6 @@ import {
   Divider,
 } from "@mui/material";
 import {
-  Search as SearchIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
@@ -51,8 +50,8 @@ import {
   RemoveCircle as RemoveIcon,
   DragIndicator as DragIcon,
 } from "@mui/icons-material";
-import SignatureCanvas from "react-signature-canvas";
 // @ts-ignore - signature canvas types
+import SignatureCanvas from "react-signature-canvas";
 import {
   formsApi,
   FormTemplate,

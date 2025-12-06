@@ -40,6 +40,8 @@ import {
   Devices,
   Assignment,
   DateRange,
+  LocalShipping,
+  Business,
 } from "@mui/icons-material";
 import { useAuthStore } from "../stores/authStore";
 import { inventoryApi, ExpiringItem } from "../services/apiService";
@@ -66,6 +68,8 @@ const navItems: NavItem[] = [
   },
   { text: "Scanner", icon: <QrCodeScanner />, path: "/scanner" },
   { text: "Orders", icon: <ShoppingCart />, path: "/orders" },
+  { text: "Vendors", icon: <Business />, path: "/vendors" },
+  { text: "Restock Orders", icon: <LocalShipping />, path: "/restock-orders" },
   { text: "Reports", icon: <Assessment />, path: "/reports" },
   { text: "Settings", icon: <Settings />, path: "/settings" },
 ];

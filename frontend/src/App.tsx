@@ -4,7 +4,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 // Pages
@@ -20,6 +20,8 @@ import SettingsPage from "./pages/SettingsPage";
 import AssetManagementPage from "./pages/AssetManagementPage";
 import FormsPage from "./pages/FormsPage";
 import ExpirationAlertsPage from "./pages/ExpirationAlertsPage";
+import RestockOrdersPage from "./pages/RestockOrdersPage";
+import VendorManagementPage from "./pages/VendorManagementPage";
 
 // Components
 import Layout from "./components/Layout";
@@ -128,6 +130,8 @@ function App() {
                 path="expiration-alerts"
                 element={<ExpirationAlertsPage />}
               />
+              <Route path="restock-orders" element={<RestockOrdersPage />} />
+              <Route path="vendors" element={<VendorManagementPage />} />
               <Route path="scanner" element={<ScannerPage />} />
               <Route path="orders" element={<OrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />
