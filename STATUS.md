@@ -84,6 +84,9 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 - `inventory_current`: Aggregate stock by item + location
 - `inventory_items`: Individual trackable items with RFID/expiration
 - `par_levels`: Min/max stock levels per item per location
+- `vendors`: Vendor/supplier management
+- `purchase_orders`: Purchase order tracking
+- `purchase_order_items`: Order line items
 
 ---
 
@@ -91,8 +94,9 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 
 ### Current Sprint
 
-- [ ] Location hierarchy implementation (stations → cabinets → vehicles)
-- [ ] Stock transfer workflows
+- [x] Purchase Orders with receiving workflow
+- [x] Vendor management
+- [x] Reorder suggestions
 - [ ] RFID scanning integration
 - [ ] Expiration alerts and notifications
 
@@ -100,29 +104,30 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 
 ## 📋 Planned Features
 
-### Phase 6: Orders & Procurement
+### Phase 6: Orders & Procurement ✓
 
-- [ ] Purchase order creation
-- [ ] Order status tracking (pending, ordered, received)
-- [ ] Vendor management
-- [ ] Automated reorder suggestions
-- [ ] Order history and analytics
-- [ ] Receiving workflow
+- [x] Purchase order creation
+- [x] Order status tracking (pending, ordered, received)
+- [x] Vendor management
+- [x] Automated reorder suggestions
+- [x] Order history and analytics
+- [x] Receiving workflow
 
-### Phase 7: Reporting & Analytics
+### Phase 7: Reporting & Analytics ✓
 
-- [ ] Dashboard with key metrics
-- [ ] Stock level reports
-- [ ] Usage analytics
-- [ ] Expiration reports
-- [ ] Cost tracking
-- [ ] Custom report builder
-- [ ] Export to PDF/Excel
+- [x] Dashboard with key metrics
+- [x] Stock level reports
+- [x] Usage analytics
+- [x] Expiration reports
+- [x] Cost tracking (Cost Analysis tab)
+- [ ] Custom report builder (deferred)
+- [x] Export to PDF/Excel
 
 ### Phase 8: Authentication & Authorization
 
-- [ ] User login/logout
-- [ ] JWT token-based authentication
+- [x] User login/logout (implemented but bypassed in DEV_MODE)
+- [x] JWT token-based authentication
+- [x] Development mode bypass for testing
 - [ ] Role-based access control (Admin, Manager, User)
 - [ ] User management interface
 - [ ] Password reset functionality
@@ -175,6 +180,29 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 
 ## 🔄 Recent Changes
 
+### December 6, 2025
+
+- ✅ Implemented Vendor Management (full CRUD)
+- ✅ Created Purchase Orders system with:
+  - Auto-generate PO numbers
+  - Multi-item orders
+  - Order status tracking
+  - Receiving workflow with location selection
+- ✅ Automated Reorder Suggestions page
+  - Shows items below par level grouped by urgency
+  - Create PO directly from suggestions
+- ✅ Enhanced Dashboard with:
+  - Quick action buttons
+  - Recent orders section
+  - Critical reorder alerts
+  - Total inventory value
+- ✅ Enhanced Reports page with:
+  - Export to CSV/Excel
+  - Print/PDF generation
+  - Cost Analysis tab
+- ✅ Added DEV_MODE authentication bypass
+- ✅ Created Cost Analysis report endpoint
+
 ### December 5, 2025
 
 - ✅ Fixed category display in Inventory page
@@ -199,16 +227,23 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 
 ### Current Data
 
-- **Items**: 26 sample items
+- **Items**: 51 total items (26 sample + user created)
 - **Categories**: 15 EMS categories
-- **Locations**: Schema ready, needs seeding
-- **Users**: Schema ready, authentication disabled
+- **Locations**: 23 locations seeded
+- **Users**: Schema ready, DEV_MODE bypass active
 
 ### Code Metrics
 
-- **Backend**: ~15 API endpoints
-- **Frontend**: 9 pages/views
-- **Database**: 11 core tables
+- **Backend**: ~25 API endpoints
+- **Frontend**: 16 pages/views
+- **Database**: 13 core tables
+
+### New Pages Added
+
+- `/vendors` - Vendor Management
+- `/orders` - Purchase Orders
+- `/reorder-suggestions` - Automated Reorder Suggestions
+- `/reports` - Enhanced with Cost Analysis tab
 
 ---
 
@@ -301,6 +336,6 @@ EMS Supply Tracking System - A comprehensive inventory management solution for E
 
 ---
 
-**Last Updated**: December 5, 2025  
-**Version**: 0.5.0 (Beta)  
+**Last Updated**: December 6, 2025  
+**Version**: 0.7.0 (Beta)  
 **Status**: Active Development

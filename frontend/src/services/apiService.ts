@@ -565,7 +565,51 @@ export const ordersApi = {
 
   cancel: (id: string) =>
     apiClient.delete<{ message: string }>(`/api/v1/orders/${id}`),
+
+  suggestions: {
+    getReorderSuggestions: (params?: {
+      vendor_id?: string;
+      category_id?: string;
+      urgency?: string;
+    }) =>
+      apiClient.get<ReorderSuggestion[]>("/api/v1/orders/suggestions/reorder", {
+        params,
+      }),
+
+    createPOFromSuggestions: (data: {
+      item_ids: string[];
+      vendor_id: string;
+    }) =>
+      apiClient.post<{
+        message: string;
+        po_id: string;
+        po_number: string;
+        items_count: number;
+        total_cost: number;
+      }>("/api/v1/orders/suggestions/create-po", data),
+  },
 };
+
+// ============================================================================
+// REORDER SUGGESTIONS
+// ============================================================================
+
+export interface ReorderSuggestion {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category_name?: string;
+  current_total_stock: number;
+  total_par_level: number;
+  total_reorder_level: number;
+  shortage: number;
+  suggested_order_qty: number;
+  preferred_vendor_id?: string;
+  preferred_vendor_name?: string;
+  estimated_cost?: number;
+  locations_below_par: number;
+  urgency: "critical" | "high" | "medium" | "low";
+}
 
 // ============================================================================
 // REPORTS
@@ -609,6 +653,37 @@ export interface InventorySummary {
   }>;
 }
 
+export interface CostAnalysisItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  unit_cost: number;
+  total_quantity: number;
+  total_value: number;
+  percentage_of_total: number;
+}
+
+export interface CostByCategory {
+  category_id: string;
+  category_name: string;
+  total_items: number;
+  total_quantity: number;
+  total_value: number;
+  percentage_of_total: number;
+}
+
+export interface CostAnalysisResponse {
+  total_inventory_value: number;
+  total_items: number;
+  total_quantity: number;
+  average_item_cost: number;
+  highest_value_items: CostAnalysisItem[];
+  lowest_value_items: CostAnalysisItem[];
+  cost_by_category: CostByCategory[];
+  value_distribution: Record<string, number>;
+}
+
 export const reportsApi = {
   lowStock: (params?: { location_id?: string; category_id?: string }) =>
     apiClient.get<LowStockItem[]>("/api/v1/reports/low-stock", { params }),
@@ -635,6 +710,11 @@ export const reportsApi = {
     item_id?: string;
     limit?: number;
   }) => apiClient.get("/api/v1/reports/movement-history", { params }),
+
+  costAnalysis: (params?: { category_id?: string; location_id?: string }) =>
+    apiClient.get<CostAnalysisResponse>("/api/v1/reports/cost-analysis", {
+      params,
+    }),
 };
 
 // ============================================================================

@@ -2,10 +2,11 @@
 Authentication API Routes
 """
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from uuid import uuid4
 
 from app.core.database import get_db
 from app.core.security import verify_password, create_access_token, create_refresh_token, decode_token
@@ -15,19 +16,40 @@ from app.schemas.user import UserResponse, Token, TokenRefresh
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
+
+
+# Development mode fake user (not saved to database)
+class DevUser:
+    """Fake user for development mode"""
+    def __init__(self):
+        self.id = uuid4()
+        self.username = "dev_user"
+        self.email = "dev@example.com"
+        self.full_name = "Development User"
+        self.role = "admin"
+        self.is_active = True
 
 
 async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
+    token: Annotated[Optional[str], Depends(oauth2_scheme)],
     db: Session = Depends(get_db)
 ) -> User:
     """Get current authenticated user from JWT token"""
+    
+    # Development mode bypass - return a fake admin user
+    if settings.DEV_MODE:
+        return DevUser()
+    
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    # Check if token is provided
+    if not token:
+        raise credentials_exception
     
     payload = decode_token(token)
     if payload is None:

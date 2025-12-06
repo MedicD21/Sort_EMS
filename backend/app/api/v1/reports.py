@@ -446,3 +446,159 @@ async def get_movement_history(
             for mov in movements
         ]
     }
+
+
+class CostAnalysisItem(BaseModel):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    category: str
+    unit_cost: float
+    total_quantity: int
+    total_value: float
+    percentage_of_total: float
+
+
+class CostByCategory(BaseModel):
+    category_id: str
+    category_name: str
+    total_items: int
+    total_quantity: int
+    total_value: float
+    percentage_of_total: float
+
+
+class CostAnalysisResponse(BaseModel):
+    total_inventory_value: float
+    total_items: int
+    total_quantity: int
+    average_item_cost: float
+    highest_value_items: List[CostAnalysisItem]
+    lowest_value_items: List[CostAnalysisItem]
+    cost_by_category: List[CostByCategory]
+    value_distribution: dict
+
+
+@router.get("/cost-analysis", response_model=CostAnalysisResponse)
+async def get_cost_analysis(
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    location_id: Optional[UUID] = Query(None, description="Filter by location"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get comprehensive cost analysis of inventory
+    """
+    # Base query for inventory with item details
+    query = db.query(
+        Item,
+        InventoryCurrent,
+        Category
+    ).outerjoin(
+        InventoryCurrent, Item.id == InventoryCurrent.item_id
+    ).outerjoin(
+        Category, Item.category_id == Category.id
+    ).filter(Item.is_active == True)
+    
+    if category_id:
+        query = query.filter(Item.category_id == category_id)
+    
+    if location_id:
+        query = query.filter(InventoryCurrent.location_id == location_id)
+    
+    results = query.all()
+    
+    # Calculate costs per item
+    item_costs = []
+    total_value = 0
+    total_quantity = 0
+    
+    for item, inventory, category in results:
+        unit_cost = float(item.cost_per_unit or 0)
+        qty = inventory.quantity_on_hand if inventory else 0
+        value = unit_cost * qty
+        
+        total_value += value
+        total_quantity += qty
+        
+        if qty > 0:  # Only include items with inventory
+            item_costs.append({
+                "item_id": item.id,
+                "item_code": item.item_code or "",
+                "item_name": item.name,
+                "category": category.name if category else "Uncategorized",
+                "category_id": item.category_id or "",
+                "unit_cost": unit_cost,
+                "total_quantity": qty,
+                "total_value": value,
+                "percentage_of_total": 0  # Calculate after we have total
+            })
+    
+    # Calculate percentages
+    for item in item_costs:
+        if total_value > 0:
+            item["percentage_of_total"] = round((item["total_value"] / total_value) * 100, 2)
+    
+    # Sort by value for highest/lowest
+    sorted_by_value = sorted(item_costs, key=lambda x: x["total_value"], reverse=True)
+    highest_value = sorted_by_value[:10]
+    lowest_value = sorted_by_value[-10:] if len(sorted_by_value) > 10 else sorted_by_value
+    lowest_value = sorted(lowest_value, key=lambda x: x["total_value"])
+    
+    # Cost by category
+    category_costs = {}
+    for item in item_costs:
+        cat_id = item["category_id"]
+        cat_name = item["category"]
+        if cat_id not in category_costs:
+            category_costs[cat_id] = {
+                "category_id": cat_id,
+                "category_name": cat_name,
+                "total_items": 0,
+                "total_quantity": 0,
+                "total_value": 0,
+                "percentage_of_total": 0
+            }
+        category_costs[cat_id]["total_items"] += 1
+        category_costs[cat_id]["total_quantity"] += item["total_quantity"]
+        category_costs[cat_id]["total_value"] += item["total_value"]
+    
+    # Calculate category percentages
+    for cat in category_costs.values():
+        if total_value > 0:
+            cat["percentage_of_total"] = round((cat["total_value"] / total_value) * 100, 2)
+    
+    cost_by_category = sorted(category_costs.values(), key=lambda x: x["total_value"], reverse=True)
+    
+    # Value distribution buckets
+    distribution = {
+        "0-50": 0,
+        "51-100": 0,
+        "101-500": 0,
+        "501-1000": 0,
+        "1001+": 0
+    }
+    
+    for item in item_costs:
+        value = item["total_value"]
+        if value <= 50:
+            distribution["0-50"] += 1
+        elif value <= 100:
+            distribution["51-100"] += 1
+        elif value <= 500:
+            distribution["101-500"] += 1
+        elif value <= 1000:
+            distribution["501-1000"] += 1
+        else:
+            distribution["1001+"] += 1
+    
+    return {
+        "total_inventory_value": round(total_value, 2),
+        "total_items": len(item_costs),
+        "total_quantity": total_quantity,
+        "average_item_cost": round(total_value / len(item_costs), 2) if item_costs else 0,
+        "highest_value_items": highest_value,
+        "lowest_value_items": lowest_value,
+        "cost_by_category": cost_by_category,
+        "value_distribution": distribution
+    }

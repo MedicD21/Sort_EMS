@@ -22,6 +22,7 @@ import FormsPage from "./pages/FormsPage";
 import ExpirationAlertsPage from "./pages/ExpirationAlertsPage";
 import RestockOrdersPage from "./pages/RestockOrdersPage";
 import VendorManagementPage from "./pages/VendorManagementPage";
+import ReorderSuggestionsPage from "./pages/ReorderSuggestionsPage";
 
 // Components
 import Layout from "./components/Layout";
@@ -132,6 +133,10 @@ function App() {
               />
               <Route path="restock-orders" element={<RestockOrdersPage />} />
               <Route path="vendors" element={<VendorManagementPage />} />
+              <Route
+                path="reorder-suggestions"
+                element={<ReorderSuggestionsPage />}
+              />
               <Route path="scanner" element={<ScannerPage />} />
               <Route path="orders" element={<PurchaseOrdersPage />} />
               <Route path="reports" element={<ReportsPage />} />

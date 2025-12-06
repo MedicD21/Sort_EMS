@@ -2,6 +2,7 @@
  * Dashboard Page
  */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Grid,
   Paper,
@@ -19,6 +20,12 @@ import {
   TableHead,
   TableRow,
   Chip,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import {
   Inventory2,
@@ -29,6 +36,12 @@ import {
   TrendingDown,
   DateRange,
   Error as ErrorIcon,
+  QrCodeScanner,
+  Assessment,
+  Add,
+  Autorenew,
+  LocalShipping,
+  AttachMoney,
 } from "@mui/icons-material";
 import {
   reportsApi,
@@ -36,6 +49,8 @@ import {
   LowStockItem,
   inventoryApi,
   ExpiringItem,
+  ordersApi,
+  ReorderSuggestion,
 } from "../services/apiService";
 
 // Stats card component
@@ -110,10 +125,14 @@ function StatsCard({
 }
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<InventorySummary | null>(null);
   const [lowStock, setLowStock] = useState<LowStockItem[]>([]);
   const [expiringItems, setExpiringItems] = useState<ExpiringItem[]>([]);
   const [expiredItems, setExpiredItems] = useState<ExpiringItem[]>([]);
+  const [reorderSuggestions, setReorderSuggestions] = useState<
+    ReorderSuggestion[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,18 +145,22 @@ export default function DashboardPage() {
       setLoading(true);
       setError(null);
 
-      const [summaryRes, lowStockRes, expiringRes, expiredRes] =
+      const [summaryRes, lowStockRes, expiringRes, expiredRes, suggestionsRes] =
         await Promise.all([
           reportsApi.inventorySummary(),
           reportsApi.lowStock(),
           inventoryApi.expiringItems({ days_ahead: 30, limit: 10 }),
           inventoryApi.expiredItems({ limit: 10 }),
+          ordersApi.suggestions
+            .getReorderSuggestions({ urgency: "critical" })
+            .catch(() => ({ data: [] })),
         ]);
 
       setSummary(summaryRes.data);
       setLowStock(lowStockRes.data);
       setExpiringItems(expiringRes.data);
       setExpiredItems(expiredRes.data);
+      setReorderSuggestions(suggestionsRes.data || []);
     } catch (err: any) {
       setError(err.response?.data?.detail || "Failed to load dashboard data");
       console.error("Error fetching dashboard data:", err);
@@ -231,22 +254,75 @@ export default function DashboardPage() {
         <Grid item xs={12} md={8}>
           <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom fontWeight="bold">
-              Recent Activity
+              Critical Reorder Items
             </Typography>
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Activity feed will be displayed here...
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                • Recent scans
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • Inventory movements
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • Order updates
-              </Typography>
-            </Box>
+            {reorderSuggestions.length === 0 ? (
+              <Box sx={{ mt: 2 }}>
+                <Alert severity="success">
+                  No critical reorder items. All stock levels are healthy!
+                </Alert>
+              </Box>
+            ) : (
+              <TableContainer sx={{ mt: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Item</TableCell>
+                      <TableCell align="right">Stock</TableCell>
+                      <TableCell align="right">Par Level</TableCell>
+                      <TableCell align="right">Suggested Order</TableCell>
+                      <TableCell>Vendor</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {reorderSuggestions.slice(0, 5).map((item) => (
+                      <TableRow
+                        key={item.item_id}
+                        sx={{ bgcolor: "rgba(244, 67, 54, 0.08)" }}
+                      >
+                        <TableCell>
+                          <Typography variant="body2" fontWeight="medium">
+                            {item.item_name}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {item.item_code}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          <Typography color="error.main" fontWeight="medium">
+                            {item.current_total_stock}
+                          </Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                          {item.total_par_level}
+                        </TableCell>
+                        <TableCell align="right">
+                          <Chip
+                            label={item.suggested_order_qty}
+                            color="primary"
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {item.preferred_vendor_name || "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+            {reorderSuggestions.length > 0 && (
+              <Box sx={{ mt: 2, textAlign: "right" }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => navigate("/reorder-suggestions")}
+                >
+                  View All Suggestions
+                </Button>
+              </Box>
+            )}
           </Paper>
         </Grid>
         <Grid item xs={12} md={4}>
@@ -254,20 +330,79 @@ export default function DashboardPage() {
             <Typography variant="h6" gutterBottom fontWeight="bold">
               Quick Actions
             </Typography>
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Quick action buttons will be displayed here...
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                • Scan Item
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • Create Order
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                • View Reports
+            <List>
+              <ListItem
+                component={Button}
+                onClick={() => navigate("/scanner")}
+                sx={{ borderRadius: 1, mb: 1, bgcolor: "action.hover" }}
+              >
+                <ListItemIcon>
+                  <QrCodeScanner color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Scan Items"
+                  secondary="Barcode/RFID scanner"
+                />
+              </ListItem>
+              <ListItem
+                component={Button}
+                onClick={() => navigate("/orders")}
+                sx={{ borderRadius: 1, mb: 1, bgcolor: "action.hover" }}
+              >
+                <ListItemIcon>
+                  <Add color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="New Purchase Order"
+                  secondary="Create PO from scratch"
+                />
+              </ListItem>
+              <ListItem
+                component={Button}
+                onClick={() => navigate("/reorder-suggestions")}
+                sx={{ borderRadius: 1, mb: 1, bgcolor: "action.hover" }}
+              >
+                <ListItemIcon>
+                  <Autorenew color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Reorder Suggestions"
+                  secondary="Auto-generated orders"
+                />
+              </ListItem>
+              <ListItem
+                component={Button}
+                onClick={() => navigate("/reports")}
+                sx={{ borderRadius: 1, bgcolor: "action.hover" }}
+              >
+                <ListItemIcon>
+                  <Assessment color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="View Reports"
+                  secondary="Analytics & insights"
+                />
+              </ListItem>
+            </List>
+          </Paper>
+
+          {/* Inventory Value Card */}
+          <Paper elevation={2} sx={{ p: 3, mt: 3 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <AttachMoney sx={{ color: "success.main", mr: 1 }} />
+              <Typography variant="h6" fontWeight="bold">
+                Total Inventory Value
               </Typography>
             </Box>
+            <Typography variant="h3" color="success.main" fontWeight="bold">
+              $
+              {(summary?.total_value || 0).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+              })}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              Across {summary?.total_locations || 0} locations
+            </Typography>
           </Paper>
         </Grid>
       </Grid>

@@ -594,3 +594,260 @@ async def cancel_purchase_order(
     db.commit()
     
     return {"message": f"Purchase order {order.po_number} cancelled successfully"}
+
+
+# =============================================================================
+# REORDER SUGGESTIONS
+# =============================================================================
+
+class ReorderSuggestion(PydanticBase):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    category_name: Optional[str] = None
+    current_total_stock: int
+    total_par_level: int
+    total_reorder_level: int
+    shortage: int
+    suggested_order_qty: int
+    preferred_vendor_id: Optional[UUID] = None
+    preferred_vendor_name: Optional[str] = None
+    estimated_cost: Optional[float] = None
+    locations_below_par: int
+    urgency: str  # "critical", "high", "medium", "low"
+
+
+@router.get("/suggestions/reorder", response_model=List[ReorderSuggestion])
+async def get_reorder_suggestions(
+    vendor_id: Optional[UUID] = Query(None, description="Filter by preferred vendor"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    urgency: Optional[str] = Query(None, description="Filter by urgency: critical, high, medium, low"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get automated reorder suggestions based on current stock levels vs par levels.
+    
+    Returns items that are below their reorder point with suggested quantities
+    and preferred vendor information.
+    """
+    from app.models.par_level import ParLevel
+    from app.models.item import Category
+    
+    # Get all active items with their inventory and par levels
+    items = db.query(Item).filter(Item.is_active == True)
+    
+    if category_id:
+        items = items.filter(Item.category_id == category_id)
+    
+    items = items.all()
+    
+    suggestions = []
+    
+    for item in items:
+        # Get all inventory across locations
+        inventories = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item.id
+        ).all()
+        
+        # Get par levels for all locations
+        par_levels = db.query(ParLevel).filter(
+            ParLevel.item_id == item.id
+        ).all()
+        
+        if not par_levels:
+            continue
+        
+        # Calculate totals
+        total_stock = sum(inv.quantity_on_hand - inv.quantity_allocated for inv in inventories)
+        total_par = sum(p.par_quantity for p in par_levels)
+        total_reorder = sum(p.reorder_quantity for p in par_levels)
+        
+        # Count locations below par
+        locations_below = 0
+        for par in par_levels:
+            inv = next((i for i in inventories if i.location_id == par.location_id), None)
+            if inv:
+                available = inv.quantity_on_hand - inv.quantity_allocated
+                if available < par.reorder_quantity:
+                    locations_below += 1
+            else:
+                locations_below += 1  # No inventory = below par
+        
+        # Skip if stock is above reorder level
+        if total_stock >= total_reorder:
+            continue
+        
+        shortage = total_par - total_stock
+        
+        # Calculate suggested order quantity (bring to par level + 10% buffer)
+        suggested_qty = int(shortage * 1.1)
+        if suggested_qty < 1:
+            suggested_qty = 1
+        
+        # Determine urgency
+        stock_ratio = total_stock / total_reorder if total_reorder > 0 else 0
+        if stock_ratio <= 0.25:
+            item_urgency = "critical"
+        elif stock_ratio <= 0.5:
+            item_urgency = "high"
+        elif stock_ratio <= 0.75:
+            item_urgency = "medium"
+        else:
+            item_urgency = "low"
+        
+        # Skip if filtering by urgency and doesn't match
+        if urgency and item_urgency != urgency:
+            continue
+        
+        # Get preferred vendor from item or auto-order rules
+        preferred_vendor = None
+        if item.preferred_vendor:
+            preferred_vendor = db.query(Vendor).filter(
+                Vendor.name == item.preferred_vendor,
+                Vendor.is_active == True
+            ).first()
+        
+        # Check auto-order rules
+        from app.models.order import AutoOrderRule
+        auto_rule = db.query(AutoOrderRule).filter(
+            AutoOrderRule.item_id == item.id,
+            AutoOrderRule.is_active == True
+        ).first()
+        
+        if auto_rule and auto_rule.preferred_vendor_id:
+            preferred_vendor = db.query(Vendor).filter(
+                Vendor.id == auto_rule.preferred_vendor_id,
+                Vendor.is_active == True
+            ).first()
+            if auto_rule.order_quantity:
+                suggested_qty = max(suggested_qty, auto_rule.order_quantity)
+        
+        # Skip if filtering by vendor and doesn't match
+        if vendor_id:
+            if not preferred_vendor or preferred_vendor.id != vendor_id:
+                continue
+        
+        # Get category name
+        category = db.query(Category).filter(Category.id == item.category_id).first()
+        
+        # Calculate estimated cost
+        estimated_cost = None
+        if item.cost_per_unit:
+            estimated_cost = round(suggested_qty * float(item.cost_per_unit), 2)
+        
+        suggestions.append(ReorderSuggestion(
+            item_id=item.id,
+            item_code=item.item_code,
+            item_name=item.name,
+            category_name=category.name if category else None,
+            current_total_stock=total_stock,
+            total_par_level=total_par,
+            total_reorder_level=total_reorder,
+            shortage=shortage,
+            suggested_order_qty=suggested_qty,
+            preferred_vendor_id=preferred_vendor.id if preferred_vendor else None,
+            preferred_vendor_name=preferred_vendor.name if preferred_vendor else None,
+            estimated_cost=estimated_cost,
+            locations_below_par=locations_below,
+            urgency=item_urgency
+        ))
+    
+    # Sort by urgency (critical first) then by shortage
+    urgency_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    suggestions.sort(key=lambda x: (urgency_order.get(x.urgency, 4), -x.shortage))
+    
+    return suggestions
+
+
+@router.post("/suggestions/create-po")
+async def create_po_from_suggestions(
+    item_ids: List[UUID],
+    vendor_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Create a purchase order from selected reorder suggestions.
+    
+    Takes a list of item IDs and creates a PO with the suggested quantities.
+    """
+    # Verify vendor exists
+    vendor = db.query(Vendor).filter(Vendor.id == vendor_id, Vendor.is_active == True).first()
+    if not vendor:
+        raise HTTPException(status_code=404, detail="Vendor not found")
+    
+    # Get suggestions for selected items
+    suggestions = await get_reorder_suggestions(
+        vendor_id=None, category_id=None, urgency=None, db=db, current_user=current_user
+    )
+    
+    selected_suggestions = [s for s in suggestions if s.item_id in item_ids]
+    
+    if not selected_suggestions:
+        raise HTTPException(status_code=400, detail="No valid items found for reorder")
+    
+    # Generate PO number
+    from datetime import datetime
+    date_str = datetime.utcnow().strftime("%Y%m%d")
+    random_suffix = str(hash(str(item_ids) + str(datetime.utcnow())))[-4:]
+    po_number = f"PO-{date_str}-{random_suffix}"
+    
+    # Check for duplicate PO number
+    existing = db.query(PurchaseOrder).filter(PurchaseOrder.po_number == po_number).first()
+    if existing:
+        po_number = f"PO-{date_str}-{random_suffix}A"
+    
+    # Create purchase order
+    purchase_order = PurchaseOrder(
+        po_number=po_number,
+        vendor_id=vendor_id,
+        status=OrderStatus.PENDING,
+        order_date=datetime.utcnow(),
+        created_by=current_user.id
+    )
+    db.add(purchase_order)
+    db.flush()
+    
+    # Create order items
+    total_cost = 0
+    for suggestion in selected_suggestions:
+        item = db.query(Item).filter(Item.id == suggestion.item_id).first()
+        
+        unit_cost = float(item.cost_per_unit) if item.cost_per_unit else None
+        item_total = None
+        if unit_cost:
+            item_total = unit_cost * suggestion.suggested_order_qty
+            total_cost += item_total
+        
+        po_item = PurchaseOrderItem(
+            po_id=purchase_order.id,
+            item_id=suggestion.item_id,
+            quantity_ordered=suggestion.suggested_order_qty,
+            unit_cost=unit_cost,
+            total_cost=item_total
+        )
+        db.add(po_item)
+    
+    purchase_order.total_cost = total_cost if total_cost > 0 else None
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.CREATE,
+        entity_type="purchase_order",
+        entity_id=purchase_order.id,
+        description=f"Created PO {po_number} from reorder suggestions ({len(selected_suggestions)} items)",
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    
+    return {
+        "message": f"Purchase order {po_number} created successfully",
+        "po_id": str(purchase_order.id),
+        "po_number": po_number,
+        "items_count": len(selected_suggestions),
+        "total_cost": total_cost
+    }

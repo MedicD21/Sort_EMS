@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = False
+    DEV_MODE: bool = True  # Set to False in production - bypasses authentication
     
     # Database
     DATABASE_URL: str = "sqlite:///./ems_supply.db"
