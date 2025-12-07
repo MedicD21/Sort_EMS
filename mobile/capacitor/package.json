@@ -1,0 +1,16 @@
+{
+  "name": "sort-ems-mobile-capacitor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "vite build --outDir ../cordova/www",
+    "cap:add:android": "npx cap add android",
+    "cap:open:android": "npx cap open android",
+    "cap:sync": "npx cap sync android",
+    "install:plugin": "node ./scripts/install-capacitor-plugin.js"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

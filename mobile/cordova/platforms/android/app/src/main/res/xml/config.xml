@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.medicd21.sortems.mobile" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Sort EMS Mobile</name>
+    <description>Hybrid wrapper for Sort_EMS web frontend with Zebra DataWedge integration</description>
+    <author>MedicD21</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <config-file parent="/manifest" target="app/src/main/AndroidManifest.xml">
+    </config-file>
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="ScrollEnabled" value="true" />
+    <preference name="SplashScreen" value="false" />
+</widget>

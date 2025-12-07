@@ -1,0 +1,7 @@
+{
+  "name": "sort-ems-mobile",
+  "private": true,
+  "devDependencies": {
+    "cordova-plugin-datawedge-intent": "file:plugins/cordova-plugin-datawedge-intent"
+  }
+}

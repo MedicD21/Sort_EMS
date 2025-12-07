@@ -139,7 +139,7 @@ async def scan_tag(
     # Try to find RFID tag
     rfid_tag = db.query(RFIDTag).filter(
         RFIDTag.tag_id == scan_data.tag_id,
-        RFIDTag.status == TagStatus.ACTIVE
+        RFIDTag.status == TagStatus.IN_STOCK
     ).first()
     
     if rfid_tag:
@@ -204,8 +204,8 @@ async def scan_tag(
         )
     else:
         # Tag not found - might be a barcode for an item without individual tracking
-        # Try to find item by barcode
-        item = db.query(Item).filter(Item.barcode == scan_data.tag_id).first()
+        # Try to find item by item_code (barcode)
+        item = db.query(Item).filter(Item.item_code == scan_data.tag_id).first()
         
         if item:
             # Found item by barcode but no individual tag
@@ -249,14 +249,14 @@ async def link_tag_to_item(
     # Check if tag already exists
     existing_tag = db.query(RFIDTag).filter(RFIDTag.tag_id == link_data.tag_id).first()
     if existing_tag:
-        if existing_tag.status == TagStatus.ACTIVE:
+        if existing_tag.status == TagStatus.IN_STOCK:
             raise HTTPException(
                 status_code=400,
                 detail=f"Tag already assigned to item: {existing_tag.item_id}"
             )
         else:
             # Reactivate retired tag
-            existing_tag.status = TagStatus.ACTIVE
+            existing_tag.status = TagStatus.IN_STOCK
             existing_tag.item_id = link_data.item_id
             existing_tag.current_location_id = link_data.location_id
             existing_tag.lot_number = link_data.lot_number
@@ -270,7 +270,7 @@ async def link_tag_to_item(
             tag_id=link_data.tag_id,
             item_id=link_data.item_id,
             current_location_id=link_data.location_id,
-            status=TagStatus.ACTIVE,
+            status=TagStatus.IN_STOCK,
             lot_number=link_data.lot_number,
             serial_number=link_data.serial_number,
             expiration_date=link_data.expiration_date,
@@ -354,7 +354,7 @@ async def move_item_by_scan(
     # Find RFID tag
     rfid_tag = db.query(RFIDTag).filter(
         RFIDTag.tag_id == move_data.tag_id,
-        RFIDTag.status == TagStatus.ACTIVE
+        RFIDTag.status == TagStatus.IN_STOCK
     ).first()
     
     if not rfid_tag:

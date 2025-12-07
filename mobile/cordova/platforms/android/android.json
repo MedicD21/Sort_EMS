@@ -1,0 +1,28 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-datawedge-intent": {
+      "PACKAGE_NAME": "com.medicd21.sortems.mobile"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "cordova-plugin-datawedge-intent.DataWedge",
+      "file": "plugins/cordova-plugin-datawedge-intent/www/datawedge.js",
+      "pluginId": "cordova-plugin-datawedge-intent",
+      "clobbers": [
+        "window.DataWedge"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "cordova-plugin-datawedge-intent": "0.0.1"
+  }
+}

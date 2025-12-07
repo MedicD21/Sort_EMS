@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sort EMS Mobile Wrapper</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #111;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2>Sort EMS Mobile Wrapper</h2>
+      <p>Loading web app...</p>
+      <p style="font-size: 12px; opacity: 0.7">
+        Add <code>?devserver=1</code> to force the remote dev server.
+      </p>
+    </div>
+
+    <script>
+      // Default remote dev server (override with ?remote=...&devserver=1)
+      const DEV_REMOTE_URL = "http://192.168.1.37:3001/";
+      const LOCAL_APP_PATH = "app/index.html"; // place built frontend here
+
+      const params = new URLSearchParams(window.location.search);
+      const devOverride = params.get("devserver") === "1";
+      const remoteOverride = params.get("remote");
+      const remoteUrl = remoteOverride || DEV_REMOTE_URL;
+
+      const redirect = (url) => window.location.replace(url);
+
+      const loadApp = () => {
+        const isCordova = typeof window.cordova !== "undefined";
+        const isFile = window.location.protocol === "file:";
+
+        // Force dev server when explicitly requested
+        if (devOverride) {
+          redirect(remoteUrl);
+          return;
+        }
+
+        // On device/file:// load the packaged build; in browser use remote dev
+        if (isCordova || isFile) {
+          redirect(LOCAL_APP_PATH);
+          return;
+        }
+
+        redirect(remoteUrl);
+      };
+
+      // Wait for Cordova to boot before redirecting on device
+      if (typeof window.cordova !== "undefined") {
+        document.addEventListener("deviceready", loadApp, false);
+      } else {
+        loadApp();
+      }
+    </script>
+  </body>
+</html>

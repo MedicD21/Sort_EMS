@@ -1,0 +1,11 @@
+{
+  "name": "@medicd21/capacitor-datawedge",
+  "version": "1.0.0",
+  "description": "Capacitor plugin to receive Zebra DataWedge intents",
+  "main": "dist/esm/plugin.cjs",
+  "capacitor": {
+    "platforms": [
+      "android"
+    ]
+  }
+}

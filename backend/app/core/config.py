@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: List[str] = ["*"]  # Allow all origins for testing
     
     @validator("ALLOWED_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: str | List[str]) -> List[str]:

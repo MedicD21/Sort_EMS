@@ -1,0 +1,6 @@
+{
+  "appId": "com.medicd21.sortems.mobile",
+  "appName": "Sort EMS Mobile",
+  "webDir": "../cordova/www",
+  "bundledWebRuntime": false
+}

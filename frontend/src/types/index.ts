@@ -102,6 +102,11 @@ export interface Item {
   created_at: string;
   updated_at: string;
   category?: Category;
+  // Optional fields sometimes present in API response views
+  par_level?: number;
+  reorder_level?: number;
+  current_quantity?: number;
+  total_par_level?: number;
 }
 
 export interface InventoryItem {
@@ -132,6 +137,7 @@ export interface InventoryItemCreate {
   expiration_date?: string;
   lot_number?: string;
   received_date?: string;
+  truck_location?: string;
 }
 
 export interface InventoryItemBulkCreate {
@@ -142,6 +148,7 @@ export interface InventoryItemBulkCreate {
   lot_number?: string;
   received_date?: string;
   rfid_tag_prefix?: string;
+  truck_location?: string;
 }
 
 export interface InventoryItemUpdate {
@@ -162,6 +169,8 @@ export interface RFIDTag {
   cost?: number;
   created_at: string;
   updated_at: string;
+  // Sometimes API includes a direct par_level property
+  par_level?: number;
   item?: Item;
   current_location?: Location;
 }
