@@ -260,7 +260,7 @@ export const exportAuditLog = (_data: unknown[]) => {
     { key: "user_name", header: "User" },
     { key: "action", header: "Action" },
     { key: "entity_type", header: "Entity Type" },
-    { key: "description", header: "Description" },
+    { key: "changes", header: "Changes" },
   ];
   return { columns, filename: "audit-log" };
 };

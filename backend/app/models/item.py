@@ -67,6 +67,7 @@ class Item(BaseModel):
     
     # Ordering information
     minimum_order_quantity = Column(Numeric(10, 2), nullable=True)
+    max_reorder_quantity_per_station = Column(Integer, nullable=True)  # Max allowed to reorder per station
     order_unit = Column(String(100), nullable=True)
     lead_time_days = Column(Numeric(5, 0), nullable=True)
     preferred_vendor = Column(String(255), nullable=True)

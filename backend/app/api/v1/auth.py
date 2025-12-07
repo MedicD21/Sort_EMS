@@ -6,7 +6,7 @@ from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from app.core.database import get_db
 from app.core.security import verify_password, create_access_token, create_refresh_token, decode_token
@@ -22,8 +22,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=F
 # Development mode fake user (not saved to database)
 class DevUser:
     """Fake user for development mode"""
+    # Static dev user ID for consistency across sessions
+    DEV_USER_ID = UUID("2a3e86b9-0755-412d-b658-2d33e0b8798e")
+    
     def __init__(self):
-        self.id = str(uuid4())
+        self.id = self.DEV_USER_ID
         self.username = "dev_user"
         self.email = "dev@example.com"
         self.first_name = "Development"

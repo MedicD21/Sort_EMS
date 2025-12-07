@@ -77,7 +77,7 @@ class AuditReportEntry(BaseModel):
     action: str
     entity_type: str
     entity_id: Optional[UUID]
-    description: str
+    changes: Optional[dict]  # JSON changes data
     ip_address: Optional[str]
 
 
@@ -296,7 +296,7 @@ async def get_audit_report(
     Get audit log report with filtering options
     Requires admin role for full access
     """
-    query = db.query(AuditLog).join(User, AuditLog.user_id == User.id)
+    query = db.query(AuditLog).outerjoin(User, AuditLog.user_id == User.id)
     
     # Apply filters
     if start_date:
@@ -326,11 +326,11 @@ async def get_audit_report(
         AuditReportEntry(
             id=log.id,
             timestamp=log.timestamp,
-            user_name=log.user.username,
+            user_name=log.user.username if log.user else "System",
             action=log.action.value if hasattr(log.action, 'value') else str(log.action),
             entity_type=log.entity_type,
             entity_id=log.entity_id,
-            description=log.description,
+            changes=log.changes,
             ip_address=log.ip_address
         )
         for log in logs
@@ -360,7 +360,7 @@ async def get_order_history(
     
     # Calculate statistics
     total_orders = len(orders)
-    total_value = sum(order.total_amount or 0 for order in orders)
+    total_value = sum(order.total_cost or 0 for order in orders)
     pending_count = sum(1 for order in orders if order.status == "pending")
     received_count = sum(1 for order in orders if order.status == "received")
     
@@ -373,12 +373,12 @@ async def get_order_history(
         "orders": [
             {
                 "id": str(order.id),
-                "order_number": order.order_number,
+                "order_number": order.po_number,
                 "vendor_name": order.vendor.name if order.vendor else "Unknown",
                 "status": order.status.value if hasattr(order.status, 'value') else str(order.status),
                 "order_date": order.order_date.isoformat() if order.order_date else None,
                 "expected_delivery": order.expected_delivery_date.isoformat() if order.expected_delivery_date else None,
-                "total_amount": float(order.total_amount) if order.total_amount else 0,
+                "total_amount": float(order.total_cost) if order.total_cost else 0,
                 "created_at": order.created_at.isoformat()
             }
             for order in orders[:50]  # Limit to 50 most recent
@@ -602,3 +602,731 @@ async def get_cost_analysis(
         "cost_by_category": cost_by_category,
         "value_distribution": distribution
     }
+
+
+# ============================================================================
+# NEW COMPREHENSIVE REPORTS
+# ============================================================================
+
+class ProductLifeProjection(BaseModel):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    category: str
+    current_stock: int
+    average_daily_usage: float
+    projected_days_remaining: int
+    projected_reorder_date: Optional[str]
+    lead_time_days: int
+    recommended_reorder_date: Optional[str]
+    status: str  # "Critical", "Low", "Normal", "Overstocked"
+
+
+class COGItem(BaseModel):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    category: str
+    unit_cost: float
+    total_used: int
+    total_cost_used: float
+    period_days: int
+    monthly_cost_rate: float
+    yearly_projected_cost: float
+
+
+class COGReport(BaseModel):
+    period_days: int
+    total_items_used: int
+    total_cost_of_goods_used: float
+    average_daily_cog: float
+    projected_monthly_cog: float
+    projected_yearly_cog: float
+    by_category: List[dict]
+    top_cost_items: List[COGItem]
+
+
+class UsageHistoryEntry(BaseModel):
+    date: str
+    total_used: int
+    total_received: int
+    net_change: int
+    movements_count: int
+
+
+class DetailedUsageReport(BaseModel):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    category: str
+    period_days: int
+    total_used: int
+    total_received: int
+    average_daily_usage: float
+    peak_usage_day: Optional[str]
+    peak_usage_amount: int
+    trend: str  # "Increasing", "Decreasing", "Stable"
+    daily_history: List[UsageHistoryEntry]
+
+
+class ExpirationAlert(BaseModel):
+    item_id: UUID
+    item_code: str
+    item_name: str
+    location_id: UUID
+    location_name: str
+    expiration_date: str
+    days_until_expiration: int
+    quantity: int
+    estimated_value: float
+    status: str  # "Expired", "Critical", "Warning", "OK"
+
+
+class ExpirationReport(BaseModel):
+    total_expiring_items: int
+    total_expired: int
+    total_critical: int  # < 7 days
+    total_warning: int   # < 30 days
+    total_at_risk_value: float
+    items: List[ExpirationAlert]
+
+
+@router.get("/product-life-projection", response_model=List[ProductLifeProjection])
+async def get_product_life_projection(
+    days_history: int = Query(30, ge=7, le=365, description="Days of history to analyze"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    include_zero_stock: bool = Query(False, description="Include items with zero stock"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get projected product life based on historical usage patterns.
+    Calculates when items will need to be reordered based on current stock and usage rates.
+    """
+    start_date = datetime.utcnow() - timedelta(days=days_history)
+    
+    # Get all active items
+    items_query = db.query(Item).filter(Item.is_active == True)
+    if category_id:
+        items_query = items_query.filter(Item.category_id == category_id)
+    items = items_query.all()
+    
+    projections = []
+    
+    for item in items:
+        # Get current stock across all locations
+        total_stock = 0
+        inventory_records = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item.id
+        ).all()
+        
+        for inv in inventory_records:
+            total_stock += inv.quantity_on_hand - inv.quantity_allocated
+        
+        if not include_zero_stock and total_stock <= 0:
+            continue
+        
+        # Get usage history for this item
+        movements = db.query(InventoryMovement).filter(
+            InventoryMovement.item_id == item.id,
+            InventoryMovement.created_at >= start_date
+        ).all()
+        
+        total_used = 0
+        for movement in movements:
+            if movement.from_location_id and not movement.to_location_id:
+                total_used += movement.quantity
+        
+        # Calculate average daily usage
+        avg_daily = total_used / days_history if days_history > 0 else 0
+        
+        # Calculate projected days remaining
+        if avg_daily > 0:
+            days_remaining = int(total_stock / avg_daily)
+        else:
+            days_remaining = 999  # Effectively infinite
+        
+        # Calculate projected reorder date
+        projected_reorder = None
+        recommended_reorder = None
+        lead_time = int(item.lead_time_days or 0)
+        
+        if days_remaining < 999:
+            projected_reorder = (datetime.utcnow() + timedelta(days=days_remaining)).strftime("%Y-%m-%d")
+            # Recommended reorder should account for lead time
+            days_to_reorder = max(0, days_remaining - lead_time - 3)  # 3 day buffer
+            recommended_reorder = (datetime.utcnow() + timedelta(days=days_to_reorder)).strftime("%Y-%m-%d")
+        
+        # Determine status
+        if days_remaining <= 7:
+            status = "Critical"
+        elif days_remaining <= 14:
+            status = "Low"
+        elif days_remaining <= 60:
+            status = "Normal"
+        else:
+            status = "Overstocked"
+        
+        projections.append(ProductLifeProjection(
+            item_id=item.id,
+            item_code=item.item_code,
+            item_name=item.name,
+            category=item.category.name if item.category else "Uncategorized",
+            current_stock=total_stock,
+            average_daily_usage=round(avg_daily, 2),
+            projected_days_remaining=days_remaining,
+            projected_reorder_date=projected_reorder,
+            lead_time_days=lead_time,
+            recommended_reorder_date=recommended_reorder,
+            status=status
+        ))
+    
+    # Sort by days remaining (most critical first)
+    projections.sort(key=lambda x: x.projected_days_remaining)
+    
+    return projections
+
+
+@router.get("/cost-of-goods", response_model=COGReport)
+async def get_cost_of_goods_report(
+    days: int = Query(30, ge=1, le=365, description="Period in days to analyze"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get Cost of Goods (COG) report showing actual costs of items used/consumed.
+    Includes projections for monthly and yearly costs.
+    """
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    # Get all items with usage in the period
+    items_query = db.query(Item).filter(Item.is_active == True)
+    if category_id:
+        items_query = items_query.filter(Item.category_id == category_id)
+    items = items_query.all()
+    
+    cog_items = []
+    total_cost = 0.0
+    category_costs = {}
+    
+    for item in items:
+        # Get movements (usage) for this item
+        movements = db.query(InventoryMovement).filter(
+            InventoryMovement.item_id == item.id,
+            InventoryMovement.created_at >= start_date
+        ).all()
+        
+        total_used = 0
+        for movement in movements:
+            if movement.from_location_id and not movement.to_location_id:
+                total_used += movement.quantity
+        
+        if total_used == 0:
+            continue
+        
+        unit_cost = float(item.cost_per_unit or 0)
+        cost_used = total_used * unit_cost
+        
+        # Calculate rates
+        monthly_rate = (cost_used / days) * 30 if days > 0 else 0
+        yearly_rate = monthly_rate * 12
+        
+        total_cost += cost_used
+        
+        # Aggregate by category
+        cat_name = item.category.name if item.category else "Uncategorized"
+        cat_id = item.category_id or "UNCATEGORIZED"
+        if cat_id not in category_costs:
+            category_costs[cat_id] = {
+                "category_id": cat_id,
+                "category_name": cat_name,
+                "total_items_used": 0,
+                "total_cost": 0.0
+            }
+        category_costs[cat_id]["total_items_used"] += 1
+        category_costs[cat_id]["total_cost"] += cost_used
+        
+        cog_items.append(COGItem(
+            item_id=item.id,
+            item_code=item.item_code,
+            item_name=item.name,
+            category=cat_name,
+            unit_cost=unit_cost,
+            total_used=total_used,
+            total_cost_used=round(cost_used, 2),
+            period_days=days,
+            monthly_cost_rate=round(monthly_rate, 2),
+            yearly_projected_cost=round(yearly_rate, 2)
+        ))
+    
+    # Sort by cost (highest first)
+    cog_items.sort(key=lambda x: x.total_cost_used, reverse=True)
+    
+    # Calculate totals
+    avg_daily = total_cost / days if days > 0 else 0
+    projected_monthly = avg_daily * 30
+    projected_yearly = projected_monthly * 12
+    
+    # Sort categories by cost
+    categories_sorted = sorted(category_costs.values(), key=lambda x: x["total_cost"], reverse=True)
+    
+    return COGReport(
+        period_days=days,
+        total_items_used=len(cog_items),
+        total_cost_of_goods_used=round(total_cost, 2),
+        average_daily_cog=round(avg_daily, 2),
+        projected_monthly_cog=round(projected_monthly, 2),
+        projected_yearly_cog=round(projected_yearly, 2),
+        by_category=categories_sorted,
+        top_cost_items=cog_items[:20]  # Top 20 by cost
+    )
+
+
+@router.get("/usage-history-detail")
+async def get_detailed_usage_history(
+    days: int = Query(30, ge=7, le=365, description="Period in days"),
+    item_id: Optional[UUID] = Query(None, description="Filter by specific item"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    limit: int = Query(50, ge=1, le=200, description="Max items to return"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get detailed usage history with daily breakdown and trends.
+    Useful for identifying usage patterns and seasonality.
+    """
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    # Get items to analyze
+    items_query = db.query(Item).filter(Item.is_active == True)
+    if item_id:
+        items_query = items_query.filter(Item.id == item_id)
+    if category_id:
+        items_query = items_query.filter(Item.category_id == category_id)
+    items = items_query.all()
+    
+    detailed_reports = []
+    
+    for item in items:
+        # Get all movements for this item
+        movements = db.query(InventoryMovement).filter(
+            InventoryMovement.item_id == item.id,
+            InventoryMovement.created_at >= start_date
+        ).order_by(InventoryMovement.created_at).all()
+        
+        if not movements:
+            continue
+        
+        # Aggregate by day
+        daily_data = {}
+        for movement in movements:
+            day_key = movement.created_at.strftime("%Y-%m-%d")
+            if day_key not in daily_data:
+                daily_data[day_key] = {"used": 0, "received": 0, "count": 0}
+            
+            if movement.from_location_id and not movement.to_location_id:
+                daily_data[day_key]["used"] += movement.quantity
+            elif movement.to_location_id and not movement.from_location_id:
+                daily_data[day_key]["received"] += movement.quantity
+            
+            daily_data[day_key]["count"] += 1
+        
+        # Calculate totals and find peak
+        total_used = 0
+        total_received = 0
+        peak_day = None
+        peak_amount = 0
+        
+        daily_history = []
+        for date_str, data in sorted(daily_data.items()):
+            total_used += data["used"]
+            total_received += data["received"]
+            
+            if data["used"] > peak_amount:
+                peak_amount = data["used"]
+                peak_day = date_str
+            
+            daily_history.append(UsageHistoryEntry(
+                date=date_str,
+                total_used=data["used"],
+                total_received=data["received"],
+                net_change=data["received"] - data["used"],
+                movements_count=data["count"]
+            ))
+        
+        # Calculate trend (compare first half vs second half)
+        mid = len(daily_history) // 2
+        if mid > 0:
+            first_half_usage = sum(d.total_used for d in daily_history[:mid])
+            second_half_usage = sum(d.total_used for d in daily_history[mid:])
+            
+            if second_half_usage > first_half_usage * 1.1:
+                trend = "Increasing"
+            elif second_half_usage < first_half_usage * 0.9:
+                trend = "Decreasing"
+            else:
+                trend = "Stable"
+        else:
+            trend = "Stable"
+        
+        avg_daily = total_used / days if days > 0 else 0
+        
+        detailed_reports.append({
+            "item_id": str(item.id),
+            "item_code": item.item_code,
+            "item_name": item.name,
+            "category": item.category.name if item.category else "Uncategorized",
+            "period_days": days,
+            "total_used": total_used,
+            "total_received": total_received,
+            "average_daily_usage": round(avg_daily, 2),
+            "peak_usage_day": peak_day,
+            "peak_usage_amount": peak_amount,
+            "trend": trend,
+            "daily_history": [
+                {
+                    "date": h.date,
+                    "total_used": h.total_used,
+                    "total_received": h.total_received,
+                    "net_change": h.net_change,
+                    "movements_count": h.movements_count
+                }
+                for h in daily_history
+            ]
+        })
+    
+    # Sort by total usage
+    detailed_reports.sort(key=lambda x: x["total_used"], reverse=True)
+    
+    return detailed_reports[:limit]
+
+
+@router.get("/expiration-tracking", response_model=ExpirationReport)
+async def get_expiration_tracking(
+    days_ahead: int = Query(90, ge=1, le=365, description="Look ahead days"),
+    include_expired: bool = Query(True, description="Include already expired items"),
+    location_id: Optional[UUID] = Query(None, description="Filter by location"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get expiration tracking report for items with expiration dates.
+    Shows expired, critical (<7 days), and warning (<30 days) items.
+    """
+    from app.models.inventory_item import InventoryItem
+    
+    now = datetime.utcnow()
+    future_date = now + timedelta(days=days_ahead)
+    
+    # Query inventory items with expiration tracking
+    query = db.query(
+        InventoryItem,
+        Item,
+        Location
+    ).join(
+        Item, InventoryItem.item_id == Item.id
+    ).join(
+        Location, InventoryItem.location_id == Location.id
+    ).filter(
+        InventoryItem.expiration_date.isnot(None),
+        Item.is_active == True,
+        Location.is_active == True
+    )
+    
+    if location_id:
+        query = query.filter(InventoryItem.location_id == location_id)
+    
+    if not include_expired:
+        query = query.filter(InventoryItem.expiration_date >= now)
+    
+    # Get items expiring within the window
+    query = query.filter(InventoryItem.expiration_date <= future_date)
+    
+    results = query.all()
+    
+    # Group by item+location+expiration_date for counting
+    grouped_items = {}
+    
+    for inv_item, item, location in results:
+        # Each InventoryItem record represents one physical item
+        # Group by item_id + location_id + expiration_date to count quantities
+        key = f"{item.id}_{location.id}_{inv_item.expiration_date.strftime('%Y-%m-%d') if inv_item.expiration_date else 'none'}"
+        
+        if key not in grouped_items:
+            grouped_items[key] = {
+                "item": item,
+                "location": location,
+                "expiration_date": inv_item.expiration_date,
+                "quantity": 0
+            }
+        grouped_items[key]["quantity"] += 1
+    
+    alerts = []
+    total_expired = 0
+    total_critical = 0
+    total_warning = 0
+    total_at_risk_value = 0.0
+    
+    for key, data in grouped_items.items():
+        item = data["item"]
+        location = data["location"]
+        exp_date = data["expiration_date"]
+        quantity = data["quantity"]
+        
+        if quantity <= 0:
+            continue
+        
+        days_until = (exp_date - now).days
+        
+        # Determine status
+        if days_until < 0:
+            status = "Expired"
+            total_expired += 1
+        elif days_until <= 7:
+            status = "Critical"
+            total_critical += 1
+        elif days_until <= 30:
+            status = "Warning"
+            total_warning += 1
+        else:
+            status = "OK"
+        
+        # Calculate value at risk
+        unit_cost = float(item.cost_per_unit or 0)
+        value = quantity * unit_cost
+        
+        if status in ["Expired", "Critical", "Warning"]:
+            total_at_risk_value += value
+        
+        alerts.append(ExpirationAlert(
+            item_id=item.id,
+            item_code=item.item_code,
+            item_name=item.name,
+            location_id=location.id,
+            location_name=location.name,
+            expiration_date=exp_date.strftime("%Y-%m-%d"),
+            days_until_expiration=days_until,
+            quantity=quantity,
+            estimated_value=round(value, 2),
+            status=status
+        ))
+    
+    # Sort by days until expiration (most urgent first)
+    alerts.sort(key=lambda x: x.days_until_expiration)
+    
+    return ExpirationReport(
+        total_expiring_items=len(alerts),
+        total_expired=total_expired,
+        total_critical=total_critical,
+        total_warning=total_warning,
+        total_at_risk_value=round(total_at_risk_value, 2),
+        items=alerts
+    )
+
+
+@router.get("/inventory-turnover")
+async def get_inventory_turnover(
+    days: int = Query(30, ge=7, le=365, description="Period to analyze"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get inventory turnover analysis showing how quickly items are used and replenished.
+    Higher turnover indicates more efficient inventory management.
+    """
+    start_date = datetime.utcnow() - timedelta(days=days)
+    
+    items_query = db.query(Item).filter(Item.is_active == True)
+    if category_id:
+        items_query = items_query.filter(Item.category_id == category_id)
+    items = items_query.all()
+    
+    turnover_data = []
+    
+    for item in items:
+        # Get current stock
+        inventory_records = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item.id
+        ).all()
+        
+        current_stock = sum(inv.quantity_on_hand for inv in inventory_records)
+        if current_stock <= 0:
+            continue
+        
+        # Get usage in period
+        movements = db.query(InventoryMovement).filter(
+            InventoryMovement.item_id == item.id,
+            InventoryMovement.created_at >= start_date
+        ).all()
+        
+        total_used = 0
+        total_received = 0
+        for mov in movements:
+            if mov.from_location_id and not mov.to_location_id:
+                total_used += mov.quantity
+            elif mov.to_location_id and not mov.from_location_id:
+                total_received += mov.quantity
+        
+        # Calculate turnover ratio (annualized)
+        # Turnover = Cost of Goods Used / Average Inventory
+        avg_inventory = current_stock  # Simplified - would ideally use average over period
+        annualization_factor = 365 / days
+        
+        if avg_inventory > 0:
+            turnover_ratio = (total_used / avg_inventory) * annualization_factor
+        else:
+            turnover_ratio = 0
+        
+        # Days of supply (how long current stock will last)
+        avg_daily_usage = total_used / days if days > 0 else 0
+        days_of_supply = current_stock / avg_daily_usage if avg_daily_usage > 0 else 999
+        
+        # Classify efficiency
+        if turnover_ratio >= 12:
+            efficiency = "Excellent"
+        elif turnover_ratio >= 6:
+            efficiency = "Good"
+        elif turnover_ratio >= 2:
+            efficiency = "Fair"
+        else:
+            efficiency = "Slow Moving"
+        
+        turnover_data.append({
+            "item_id": str(item.id),
+            "item_code": item.item_code,
+            "item_name": item.name,
+            "category": item.category.name if item.category else "Uncategorized",
+            "current_stock": current_stock,
+            "total_used": total_used,
+            "total_received": total_received,
+            "turnover_ratio": round(turnover_ratio, 2),
+            "days_of_supply": round(days_of_supply, 1),
+            "avg_daily_usage": round(avg_daily_usage, 2),
+            "efficiency": efficiency
+        })
+    
+    # Sort by turnover ratio (highest first - most active items)
+    turnover_data.sort(key=lambda x: x["turnover_ratio"], reverse=True)
+    
+    # Calculate summary stats
+    if turnover_data:
+        avg_turnover = sum(d["turnover_ratio"] for d in turnover_data) / len(turnover_data)
+        slow_moving = [d for d in turnover_data if d["efficiency"] == "Slow Moving"]
+        excellent = [d for d in turnover_data if d["efficiency"] == "Excellent"]
+    else:
+        avg_turnover = 0
+        slow_moving = []
+        excellent = []
+    
+    return {
+        "period_days": days,
+        "total_items_analyzed": len(turnover_data),
+        "average_turnover_ratio": round(avg_turnover, 2),
+        "slow_moving_items": len(slow_moving),
+        "high_turnover_items": len(excellent),
+        "items": turnover_data
+    }
+
+
+@router.get("/reorder-forecast")
+async def get_reorder_forecast(
+    days_ahead: int = Query(30, ge=7, le=90, description="Forecast days ahead"),
+    category_id: Optional[str] = Query(None, description="Filter by category"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get reorder forecast showing expected order needs in the upcoming period.
+    Helps with budget planning and procurement scheduling.
+    """
+    # Use historical data to project future needs
+    history_days = 30  # Use last 30 days for projection
+    start_date = datetime.utcnow() - timedelta(days=history_days)
+    
+    items_query = db.query(Item).filter(Item.is_active == True)
+    if category_id:
+        items_query = items_query.filter(Item.category_id == category_id)
+    items = items_query.all()
+    
+    forecast_data = []
+    total_projected_cost = 0.0
+    
+    for item in items:
+        # Get current stock
+        inventory_records = db.query(InventoryCurrent).filter(
+            InventoryCurrent.item_id == item.id
+        ).all()
+        current_stock = sum(inv.quantity_on_hand - inv.quantity_allocated for inv in inventory_records)
+        
+        # Get historical usage
+        movements = db.query(InventoryMovement).filter(
+            InventoryMovement.item_id == item.id,
+            InventoryMovement.created_at >= start_date
+        ).all()
+        
+        total_used = 0
+        for mov in movements:
+            if mov.from_location_id and not mov.to_location_id:
+                total_used += mov.quantity
+        
+        avg_daily_usage = total_used / history_days if history_days > 0 else 0
+        
+        if avg_daily_usage <= 0:
+            continue
+        
+        # Project usage for forecast period
+        projected_usage = avg_daily_usage * days_ahead
+        projected_stock_at_end = current_stock - projected_usage
+        
+        # Get par level for reorder calculation
+        par_levels = db.query(ParLevel).filter(ParLevel.item_id == item.id).all()
+        total_par = sum(p.par_quantity for p in par_levels)
+        total_reorder = sum(p.reorder_quantity for p in par_levels)
+        
+        # Will we need to reorder?
+        needs_reorder = projected_stock_at_end < total_reorder
+        
+        if needs_reorder:
+            # Calculate quantity to order
+            quantity_to_order = max(total_par - projected_stock_at_end, 0)
+            lead_time = int(item.lead_time_days or 7)
+            
+            # When to order
+            days_until_reorder = max(0, (current_stock - total_reorder) / avg_daily_usage) if avg_daily_usage > 0 else 0
+            reorder_date = (datetime.utcnow() + timedelta(days=days_until_reorder)).strftime("%Y-%m-%d")
+            
+            unit_cost = float(item.cost_per_unit or 0)
+            order_cost = quantity_to_order * unit_cost
+            total_projected_cost += order_cost
+            
+            forecast_data.append({
+                "item_id": str(item.id),
+                "item_code": item.item_code,
+                "item_name": item.name,
+                "category": item.category.name if item.category else "Uncategorized",
+                "current_stock": int(current_stock),
+                "projected_usage": round(projected_usage, 1),
+                "projected_stock_at_end": round(projected_stock_at_end, 1),
+                "par_level": total_par,
+                "reorder_point": total_reorder,
+                "quantity_to_order": int(quantity_to_order),
+                "lead_time_days": lead_time,
+                "suggested_reorder_date": reorder_date,
+                "unit_cost": unit_cost,
+                "projected_order_cost": round(order_cost, 2),
+                "urgency": "High" if projected_stock_at_end <= 0 else "Medium" if projected_stock_at_end < total_reorder else "Low"
+            })
+    
+    # Sort by urgency then by projected order cost
+    urgency_order = {"High": 0, "Medium": 1, "Low": 2}
+    forecast_data.sort(key=lambda x: (urgency_order[x["urgency"]], -x["projected_order_cost"]))
+    
+    return {
+        "forecast_period_days": days_ahead,
+        "total_items_needing_reorder": len(forecast_data),
+        "total_projected_cost": round(total_projected_cost, 2),
+        "items": forecast_data
+    }
+

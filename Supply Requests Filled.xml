@@ -1,0 +1,2435 @@
+<?xml version="1.0" encoding="utf-8" ?><Reports><Summary>
+  <Table1>
+    <Supply_Room>Cleaning/Station Supplies - Main Supply</Supply_Room>
+    <Supplied_Total>$6,860.12</Supplied_Total>
+  </Table1>
+  <Table1>
+    <Supply_Room>Medical Supplies- Main Supply</Supply_Room>
+    <Supplied_Total>$62,663.23</Supplied_Total>
+  </Table1>
+  <Table1>
+    <Supply_Room>Medication Cabinet @ Medic 2</Supply_Room>
+    <Supplied_Total>$6,181.84</Supplied_Total>
+  </Table1>
+  <Table1>
+    <Supply_Room>Station 7 - Medical Equipment Supply Cabinet</Supply_Room>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Table1>
+  <Table1>
+    <Supply_Room />
+    <Supplied_Total>$75,705.18</Supplied_Total>
+  </Table1>
+</Summary><Detail>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>A60- Ipad Screen Wipes</Part_Description>
+    <Part_Number>H01050</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$0.80</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K02- Tire Shine</Part_Description>
+    <Part_Number>TireShine5500</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$9.00</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K03- Bug/Tar Remover</Part_Description>
+    <Part_Number>BugTar5500</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$35.84</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K04- Vehicle Wax</Part_Description>
+    <Part_Number>007466001222</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$23.52</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K05- Swiffer Dust Kit</Part_Description>
+    <Part_Number>22-SWIF DUSTER KIT</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$5.97</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K07- Fly trap ribbon- Raid</Part_Description>
+    <Part_Number>2632290</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$2.24</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K08- Steri-Fab Disinfectant, Bed Bugs 16oz</Part_Description>
+    <Part_Number>Steri-fab</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$174.24</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K09- Bed Bug/Flea Bomb 3/pk Hot Shot</Part_Description>
+    <Part_Number>2637710</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$18.30</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K11- Finish Dishwasher Gelpacs</Part_Description>
+    <Part_Number>Finish Gelpac</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$498.80</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K20- Comet Scour Powder</Part_Description>
+    <Part_Number>07-COMET POWDER</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$1.99</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K21- Non-scratch Dish Brush</Part_Description>
+    <Part_Number>Dish Brush</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$3.00</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K22- Non-scratch Sponge</Part_Description>
+    <Part_Number>Sponge5300</Part_Number>
+    <Quantity>43</Quantity>
+    <Supplied_Total>$60.85</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K23- Soap pads (Brillo, SOS)</Part_Description>
+    <Part_Number>02-BRILLO PADS</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$1.77</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K24- Purell Hand Sanitizer (Extra on top of Tan cabinet)</Part_Description>
+    <Part_Number>25-PURELL 9652-A</Part_Number>
+    <Quantity>21</Quantity>
+    <Supplied_Total>$103.32</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K28- Hose Nozzle</Part_Description>
+    <Part_Number>TWIS3432</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.50</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K30- WD-40</Part_Description>
+    <Part_Number>WD40-5500</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$15.36</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K32- Clorox Fuzion</Part_Description>
+    <Part_Number>Special Order- Must Call</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$124.97</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K40- Laundry Sanitizer</Part_Description>
+    <Part_Number>6472105</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$181.86</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K61- Spray Disinfectant for station</Part_Description>
+    <Part_Number>08-SD 427 LINEN CASE</Part_Number>
+    <Quantity>32</Quantity>
+    <Supplied_Total>$167.95</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K62- Glass Cleaner</Part_Description>
+    <Part_Number>06-SUN STRKLESS Q CS</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$11.58</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K63- Trigger sprayer for Glass Cleaner</Part_Description>
+    <Part_Number>05-TRIGGER GP</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$8.30</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K71- Formula 409 Multi Surface Cleaner</Part_Description>
+    <Part_Number>409MS5500</Part_Number>
+    <Quantity>18</Quantity>
+    <Supplied_Total>$63.72</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K72- Clorox Anywhere (Kitchen, Shower, bathroom)</Part_Description>
+    <Part_Number>07-CLOROX 01698 CS</Part_Number>
+    <Quantity>42</Quantity>
+    <Supplied_Total>$227.43</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K73- Dawn Dish Soap, Reg Scent  (Dish Detergent)</Part_Description>
+    <Part_Number>Dawn5500</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$109.80</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K80- Disinfectant Wipes, Bleach Free, Extra @ U9</Part_Description>
+    <Part_Number>07-CLOROX 30825 CASE</Part_Number>
+    <Quantity>34</Quantity>
+    <Supplied_Total>$155.82</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>K81- Red Safety Flares</Part_Description>
+    <Part_Number>2720OS.LS</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$31.04</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>L04- Threaded Wood Handle, Metal Tip, for truck brush</Part_Description>
+    <Part_Number>04-HANDLE M M60</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$6.08</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>M01- Toilet Paper, TP (Extra @ U1, U3, U5, U7)</Part_Description>
+    <Part_Number>19-TP-21724</Part_Number>
+    <Quantity>843</Quantity>
+    <Supplied_Total>$592.63</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>M02- Paper Towel, Roll, Kitchen, PT (Extra @ U2, U4, U6)</Part_Description>
+    <Part_Number>19-KIT LIVI 508</Part_Number>
+    <Quantity>992</Quantity>
+    <Supplied_Total>$1,776.67</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>M03- Multi Fold Hand, Paper, Towels, Tri fold (Extra @ V4)</Part_Description>
+    <Part_Number>19-MF- 400011</Part_Number>
+    <Quantity>323</Quantity>
+    <Supplied_Total>$750.17</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>N01- Laundry Detergent 5 Gallon Pail</Part_Description>
+    <Part_Number>06-HE LIQ LAUNDRY 5G</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$131.10</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>N02- Car wash, 5 gallon pail</Part_Description>
+    <Part_Number>09-CHERRY BOMB 5G</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$249.90</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O01- Stainless Steel polish Oil Based</Part_Description>
+    <Part_Number>08-5197 STAINLESS</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$4.79</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O02- Furniture Polish</Part_Description>
+    <Part_Number>08-5136 LEMON POLISH</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$4.37</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O03- Toilet Brush And Caddy</Part_Description>
+    <Part_Number>24-BOWL BRUSH 333</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$16.47</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O04- Urinal Screen/Block</Part_Description>
+    <Part_Number>12-URINAL W-MANGO</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$17.52</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O06- Dust Mop Refill</Part_Description>
+    <Part_Number>22-DUST MOP 18 IN</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$8.19</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>O09- Doorstop, Wedge, Rubber</Part_Description>
+    <Part_Number>N237-891</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$5.22</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P02- Large Mop Head, White, Web Foot * Highly Launderable &amp; Durable *</Part_Description>
+    <Part_Number>17-KD WEB LOOP G L</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$84.04</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P03- Pump for 5 gallon bucket</Part_Description>
+    <Part_Number>05-PUMP 5 GALLON</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$16.47</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P04- Scrub Brush, Large</Part_Description>
+    <Part_Number>04-BRUSH H 236-854</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$5.31</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P05- Quik-Care Waterless Antimicrobial Foaming Hand Sanitizer, 7oz</Part_Description>
+    <Part_Number>1063-71307</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$18.57</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P11- Rain-X Windshield Washer Fluid- ORANGE</Part_Description>
+    <Part_Number>079118900502</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$13.56</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P12 - United States Of America - Flag 3x5</Part_Description>
+    <Part_Number>3x5flag</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P15- Truck Brush (brush only)</Part_Description>
+    <Part_Number>04-BRUSH M 186M</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$13.99</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P22- Trash Bags, LARGE (Bay, 40x46) Extra @ U10</Part_Description>
+    <Part_Number>03-X8046AK R01</Part_Number>
+    <Quantity>75</Quantity>
+    <Supplied_Total>$446.25</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P23- Mattress Cover, Twin XL</Part_Description>
+    <Part_Number>MattressCover</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$19.94</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P25- Trash Bags, SMALL (Kitchen, 24x32) Extra @ U10</Part_Description>
+    <Part_Number>03-H4832HK R01</Part_Number>
+    <Quantity>32</Quantity>
+    <Supplied_Total>$127.81</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P41- Hand Soap for dispensers</Part_Description>
+    <Part_Number>25-SCJ GREEN CS</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$149.31</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P42 - Hand Soap Dispenser - Black</Part_Description>
+    <Part_Number>05-SCJ BLACK</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$5.98</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P43- Cling Toilet Bowl Cleaner</Part_Description>
+    <Part_Number>06-CLING Q CS</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$72.34</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P44- Wet Mop Floor Cleaner</Part_Description>
+    <Part_Number>06-MAINTAIN CH G CS</Part_Number>
+    <Quantity>26</Quantity>
+    <Supplied_Total>$243.56</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description>P45- Clorox Germicidal Bleach, Gallon</Part_Description>
+    <Part_Number>07-BLEACH G</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$34.93</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+    <Part_Description />
+    <Part_Number />
+    <Quantity />
+    <Supplied_Total>$6,860.12</Supplied_Total>
+  </Cleaning_x002F_Station_x0020_Supplies_x0020_-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A01- 3" Kling, ORDER 12 FOR A BOX</Part_Description>
+    <Part_Number>279-3113EA</Part_Number>
+    <Quantity>72</Quantity>
+    <Supplied_Total>$21.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A02- 2"x2" Gauze, ORDER 100 FOR A BOX (2 inch x 2 inch, 2x2)</Part_Description>
+    <Part_Number>087770</Part_Number>
+    <Quantity>1,859</Quantity>
+    <Supplied_Total>$42.76</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A04- 4"x4" Gauze, ORDER 50 FOR A BOX  ( 4inch x 4inch, 4x4)</Part_Description>
+    <Part_Number>087773</Part_Number>
+    <Quantity>1,953</Quantity>
+    <Supplied_Total>$124.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A05- 5"x9" Gauze, ORDER 25 FOR A BOX  (5inch x 9inch, 5x9)</Part_Description>
+    <Part_Number>085590</Part_Number>
+    <Quantity>92</Quantity>
+    <Supplied_Total>$13.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A07- Sterile Water,  250ml Bottle, Saline ORDER IN SINGLES</Part_Description>
+    <Part_Number>607112</Part_Number>
+    <Quantity>43</Quantity>
+    <Supplied_Total>$140.61</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A08- Triangular Bandages (Cravat) Order by 3's</Part_Description>
+    <Part_Number>J2051</Part_Number>
+    <Quantity>59</Quantity>
+    <Supplied_Total>$30.09</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A09- Ace wrap, Elastic Bandage Roll, Order by 3's</Part_Description>
+    <Part_Number>080504</Part_Number>
+    <Quantity>55</Quantity>
+    <Supplied_Total>$37.95</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A10- Coban, 2" (Extra On Top Of Cabinet) Order by 6's</Part_Description>
+    <Part_Number>1121-36571</Part_Number>
+    <Quantity>152</Quantity>
+    <Supplied_Total>$161.73</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A11- Amputation Cooler, Soft sided</Part_Description>
+    <Part_Number>999990</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$0.03</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A12- C-Collar, PEDIATRIC (Cervical, C Collar)</Part_Description>
+    <Part_Number>260280</Part_Number>
+    <Quantity>17</Quantity>
+    <Supplied_Total>$82.11</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A13- Insect Sting Swab, (10 per box) ORDER BY BOX ONLY</Part_Description>
+    <Part_Number>279-1407</Part_Number>
+    <Quantity>19</Quantity>
+    <Supplied_Total>$110.01</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A14- Nose Clip, clamp, Order by 3's</Part_Description>
+    <Part_Number>84-1008EA</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$6.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A15- Fire Wipes</Part_Description>
+    <Part_Number>1063-20763</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$4.48</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A16- Adaptic Sterile Non-Adhering Dressing, 50/bx, ORDER SINGLES</Part_Description>
+    <Part_Number>1212-09706</Part_Number>
+    <Quantity>138</Quantity>
+    <Supplied_Total>$107.09</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A17- Bandaid, 1 inch,  ORDER 100 FOR A BOX</Part_Description>
+    <Part_Number>1122-14960</Part_Number>
+    <Quantity>1,409</Quantity>
+    <Supplied_Total>$39.45</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A18- Baby Wipes- For Fire Rehab Bag</Part_Description>
+    <Part_Number>PDIM233XT</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$4.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A19- Compressed Krinkle Gauze</Part_Description>
+    <Part_Number>1211-03160</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$22.90</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A20- Hot Pack (Extra @ A3) Order by 4's</Part_Description>
+    <Part_Number>MDS139008</Part_Number>
+    <Quantity>60</Quantity>
+    <Supplied_Total>$41.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A21- Cold Pack (Extra @ A06) Order by 4's</Part_Description>
+    <Part_Number>MDS137000</Part_Number>
+    <Quantity>142</Quantity>
+    <Supplied_Total>$70.01</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A22- Trauma Dressing (25/cs) Singles</Part_Description>
+    <Part_Number>1211-03020</Part_Number>
+    <Quantity>26</Quantity>
+    <Supplied_Total>$35.88</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A23- Olaes Bandage, Flat Pack, 4"</Part_Description>
+    <Part_Number>1211-06164</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$9.89</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A24- Hyfin Vent, Chest Seal, Twin Pack - You keep 2 as a pack</Part_Description>
+    <Part_Number>NAR10-0042</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$264.44</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A25- Combat Application Tourniquet (CAT)</Part_Description>
+    <Part_Number>TQ0001-BLK</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$118.85</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A26- Water-Jel, 8"x 18" (Burn Dressing, 8x18, 8in x 18in, Waterjel, Water-gel, Watergel) Singles</Part_Description>
+    <Part_Number>1521-81820</Part_Number>
+    <Quantity>19</Quantity>
+    <Supplied_Total>$279.11</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A27- Water-Jel, 12"x16" (Sterile Burn Face Mask, 12in x 16in, 12x16, Waterjel, Water-gel, Watergel) Singles</Part_Description>
+    <Part_Number>1522-21620</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$114.30</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A28- Water-Jel, 4"x16" (Burn Dressing, 4x16, 4in x 16in, Waterjel, Water-gel, Watergel) Singles</Part_Description>
+    <Part_Number>710416</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$93.51</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A29- Water-Jel, 4"x4" (Sterile Burn Dressings, 4in x 4in, 4x4, Waterjel, Water-gel, Watergel) Singles</Part_Description>
+    <Part_Number>710404</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$70.68</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A30- Burn Sheet, Disposable, 60inch x 90 inch</Part_Description>
+    <Part_Number>30061MS</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$22.45</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A33- DMV Ultra Contact Lens Suction Cup</Part_Description>
+    <Part_Number>442752</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$3.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A34- Foil Blanket  (Silver, Mylar) Order by 4's</Part_Description>
+    <Part_Number>12945</Part_Number>
+    <Quantity>19</Quantity>
+    <Supplied_Total>$8.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A35- 1" Tape, Hypo-Silk(Extra On Top OF Cabinet) Order by 4's</Part_Description>
+    <Part_Number>1110-14007</Part_Number>
+    <Quantity>66</Quantity>
+    <Supplied_Total>$69.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A36- 2" Tape, Hypo-Silk(Extra On Top Of Cabinet) Order by 2's</Part_Description>
+    <Part_Number>1110-14008</Part_Number>
+    <Quantity>27</Quantity>
+    <Supplied_Total>$45.28</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A37- Splint, SAM, Flex-All, 4inch, Singles</Part_Description>
+    <Part_Number>533-MS-SPLINT</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$105.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A38- Fibertect Polyester Wipe (Fentanyl Wipes) Singles</Part_Description>
+    <Part_Number>FBT-PAD-12X12</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$25.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A40- Sudecon Decontamination Wipes, Order by 3's</Part_Description>
+    <Part_Number>1063-19051</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$9.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A46- Shears, scissors</Part_Description>
+    <Part_Number>Pink Shears</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$35.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A50- Penlight, Pen Light</Part_Description>
+    <Part_Number>32762</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$10.92</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A52- Ring Cutter</Part_Description>
+    <Part_Number>IN960</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$17.25</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A54- Decompression Needle, 14ga x 3.25in, Singles</Part_Description>
+    <Part_Number>1640-12016</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$163.02</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A55- Hygea Sterile Saline Wipes- Order by 5's</Part_Description>
+    <Part_Number>1063-22370</Part_Number>
+    <Quantity>203</Quantity>
+    <Supplied_Total>$1,020.68</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A60- Ipad Screen Wipes</Part_Description>
+    <Part_Number>H01050</Part_Number>
+    <Quantity>80</Quantity>
+    <Supplied_Total>$12.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>A70- C-Collar, ADULT  (Cervical Collar, C Collar) On Top Of Cabinet (Extra @ Y14)</Part_Description>
+    <Part_Number>260281</Part_Number>
+    <Quantity>181</Quantity>
+    <Supplied_Total>$874.23</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B07- 14g Angio for needle cric(Extra @ B1)</Part_Description>
+    <Part_Number>1612-84110</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$34.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B09- IV Catheter, 18g Angio (Blood Control, 1 1/6inch Needle, Extra @ B3) Order by 5's</Part_Description>
+    <Part_Number>1612-54418</Part_Number>
+    <Quantity>143</Quantity>
+    <Supplied_Total>$326.04</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B10- IV Catheter, 20g Angio  (Blood Control, 1 1/6inch Needle, Extra @ B4) Order by 5's</Part_Description>
+    <Part_Number>1612-53420</Part_Number>
+    <Quantity>396</Quantity>
+    <Supplied_Total>$902.88</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B11- IV Catheter, 22g Angio  (Blood Control, 1inch Needle, Extra @ B5) Order by 2's</Part_Description>
+    <Part_Number>1612-52322</Part_Number>
+    <Quantity>85</Quantity>
+    <Supplied_Total>$193.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B12- IV Catheter, 24g Angio  (Blood Control, 3/4inch Needle, Extra @ B6) Order by 2's</Part_Description>
+    <Part_Number>1612-52224</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$36.48</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B13- Needle, 21g 1-1/2"  (Hypodermic, Safety Glide, IM) Order by 5's</Part_Description>
+    <Part_Number>62305917</Part_Number>
+    <Quantity>34</Quantity>
+    <Supplied_Total>$22.44</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B14- Needle, 25g 5/8"  (Hypodermic, Safety Glide, IM) Order by 5's</Part_Description>
+    <Part_Number>35305901</Part_Number>
+    <Quantity>44</Quantity>
+    <Supplied_Total>$28.73</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B15- Alcohol Prep Pads, ORDER BY BOX/100</Part_Description>
+    <Part_Number>1330-86100</Part_Number>
+    <Quantity>4,326</Quantity>
+    <Supplied_Total>$150.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B16- IV Tourniquet, Rolled, 1"x18" (Order in multiples of 25)</Part_Description>
+    <Part_Number>1841-14000</Part_Number>
+    <Quantity>822</Quantity>
+    <Supplied_Total>$92.06</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B17- Tegaderm Transparent Dressing, Order in multiples of 20</Part_Description>
+    <Part_Number>081624</Part_Number>
+    <Quantity>1,195</Quantity>
+    <Supplied_Total>$478.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B18- Saline Flush, 0.9% NaCl(Extra @ G35) Order by 10's</Part_Description>
+    <Part_Number>1920-61210</Part_Number>
+    <Quantity>715</Quantity>
+    <Supplied_Total>$357.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B19- IV Extension Set(Ext set, J loop, J-loop) Extra @ G31, Order by 10's</Part_Description>
+    <Part_Number>1714-10216</Part_Number>
+    <Quantity>466</Quantity>
+    <Supplied_Total>$876.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B21- Stopcock, 3-Way, Stop Cock, Order by 2's</Part_Description>
+    <Part_Number>35411</Part_Number>
+    <Quantity>49</Quantity>
+    <Supplied_Total>$70.07</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B22- Fluid Dispensing Connector, Green, Order by 2's</Part_Description>
+    <Part_Number>IT415080</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$13.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B23- IV Drip Set, Primary, 10 Drop, MACRO (Extra @ G30) Order by 5's</Part_Description>
+    <Part_Number>044-108308EA</Part_Number>
+    <Quantity>150</Quantity>
+    <Supplied_Total>$463.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B24- IV Drip Set, 60 Drop, MICRO (83 in, PP Y-Site, Sure- LOK, Needle Free Y-Site, Rotat Male Lure Lock)</Part_Description>
+    <Part_Number>1712-60830</Part_Number>
+    <Quantity>27</Quantity>
+    <Supplied_Total>$59.13</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B25- Mucosal Atomizer Device, w/ 3cc Syringe (MAD) Singles</Part_Description>
+    <Part_Number>2170-20100</Part_Number>
+    <Quantity>31</Quantity>
+    <Supplied_Total>$151.28</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B26- FILTER STRAW, Flexible Straw, Order by 5's</Part_Description>
+    <Part_Number>354150</Part_Number>
+    <Quantity>24</Quantity>
+    <Supplied_Total>$14.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B27- 1ml Syringe, Luer Lock, Order by 5's</Part_Description>
+    <Part_Number>26050</Part_Number>
+    <Quantity>78</Quantity>
+    <Supplied_Total>$13.73</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B28- 3ML Syringe, Luer-Lok w/ Vial Access Cannula, Order by 5's</Part_Description>
+    <Part_Number>353401</Part_Number>
+    <Quantity>190</Quantity>
+    <Supplied_Total>$76.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B29- 5ML Syringe, Luer-Lok w/ Vial Access Cannula, Order by 5's</Part_Description>
+    <Part_Number>1633-03403</Part_Number>
+    <Quantity>57</Quantity>
+    <Supplied_Total>$25.65</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B30- 10ML Syringe, Luer-lok w/ vial access cannula, Order by 5's</Part_Description>
+    <Part_Number>303405</Part_Number>
+    <Quantity>110</Quantity>
+    <Supplied_Total>$52.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B32- 30ml Syringe, Luer Lock, Order by 2's</Part_Description>
+    <Part_Number>IT30CCLL</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$2.88</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B33- 60ml Syringe, Luer Lock, Singles</Part_Description>
+    <Part_Number>IT60CCLL</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$3.10</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B34- EZ-IO 15mm Pink Needle w/ Stabilizer (EZIO) Singles</Part_Description>
+    <Part_Number>9018P-VC-005</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$1,330.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B35- EZ-IO 25mm Blue Needle w/ Stabilizer (EZIO) Singles</Part_Description>
+    <Part_Number>9001P-VC-005</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$1,862.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B36- EZ-IO 45mm Yellow Needle w/ Stabilizer (EZIO) Singles</Part_Description>
+    <Part_Number>9079P-VC-005</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$1,064.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B37- EZ-IO Needle Stabilizer (EZIO) Singles</Part_Description>
+    <Part_Number>9066-VC-005</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$140.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B38- Pressure Infuser (500ml, IO, EZIO) Singles</Part_Description>
+    <Part_Number>301-MTM305EA</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$183.26</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B39- EZ-IO Needle Drill (EZIO) Singles</Part_Description>
+    <Part_Number>9058</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$150.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B40- Hand-E Device, w/Retainer Strap, Singles</Part_Description>
+    <Part_Number>3176-07705</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$63.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B42- Arm Board Small, Armboard, 9"x3"</Part_Description>
+    <Part_Number>1830-91350</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$11.13</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B43- ChloraPrep One-Step, 3ml (Extra @ H29) Order by 2's</Part_Description>
+    <Part_Number>1330-30400</Part_Number>
+    <Quantity>70</Quantity>
+    <Supplied_Total>$220.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B44- Security Seals, Numbered, ORDER by 100's (Extra @ G40)</Part_Description>
+    <Part_Number>1880-15101</Part_Number>
+    <Quantity>1,708</Quantity>
+    <Supplied_Total>$261.32</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B45- Arm Board Large, Armboard 18"x3"</Part_Description>
+    <Part_Number>IV180D</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$5.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B46- 100ml Saline (IV solution, Sodium Chloride, 0.9%, NS) Order Singles</Part_Description>
+    <Part_Number>358437</Part_Number>
+    <Quantity>27</Quantity>
+    <Supplied_Total>$94.23</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B49- ZipLoc Bags, 1 gallon (Ziplock Bag)</Part_Description>
+    <Part_Number>999991</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$1.65</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B50- Medication Added Labels  (Med, Sticker) Order by 5's</Part_Description>
+    <Part_Number>HH506</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$1.46</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B51- Vial Access Cannula, Order by 4's</Part_Description>
+    <Part_Number>353367</Part_Number>
+    <Quantity>83</Quantity>
+    <Supplied_Total>$44.82</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B54- Carpuject Holder</Part_Description>
+    <Part_Number>D250</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$0.03</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B60- Battery, CR2032, Glucometer, Batteries, Order by 2's</Part_Description>
+    <Part_Number>170981</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$11.56</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B61- Lithium Battery, AA (AA Cell, Batteries, Lithium)FOR TEMP PUCKS ONLY!!! Order by 4's</Part_Description>
+    <Part_Number>Lithium AA Batteries</Part_Number>
+    <Quantity>68</Quantity>
+    <Supplied_Total>$68.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B62- Battery, AAA  (AAA Cell, Batteries) Order by 4's</Part_Description>
+    <Part_Number>BT24B</Part_Number>
+    <Quantity>107</Quantity>
+    <Supplied_Total>$160.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B64- Battery, AA  (AA Cell, Batteries) Order by 4's</Part_Description>
+    <Part_Number>BT15B</Part_Number>
+    <Quantity>284</Quantity>
+    <Supplied_Total>$426.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B65- Battery, 9 Volt  (9V, Batteries)</Part_Description>
+    <Part_Number>BT16B</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$61.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B66- Battery, C  (Size C Cell, Batteries) Order by 2's</Part_Description>
+    <Part_Number>BT14A</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$14.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>B67- Battery, D  (Size D Cell, Batteries)</Part_Description>
+    <Part_Number>BT13B</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$8.28</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C-Collar Bag, Cervical Collar Bag, Immobilization Bag, Blue</Part_Description>
+    <Part_Number>685800</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$218.97</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C01- Saline Bullets, Suction, Order by 4's</Part_Description>
+    <Part_Number>108-116bx</Part_Number>
+    <Quantity>29</Quantity>
+    <Supplied_Total>$15.81</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C02- 6FR PEDI Suction Catheter Kit, W/ Sterile Gloves, 6F, 6 F, 6 FR</Part_Description>
+    <Part_Number>18781</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$3.27</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C03- 8FR PEDI Suction Catheter Kit, W/ Sterile Gloves, 8F, 8 F, 8 FR</Part_Description>
+    <Part_Number>18782</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$2.18</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C04- 10FR Suction Catheter Kit, W/ Sterile Gloves, 10F, 10 FR, 10 F</Part_Description>
+    <Part_Number>18783</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$2.18</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C05- 12FR Suction Catheter Kit, W/ Sterile Gloves, 12F, 12 F, 12 FR</Part_Description>
+    <Part_Number>18784</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$5.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C06- 14FR Suction Catheter Kit, W/ Sterile Gloves, 14F, 14 F, 14 FR</Part_Description>
+    <Part_Number>18785</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$4.36</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C07- 16FR Suction Catheter Kit, W/ Sterile Gloves, 16F, 16 F, 16 FR</Part_Description>
+    <Part_Number>18786</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$4.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C08- 18FR Suction Catheter Kit, W/ Sterile Gloves, 18F, 18 F, 18 FR</Part_Description>
+    <Part_Number>18787</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.85</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C09- NPA, 14Fr  (Latex Free, 14F, 14 F, 14 FR) Extra @ D19</Part_Description>
+    <Part_Number>2021-14630</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$23.92</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C10- NPA, 16Fr  (Latex Free, 16F, 16 F, 16 FR) Extra @ D19</Part_Description>
+    <Part_Number>2021-14635</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$47.84</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C101- Magill Forceps, Adult, Large</Part_Description>
+    <Part_Number>400008</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$4.19</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C102- Bite Block (Bite Stick)</Part_Description>
+    <Part_Number>020010</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$3.45</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C103- Tongue Depressor, 6", Sterile</Part_Description>
+    <Part_Number>276-9004BX</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$0.13</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C104- Oxygen Cylinder Gaskets, O-Ring, oring, o ring</Part_Description>
+    <Part_Number>OT99</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$1.20</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C106- Oxygen Barb Adapter, Nipple/Nut, Xmas Tree, Swivel, Green, O2, Christmas Tree</Part_Description>
+    <Part_Number>11187</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$4.55</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C108- Oxygen Wrench, Small, With Chain  (For E Cylinders, Plastic, small O2 bottle, O2 Wrench, O2 Key, Oxygen Key)</Part_Description>
+    <Part_Number>553-1601</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$8.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C11- NPA, 18Fr  (Latex Free, 18F, 18 F, 18 FR) Extra @ D65</Part_Description>
+    <Part_Number>2021-14640</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$59.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C12- NPA, 20Fr  (Robertazzi style , 20F, 20 F, 20 FR) Extra @ D65</Part_Description>
+    <Part_Number>023120</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$20.82</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C13- NPA, 22Fr  (Robertazzi style, 22F, 22 F, 22 FR) Extra @ D65</Part_Description>
+    <Part_Number>023122</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$3.39</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C14- NPA, 24Fr  (Robertazzi style, 24F, 24 F, 24 FR) Extra @ D65</Part_Description>
+    <Part_Number>023124</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$24.29</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C15- NPA, 26Fr  (Robertazzi style, 26F, 26 F, 26 FR) Extra @ D65</Part_Description>
+    <Part_Number>023126</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$27.76</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C16- NPA, 28Fr  (Robertazzi style, 28F, 28 F, 28 FR) Extra @ D65</Part_Description>
+    <Part_Number>023128</Part_Number>
+    <Quantity>23</Quantity>
+    <Supplied_Total>$79.81</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C17- NPA, 30Fr  (Robertazzi style, 30F, 30 F, 30 FR) Extra @ D65</Part_Description>
+    <Part_Number>023130</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$27.76</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C18- NPA, 32Fr  (Robertazzi style, 32F, 32 F, 32 FR) Extra @ D65</Part_Description>
+    <Part_Number>023132</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$10.41</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C19- NPA, 34Fr  (Robertazzi style, 34F, 34 F, 34 FR) Extra @ D65</Part_Description>
+    <Part_Number>023134</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$6.94</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C20- NPA, 36Fr  (Robertazzi style, 36F, 36 F, 36 FR) Extra @ D65</Part_Description>
+    <Part_Number>023136</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$3.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C21- Lube (KY, 2.7gm, Water Soluble, Lubricating Jelly) Order by 8's</Part_Description>
+    <Part_Number>1340-27000</Part_Number>
+    <Quantity>426</Quantity>
+    <Supplied_Total>$39.19</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C22- PEEP Valve, 0-20cm, w/22mm Adapter</Part_Description>
+    <Part_Number>D4177</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$17.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C23- HEPA Filter (Bacterial/Viral Filter) Extra @ D48</Part_Description>
+    <Part_Number>2358-62160</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$49.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C24- Bougie, ADULT, ET Tube Introducer</Part_Description>
+    <Part_Number>2120-21282</Part_Number>
+    <Quantity>31</Quantity>
+    <Supplied_Total>$232.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C25- 6.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10260</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$16.11</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C26- 6.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10265</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$3.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C27- 7.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10270</Part_Number>
+    <Quantity>36</Quantity>
+    <Supplied_Total>$71.64</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C28- 7.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10275</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$7.96</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C29- 8.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10280</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$8.95</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C30- 8.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10285</Part_Number>
+    <Quantity>25</Quantity>
+    <Supplied_Total>$49.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C31- Adult ET Tube Holder, Blue/yellow</Part_Description>
+    <Part_Number>2130-42560</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$48.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C32- BVM Nebulizer Kit</Part_Description>
+    <Part_Number>812-BVMNEBKIT</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$14.10</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C33- GlideScope DirectView Mac S3 blade(Green Label, Glide scope)</Part_Description>
+    <Part_Number>0270-0932</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$451.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C33- i-Gel, Size 1, Neonates  (5-11 lbs OR 2.2-5kgs, igel, i gel)</Part_Description>
+    <Part_Number>2114-08201</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$16.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C34- GlideScope DirectView Mac S4 blade(Green Label, Glide scope)</Part_Description>
+    <Part_Number>0270-0933</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$369.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C34- i-Gel, Size 1.5, Infants  (11-25 lbs OR 5-11.4kgs, igel, i gel)</Part_Description>
+    <Part_Number>2114-08215</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$16.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C35- GlideScope Stylet (Glide scope)</Part_Description>
+    <Part_Number>0270-1005</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$188.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C36- GlideScope LoPro S3 blade (Blue Label, Glide scope)</Part_Description>
+    <Part_Number>0270-0938</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$82.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C36- i-Gel, Size 2.5, Large Pediatrics  (55-77 lbs OR 25-35kg, igel, i gel)</Part_Description>
+    <Part_Number>2114-08225</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$16.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C37- GlideScope LoPro S4 blade (Blue Label, Glide scope)</Part_Description>
+    <Part_Number>0270-0939</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$287.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C37- i-Gel, Size 3, SM Adult  (66-132lbs OR 30-60 kg, igel, i gel)</Part_Description>
+    <Part_Number>2114-87301</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$106.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C38- i-Gel, Size 4, MED Adult  (110-198lbs OR 50-90 kg, igel, i gel)</Part_Description>
+    <Part_Number>2114-87302</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$26.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C39- i-Gel, Size 5, LG Adult  (198+lbs OR 90+kg, igel, i gel)</Part_Description>
+    <Part_Number>2114-87303</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$79.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C40- Air-Q SP3G LMA Size 0, Preemie(&lt; 4lb/&lt; 2kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60005</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C41- Air-Q SP3G LMA Size 0.5, Neonatal (4-9lb/2-4kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60055</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C42- Air-Q SP3G LMA Size 1, Infant (9-15lb/4-7kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60105</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C43- Air-Q SP3G LMA Size 1.5, Sm. Child (15-37lb/7-17kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60155</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C44- Air-Q SP3G LMA Size 2, Lg. Child(37-66lb/17-30kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60205</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C45- Air-Q SP3G LMA Size 3, Sm. Adult(66-132lb/30-60kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60305</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$64.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C46- Air-Q SP3G LMA Size 4, Med. Adult(132-176lb/60-80kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60405</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$107.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C47- Air-Q SP3G LMA Size 5, Lg. Adult (&gt;176lb/&gt;80kg, airq, air q)</Part_Description>
+    <Part_Number>2114-60505</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$86.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C50- N95, Duckbill w/ Faceshield</Part_Description>
+    <Part_Number>29080</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$9.17</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C55- Hand Held Suction Kit (V-Vac)</Part_Description>
+    <Part_Number>590100</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$185.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C56- Hand Held Suction Refill (V-Vac)</Part_Description>
+    <Part_Number>590200</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$50.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C58- 14FR Inline Suction, Adult, T-Piece, 14F, 14 F, 14 FR</Part_Description>
+    <Part_Number>ok2205</Part_Number>
+    <Quantity>24</Quantity>
+    <Supplied_Total>$336.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C60- Oxygen Regulator, For Portables</Part_Description>
+    <Part_Number>CRAAREG8725B2D</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$57.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C70- Scalpel #10</Part_Description>
+    <Part_Number>372610</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$3.09</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C72- Disp. LED Laryngoscope Blade, Mac 2, Child</Part_Description>
+    <Part_Number>2142-10223</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.87</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C73- Disp. LED Laryngoscope Blade, Mac 3, MED Adult</Part_Description>
+    <Part_Number>2142-10233</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$6.57</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C74- Disp. LED Laryngoscope Blade, Mac 4, LG Adult</Part_Description>
+    <Part_Number>2142-10243</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$13.14</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C82- Disp. LED Laryngoscope Blade, Miller 2, Child</Part_Description>
+    <Part_Number>2142-10323</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$6.57</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C84- Disp. LED Laryngoscope Blade, Miller 4,  LG Adult</Part_Description>
+    <Part_Number>2142-10343</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.15</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C85- Reusable Laryngoscope Handle, Small (AA Battery)</Part_Description>
+    <Part_Number>020316</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$47.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C94- OPA, 80mm, Green, Size 3, SM Adult</Part_Description>
+    <Part_Number>2010-34080</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$0.78</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C95- OPA, 90mm, Yellow, Size 4, MED Adult</Part_Description>
+    <Part_Number>2010-34090</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$1.56</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C96- OPA, 100mm, Lavender or Red, Size 5, LG Adult</Part_Description>
+    <Part_Number>2010-34100</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$1.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>C97- OPA, 110mm, Orange or Blue, Size 6, XL Adult</Part_Description>
+    <Part_Number>2010-34110</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$0.78</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D01- CO2 Sampling Line, ET FilterLine Set, Adult/Pediatric  (Tube, ETCO2, Capno) Singles</Part_Description>
+    <Part_Number>301-5107ET</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$191.18</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D02- ETCO2 ADULT NC Sampling Line (Adult Capnocannula, CO2, Cannula) Extra @ Y14, order by 10's</Part_Description>
+    <Part_Number>8600-01297</Part_Number>
+    <Quantity>292</Quantity>
+    <Supplied_Total>$2,832.40</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D03- Nebulizer w/ Aerosol Mask, ADULT, Extra @ D85, order by 2's</Part_Description>
+    <Part_Number>301-202EA</Part_Number>
+    <Quantity>28</Quantity>
+    <Supplied_Total>$31.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D04- Nebulizer, ADULT, No Mask, Extra @ D87, order by 2's</Part_Description>
+    <Part_Number>412046</Part_Number>
+    <Quantity>26</Quantity>
+    <Supplied_Total>$45.76</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D05- NRB, ADULT (Non-Rebreather, non rebreather)Extra @ D80, order by 2's</Part_Description>
+    <Part_Number>HCS4640B</Part_Number>
+    <Quantity>48</Quantity>
+    <Supplied_Total>$65.90</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D06- NC, ADULT, Nasal Cannula, Extra @ D81, Order by 2's</Part_Description>
+    <Part_Number>HCS4514</Part_Number>
+    <Quantity>88</Quantity>
+    <Supplied_Total>$38.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D11- CPAP Full face mask, Pediatric, XS 10ea/bx (C Pap, Gopap, Go Pap, Go-Pap)</Part_Description>
+    <Part_Number>313-9527EA</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$76.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D12- CPAP Full face mask, SM Adult 10ea/cs (C Pap, Gopap, Go Pap, Go-Pap)</Part_Description>
+    <Part_Number>313-7054EA</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$74.70</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D13- Pedi CPAP Neb- FOR PEDI KIT</Part_Description>
+    <Part_Number>301-201EA</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$2.24</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D14- CPAP Fitting Card- Pedi CPAP Kit</Part_Description>
+    <Part_Number>CPAPFitCard</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D15- CPAP, Clear Adapter for Go-PAP Connection, XXS and XS Mask ONLY (C Pap, Gopap, Go Pap, Go-Pap)</Part_Description>
+    <Part_Number>313-5007EA</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$8.76</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D16- CPAP, Blue Adapter for Go-PAP Connection, XXS and XS masks ONLY (C Pap, Gopap, Go Pap, Go-Pap)</Part_Description>
+    <Part_Number>313-8184EA</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$3.78</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D17- CPAP GoPap Neb Connect- FOR PEDI KIT</Part_Description>
+    <Part_Number>313-011111EA</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$13.34</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D18- CPAP GoPap Generator ONLY- FOR PEDI KIT</Part_Description>
+    <Part_Number>2430-34600</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$64.26</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D25- CPAP Large Mask ONLY (C Pap, Gopap, Go Pap, Go-Pap)</Part_Description>
+    <Part_Number>313-7030EA</Part_Number>
+    <Quantity>18</Quantity>
+    <Supplied_Total>$440.28</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D28- CPAP w/neb-connect capno kit, medium mask  (GoPap, c pap, go pap, gopap)</Part_Description>
+    <Part_Number>670170-KIT</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$943.67</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D30- OB Kit Boxed With Scissors</Part_Description>
+    <Part_Number>444004</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$383.90</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D40- Wash Basin, Graphite, Rectangular, 6 quart Capacity</Part_Description>
+    <Part_Number>1072-80347</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.91</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D41- Suction Canister, 1200ml</Part_Description>
+    <Part_Number>2212-11200</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$15.84</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D50- ADULT BVM w/ manometer, peep, and hepa filter, Bag Valve Mask, Extra @ D90</Part_Description>
+    <Part_Number>2442-BVMPAD</Part_Number>
+    <Quantity>36</Quantity>
+    <Supplied_Total>$730.44</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D55- Suction DuCanto Catheter w/6ft tubing (tubing and Tonsil Tip)</Part_Description>
+    <Part_Number>2211-20006</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$180.18</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>D60- Emesis Bag (Vomit, Puke, Convenience) Order by 50's</Part_Description>
+    <Part_Number>1071-04712</Part_Number>
+    <Quantity>171</Quantity>
+    <Supplied_Total>$131.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E02- Auxiliary Power, Breakout Cable, X Series</Part_Description>
+    <Part_Number>8000-000903-01</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$102.41</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E04- 12 Lead Zoll Monitor Cable, EKG (ECG, V Lead Cable, AAMI)</Part_Description>
+    <Part_Number>2746-80483</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$451.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E05- 4 Lead Zoll Monitor Cable</Part_Description>
+    <Part_Number>8300-0803-01</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$856.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E07- Autopulse LifeBand</Part_Description>
+    <Part_Number>8700-0706-01</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$895.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E13- Razors, order by 3's</Part_Description>
+    <Part_Number>540047</Part_Number>
+    <Quantity>37</Quantity>
+    <Supplied_Total>$14.17</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E14- Nail Polish Remover for Finger Pulse Ox, order by 10's</Part_Description>
+    <Part_Number>279-1501BX</Part_Number>
+    <Quantity>53</Quantity>
+    <Supplied_Total>$5.46</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E15- Mastisol- Liquid Adhesive (For EKG patches) order by 3's</Part_Description>
+    <Part_Number>0523-48</Part_Number>
+    <Quantity>91</Quantity>
+    <Supplied_Total>$401.90</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E16- NIBP Tube Set, Dual Tube Connector, 8" (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>261321317</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E20- NiBP Hose, Dual Lumen Tubing Accessory, 10 ft (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>2613-00283</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$273.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E21- NiBP Cuff, 2 Tube Locking Connector, Size 10, Small Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>2615-21310</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$60.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E22- NiBP Cuff, 2 Tube Locking Connector, Size 11, Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>2615-21311</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$181.74</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E23- NiBP Cuff, 2 Tube Locking Connector, Size 12, Large Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>2615-21312</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$191.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E24- NiBP Cuff, 2 Tube Locking Connector, Size 13, Thigh (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>2615-21313</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$54.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E26- Glucometer, Assure Prism Black Kit w/ Foil Test Strips, Basic</Part_Description>
+    <Part_Number>670210-KIT</Part_Number>
+    <Quantity>24</Quantity>
+    <Supplied_Total>$988.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E30- Glucometer Lancets, 1=Box</Part_Description>
+    <Part_Number>E6255</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$338.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E31- Monitor Stat Padz, Adult  (Defibrillator, CPR, Quick Combo Pads, Zoll) EXTRA @ E100</Part_Description>
+    <Part_Number>8900-0400</Part_Number>
+    <Quantity>50</Quantity>
+    <Supplied_Total>$3,669.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E32- SPO2 ONLY, ADULT, M-LNCS ADTX SPO2 Disposable Sensor</Part_Description>
+    <Part_Number>2712-03911</Part_Number>
+    <Quantity>40</Quantity>
+    <Supplied_Total>$819.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E34- Masimo Rainbow SPO2/SPCO/SPMet, Adult, Reusable Sensor</Part_Description>
+    <Part_Number>2712-26963</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$4,195.03</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E41- AED, Zoll, Stat Padz ll, ADULT</Part_Description>
+    <Part_Number>230802</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$63.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E45- EKG Electrode, Adult  (Ambu BlueSensor R, EKG patches, ECG) Extra @ Y14, Order by 10's</Part_Description>
+    <Part_Number>230010</Part_Number>
+    <Quantity>456</Quantity>
+    <Supplied_Total>$1,504.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E50- Doppler Gel, CardioBeat, 60gm</Part_Description>
+    <Part_Number>1701021</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$13.52</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E52- Monitor EKG Paper, 80mm, With grid  (Zoll X Series, ECG) Order by 3's</Part_Description>
+    <Part_Number>2745-90080</Part_Number>
+    <Quantity>53</Quantity>
+    <Supplied_Total>$121.37</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E60- Manual BP Cuff, Size 10 SM Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>540004</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$118.20</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E61- Manual BP Cuff, Size 11, Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>540003</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$129.10</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E62- Manual BP Cuff, Size 12, LG Adult (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>540002</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$82.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E65- Stethoscope, Curaplex</Part_Description>
+    <Part_Number>36020</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>E65- Stethoscope, Littmann Classic II S.E. Adult</Part_Description>
+    <Part_Number>172190</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$133.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F02- 3.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10230</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$10.74</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F03- 3.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10235</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$21.48</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F04- 4.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10240</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$21.48</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F05- 4.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10245</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$7.16</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F10- 5.0 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10250</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$3.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F11- 5.5 ET Cuffed, W/stylet, ETT, Tube</Part_Description>
+    <Part_Number>2113-10255</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$25.06</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F12- Pediatric Tube Holder, Pink</Part_Description>
+    <Part_Number>020400</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$6.78</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F13- Bougie, Pediatric, ET Tube Introducer</Part_Description>
+    <Part_Number>2120-17010</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$80.34</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F14- Cric Connector 3.0 ET Uncuffed, ETT, Tube</Part_Description>
+    <Part_Number>2113-10330</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$8.97</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F15- NiBP Cuff, 2 Tube Locking Connector, Size 7, Infant (B/P, Cuff, Blood Pressure)</Part_Description>
+    <Part_Number>662160</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$87.87</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F24- Stethoscope, Pediatric</Part_Description>
+    <Part_Number>172113</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$170.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F30- EKG Electrode, Pediatric (ECG, EKG Patches, Zoll) Order by 3's</Part_Description>
+    <Part_Number>8900-0709</Part_Number>
+    <Quantity>45</Quantity>
+    <Supplied_Total>$43.07</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F31- Monitor Pedi-Padz, Pediatric Stat Padz  (Stat Pads, Zoll) Extra @ F110</Part_Description>
+    <Part_Number>8900-3000-01</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$573.84</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F33- $$$3-30kg SPCO Sensor(NOT FOR SPO2 Monitoring!!!!)Infant/Peds$$$</Part_Description>
+    <Part_Number>8000-0340</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$476.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F34- SPO2 ONLY, INFANT, M-LNCS Disposable Sensor, 3-20kg</Part_Description>
+    <Part_Number>2712-25120</Part_Number>
+    <Quantity>40</Quantity>
+    <Supplied_Total>$640.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F40- SPO2 ONLY, PEDIATRIC, M-LNCS Disposable Sensor, 10-50kg</Part_Description>
+    <Part_Number>2712-40171</Part_Number>
+    <Quantity>58</Quantity>
+    <Supplied_Total>$1,217.42</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F43- Bulb Syringe, Ear/Nose</Part_Description>
+    <Part_Number>044-AS00502SEA</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$8.72</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F44- NRB, INFANT  (Non-rebreather, non rebreather)</Part_Description>
+    <Part_Number>30058</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$10.14</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F45- Pedi Capno (Capnocannula, ETCO2)</Part_Description>
+    <Part_Number>301-5207F-SE</Part_Number>
+    <Quantity>34</Quantity>
+    <Supplied_Total>$261.46</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F46- NRB, PEDI(Non-rebreather, non rebreather)</Part_Description>
+    <Part_Number>533-MS-25058EA</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$27.04</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F50- Nebulizer Aerosol Mask, PEDIATRIC, Small Volume</Part_Description>
+    <Part_Number>301-203EA</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$11.83</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>F51- INFANT BVM w/ manometer, peep, and hepa filter, Bag Valve Mask</Part_Description>
+    <Part_Number>2442-BVMPIN</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$18.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>G20- Vacuum Splint, Arm Only, Medium</Part_Description>
+    <Part_Number>DL20002</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$900.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>G25- Vacuum Splint, Ankle/Wrist Only, Small</Part_Description>
+    <Part_Number>DL20001</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$549.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>G55- Vacuum Splint, Full Body MATTRESS ONLY, Adult</Part_Description>
+    <Part_Number>MT80002</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$3,000.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H10- Probe Covers For Welch Allyn Thermometers  (Temperature) 1=Small box of 25</Part_Description>
+    <Part_Number>2733-53175</Part_Number>
+    <Quantity>24</Quantity>
+    <Supplied_Total>$21.60</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H15- ADTEMP Thermometer Sheaths, NOT FOR WELCH ALLYN</Part_Description>
+    <Part_Number>400018</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$3.20</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H16- ADTEMP Thermometer, Digital Oral/Rectal, NOT WELCH ALLYN</Part_Description>
+    <Part_Number>066-413BK</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$29.96</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H18- Bedpan  (Fracture pan, Bed Pan)</Part_Description>
+    <Part_Number>721-H100-10EA</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$2.78</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H19- Urinal, Male, w/Cover</Part_Description>
+    <Part_Number>1072-23519</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$6.30</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H20- Property Bags (Belongings)</Part_Description>
+    <Part_Number>73251</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$13.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H21- Paper Bag  (17" X 12" X 7", Brown, Evidence)</Part_Description>
+    <Part_Number>1697833</Part_Number>
+    <Quantity>10</Quantity>
+    <Supplied_Total>$1.50</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H22- XD Cuff Restraints Full Kit</Part_Description>
+    <Part_Number>xd cuff</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$120.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H41- Biohazard Waste Bag, 14.5in x 19in, 1.25mil Gauge 1= 1 Roll</Part_Description>
+    <Part_Number>520-RD630RL</Part_Number>
+    <Quantity>31</Quantity>
+    <Supplied_Total>$0.74</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H43- Wall Mount cabinet for Lg Sharps</Part_Description>
+    <Part_Number>298516</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$39.40</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H45- Large Sharps Container, 5Q, Extra @ H08</Part_Description>
+    <Part_Number>298507SA</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$102.06</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H47- Small Sharps Container, 1 Quart (Extra H09)</Part_Description>
+    <Part_Number>298303</Part_Number>
+    <Quantity>14</Quantity>
+    <Supplied_Total>$82.46</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H50- Quick Warming Blankets (Extra @ H07)</Part_Description>
+    <Part_Number>3271-12207</Part_Number>
+    <Quantity>28</Quantity>
+    <Supplied_Total>$726.32</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H51- Mega Mover Chair</Part_Description>
+    <Part_Number>3246-95206</Part_Number>
+    <Quantity>27</Quantity>
+    <Supplied_Total>$399.33</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H52- Megamover Tarp, White-(2 total, Cot, Outside comp.) Extra @ Y14</Part_Description>
+    <Part_Number>3246-12345</Part_Number>
+    <Quantity>102</Quantity>
+    <Supplied_Total>$2,120.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>H53- Titan Tarp,Black-ON COT (Extra @ Y14)</Part_Description>
+    <Part_Number>3246-44110</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$781.08</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>I12- Emergency Response Guide (ERG, Hazmat, Haz-Mat)</Part_Description>
+    <Part_Number>3720-49360</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$17.98</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>I16- Boxlight, Orange, With Charger</Part_Description>
+    <Part_Number>484430</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$209.40</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>I18- Backboard Strap, 2 Piece (Total of 3 On Each Backboard, Total of 3 in C-Spine Bag)</Part_Description>
+    <Part_Number>506023B</Part_Number>
+    <Quantity>31</Quantity>
+    <Supplied_Total>$337.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>I41- Clipboard, A-Holder Aluminum, Antimicrobial, 8 1/2inch x 15inch x 3/8inch</Part_Description>
+    <Part_Number>488517</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$37.79</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J01- N95, 3M, 8210</Part_Description>
+    <Part_Number>1031-82100</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.59</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J02- N95, 3M, 1860 Regular</Part_Description>
+    <Part_Number>291860</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$1.35</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J03- N95, Duckbill, SMALL</Part_Description>
+    <Part_Number>299174</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$4.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J04- N95, Duckbill, REGULAR</Part_Description>
+    <Part_Number>299170</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$4.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J05- N95, 3M, 1860 Small (Extra @ S1)</Part_Description>
+    <Part_Number>291860S</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.58</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J08- Surgical Face Mask With Ear Loop (Extra @ Q1, Q2, Q3, Q4, R3, Y2)</Part_Description>
+    <Part_Number>R5039</Part_Number>
+    <Quantity>18</Quantity>
+    <Supplied_Total>$1.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J10- N95, Moldex, 1510, X-SMALL</Part_Description>
+    <Part_Number>578-1510BX</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$4.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J11- N95, Moldex, 1511, SMALL (Extra @ S1, S2)</Part_Description>
+    <Part_Number>1511</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$4.64</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J12- N95, Moldex, 1512, MEDIUM (Extra @ S1, S2)</Part_Description>
+    <Part_Number>1512</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$2.32</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J13- N95, Moldex, 1513, LARGE (Extra @ S1, S2)</Part_Description>
+    <Part_Number>1513</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$3.48</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J14- N95, Shield Pro</Part_Description>
+    <Part_Number>IC7880</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$1.63</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J20- Gloves, XSM, X-Small (Extra @ T3)</Part_Description>
+    <Part_Number>1015-47150</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$123.09</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J21- Gloves, SM, Small (Extra @ T3)</Part_Description>
+    <Part_Number>1015-47151</Part_Number>
+    <Quantity>27</Quantity>
+    <Supplied_Total>$321.03</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J22- Gloves, MED, Medium (Extra @ T4)</Part_Description>
+    <Part_Number>1015-47152</Part_Number>
+    <Quantity>119</Quantity>
+    <Supplied_Total>$1,331.61</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J23- Gloves, LG, Large (Extra @ T1)</Part_Description>
+    <Part_Number>1015-47153</Part_Number>
+    <Quantity>103</Quantity>
+    <Supplied_Total>$1,152.57</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J24- Gloves, XL, X-Large (Extra @ T2)</Part_Description>
+    <Part_Number>1015-47154</Part_Number>
+    <Quantity>76</Quantity>
+    <Supplied_Total>$850.44</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J25- Gloves, 2XL, XXL, XX-Large (Extra @ T3)</Part_Description>
+    <Part_Number>1015-47155</Part_Number>
+    <Quantity>20</Quantity>
+    <Supplied_Total>$237.80</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J27- Spit Hood</Part_Description>
+    <Part_Number>Spit Hood</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$48.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J30- Boot Cover, Universal, Non-skid- Pair</Part_Description>
+    <Part_Number>R5037</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$1.04</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J32- Safety Glasses, Clear</Part_Description>
+    <Part_Number>1022-25679</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$19.56</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J34- Safety Glasses, Nemesis, Tinted</Part_Description>
+    <Part_Number>25688</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$13.17</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J36- Safety Glasses- READERS +1.5</Part_Description>
+    <Part_Number>1022-28615</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$12.79</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J37- Safety Glasses- READERS +2.0</Part_Description>
+    <Part_Number>1022-28620</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$12.79</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J40- Earplugs  (SparkPlugs With Cord, Noise Reduction, Ear Plugs)</Part_Description>
+    <Part_Number>486654</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$2.49</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J50- Body Bag, Heavy Duty, Black</Part_Description>
+    <Part_Number>B2195</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$167.97</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J51- 3M Cartridge Hard Filter, 7093</Part_Description>
+    <Part_Number>7093</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J52- 3M p100 2091 filter, pink (Extra @ R4)</Part_Description>
+    <Part_Number>1035-02091</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$62.27</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J53- P100 Mask Small- NO FILTERS (Extra @ R4)</Part_Description>
+    <Part_Number>P100SML</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J54- P100 Mask Medium- NO FILTERS (Extra @ R4)</Part_Description>
+    <Part_Number>P100MDM</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>J56- Body Bag, White</Part_Description>
+    <Part_Number>533-MS-BOD100EA</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$175.12</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Quick Litter Lite Stretcher, RTF Bag, 74"x27"</Part_Description>
+    <Part_Number>3246-50469</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$65.94</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>R03- Hospital Scrubs</Part_Description>
+    <Part_Number>SCRUBS 1000</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Rx- Epi 1:10,000 1Mg/10Ml</Part_Description>
+    <Part_Number>Hursh Epi 1:10,000</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$7.26</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Rx01- 500ml Saline (IV solution, Sodium Chloride, 0.9%, NS)</Part_Description>
+    <Part_Number>601323</Part_Number>
+    <Quantity>183</Quantity>
+    <Supplied_Total>$960.75</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Rx02- Drinking Water- SMALL BOTTLE ONLY FOR Tylenol/Motrin Admin- NOT FIRE REHAB</Part_Description>
+    <Part_Number>Small water bottle</Part_Number>
+    <Quantity>5</Quantity>
+    <Supplied_Total>$0.84</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Stair Chair Straps</Part_Description>
+    <Part_Number>3230-200012</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$88.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>U08- Red G3 Breather Stat Pack, First In Bag</Part_Description>
+    <Part_Number>2522-00818</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$330.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>U08- Statpack, G3 Perfusion Medic Backpack, Red - Old style for Capt461</Part_Description>
+    <Part_Number>2521-00518</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$257.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>V06- Tyvek 2XL (tyveck, tyvec, bed bug, suit)</Part_Description>
+    <Part_Number>TY127S2XL</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$33.92</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>V06- Tyvek Large (tyveck, tyvec, bed bug, suit)</Part_Description>
+    <Part_Number>TY127SLG</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$46.32</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>V06- Tyvek XL (tyveck, tyvec, bed bug, suit)</Part_Description>
+    <Part_Number>TY127SXLG</Part_Number>
+    <Quantity>3</Quantity>
+    <Supplied_Total>$25.44</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>W08- Bottled Water, For Consumption</Part_Description>
+    <Part_Number>Water purchased at menards</Part_Number>
+    <Quantity>34</Quantity>
+    <Supplied_Total>$68.00</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>X1- Backboard ONLY, Adult (Extra @ Y1)</Part_Description>
+    <Part_Number>3133-21302</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$1,520.56</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>XD Cuff Ankle Restraints (Green)</Part_Description>
+    <Part_Number>REF113</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$59.95</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>XD Cuff Clip Anchor - 4 pk (Ref114)</Part_Description>
+    <Part_Number>114</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$13.99</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>XD Cuff Wrist Restraints (Blue)</Part_Description>
+    <Part_Number>REF112</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$59.95</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description>Y07, Y08- Papoose Board ONLY, Infant/Pediatric</Part_Description>
+    <Part_Number>36111</Part_Number>
+    <Quantity>1</Quantity>
+    <Supplied_Total>$133.33</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+    <Part_Description />
+    <Part_Number />
+    <Quantity />
+    <Supplied_Total>$62,663.23</Supplied_Total>
+  </Medical_x0020_Supplies-_x0020_Main_x0020_Supply>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>RX- Acetaminophen, 500mg, 2 Caplets per pack (1000mg/bag and 1000mg/drawer)</Part_Description>
+    <Part_Number>TylenolCaplet</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$6.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Adenocard 12Mg/4Ml</Part_Description>
+    <Part_Number>HurshAdeno 12MG</Part_Number>
+    <Quantity>15</Quantity>
+    <Supplied_Total>$210.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Adenocard 6Mg/1Ml</Part_Description>
+    <Part_Number>Hursh Aden6MG</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$23.87</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Albuterol</Part_Description>
+    <Part_Number>HurshAlbuterol</Part_Number>
+    <Quantity>130</Quantity>
+    <Supplied_Total>$16.90</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- ASA Pack</Part_Description>
+    <Part_Number>HurshASA</Part_Number>
+    <Quantity>71</Quantity>
+    <Supplied_Total>$63.90</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Ativan 2Mg/1Ml</Part_Description>
+    <Part_Number>Hursh Ativan</Part_Number>
+    <Quantity>34</Quantity>
+    <Supplied_Total>$23.46</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Atropine 1Mg/10Ml</Part_Description>
+    <Part_Number>Hursh Atropine</Part_Number>
+    <Quantity>17</Quantity>
+    <Supplied_Total>$131.41</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Atrovent</Part_Description>
+    <Part_Number>Hursh Atrovent</Part_Number>
+    <Quantity>118</Quantity>
+    <Supplied_Total>$27.14</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Benadryl 50Mg/1Ml</Part_Description>
+    <Part_Number>Hursh Benadryl</Part_Number>
+    <Quantity>15</Quantity>
+    <Supplied_Total>$12.45</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Calcium Gluconate 100mg/ml @ 10ml/Vial (1000mg/Vial)</Part_Description>
+    <Part_Number>Hursh Calc Gluconate</Part_Number>
+    <Quantity>8</Quantity>
+    <Supplied_Total>$144.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Cardizem 25Mg/5Ml</Part_Description>
+    <Part_Number>Hursh Cardizem</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$66.66</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Children's Ibuprofen 100mg/5ml</Part_Description>
+    <Part_Number>30043308</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$60.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Childrens Tylenol</Part_Description>
+    <Part_Number>Tylenol Hursh</Part_Number>
+    <Quantity>9</Quantity>
+    <Supplied_Total>$27.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- D10 250ML</Part_Description>
+    <Part_Number>Hirsh D10</Part_Number>
+    <Quantity>24</Quantity>
+    <Supplied_Total>$88.32</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Decadron (Dexamethasone) 10mg/ml @ 1ml/Vial</Part_Description>
+    <Part_Number>Hursh Decadron</Part_Number>
+    <Quantity>38</Quantity>
+    <Supplied_Total>$152.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Dilaudid 2Mg/Ml (Hydromorphone)</Part_Description>
+    <Part_Number>Hursh Dilaudid</Part_Number>
+    <Quantity>36</Quantity>
+    <Supplied_Total>$78.84</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Epi 1:1,000</Part_Description>
+    <Part_Number>Hursh Epi 1:1000</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$211.68</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Epi 1:10,000 1Mg/10Ml</Part_Description>
+    <Part_Number>Hursh Epi 1:10,000</Part_Number>
+    <Quantity>82</Quantity>
+    <Supplied_Total>$595.32</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Etomidate 20Mg/10Ml (Amidate)</Part_Description>
+    <Part_Number>Hursh Etomidate 20</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$45.36</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Fentanyl 100mcg/2ML</Part_Description>
+    <Part_Number>Hursh Fentanyl</Part_Number>
+    <Quantity>157</Quantity>
+    <Supplied_Total>$274.75</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Glucagon 1Mg</Part_Description>
+    <Part_Number>Hursh Glucagon</Part_Number>
+    <Quantity>7</Quantity>
+    <Supplied_Total>$967.12</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Glutose (Oral)</Part_Description>
+    <Part_Number>Hursh transend</Part_Number>
+    <Quantity>28</Quantity>
+    <Supplied_Total>$45.36</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Haldol 5Mg/1Ml</Part_Description>
+    <Part_Number>Hirsh Haldol</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$9.36</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Ibuprofen, 200mg, 2 Caplets per pack (800mg/bag and 800mg/drawer)</Part_Description>
+    <Part_Number>IbuporfenTablet</Part_Number>
+    <Quantity>4</Quantity>
+    <Supplied_Total>$2.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Ketamine 500mg/10ml</Part_Description>
+    <Part_Number>Ketamine1250</Part_Number>
+    <Quantity>18</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Ketamine 500mg/5ml</Part_Description>
+    <Part_Number>Hursh Ketamine IM</Part_Number>
+    <Quantity>21</Quantity>
+    <Supplied_Total>$210.00</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Lidocaine 2% 100Mg/5Ml</Part_Description>
+    <Part_Number>Hursh Lido</Part_Number>
+    <Quantity>26</Quantity>
+    <Supplied_Total>$242.06</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Magnesium Sulfate 5G/10Ml</Part_Description>
+    <Part_Number>Hursh Mag 5G</Part_Number>
+    <Quantity>13</Quantity>
+    <Supplied_Total>$21.84</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Narcan 2Mg/2Ml</Part_Description>
+    <Part_Number>Hursh Narcan</Part_Number>
+    <Quantity>43</Quantity>
+    <Supplied_Total>$1,589.28</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Nitrostat Tablets 25/bottle</Part_Description>
+    <Part_Number>Hursh Nitro</Part_Number>
+    <Quantity>6</Quantity>
+    <Supplied_Total>$39.90</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Oral Zofran - ODT</Part_Description>
+    <Part_Number>Hursh Zofran ODT</Part_Number>
+    <Quantity>88</Quantity>
+    <Supplied_Total>$24.64</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Racemic Epi</Part_Description>
+    <Part_Number>Hursh Racemic</Part_Number>
+    <Quantity>11</Quantity>
+    <Supplied_Total>$12.87</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Rocuronium 100Mg/10Ml</Part_Description>
+    <Part_Number>Hursh Roc</Part_Number>
+    <Quantity>17</Quantity>
+    <Supplied_Total>$76.16</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Sodium Bicarbonate 50Meq/50Ml</Part_Description>
+    <Part_Number>Hursh Bicarb</Part_Number>
+    <Quantity>12</Quantity>
+    <Supplied_Total>$146.52</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Succinylcholine 200Mg/10Ml</Part_Description>
+    <Part_Number>Hursh Succ</Part_Number>
+    <Quantity>18</Quantity>
+    <Supplied_Total>$115.74</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Toradol (Ketorolac) 30mg/ml @ 1ml</Part_Description>
+    <Part_Number>Hursh Gordon</Part_Number>
+    <Quantity>59</Quantity>
+    <Supplied_Total>$205.91</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- TXA 1G/10Ml</Part_Description>
+    <Part_Number>Hursh TXA</Part_Number>
+    <Quantity>16</Quantity>
+    <Supplied_Total>$77.28</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Tylenol 4oz 160Mg/ml, Liquid</Part_Description>
+    <Part_Number>1958-00</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$6.78</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Versed 5Mg/1Ml (Midazolam)</Part_Description>
+    <Part_Number>Hursh Versed</Part_Number>
+    <Quantity>22</Quantity>
+    <Supplied_Total>$29.92</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description>Rx- Zofran 4Mg/2Ml</Part_Description>
+    <Part_Number>Hursh Zofran</Part_Number>
+    <Quantity>244</Quantity>
+    <Supplied_Total>$100.04</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+    <Part_Description />
+    <Part_Number />
+    <Quantity />
+    <Supplied_Total>$6,181.84</Supplied_Total>
+  </Medication_x0020_Cabinet_x0020__x0040__x0020_Medic_x0020_2>
+  <Station_x0020_7_x0020_-_x0020_Medical_x0020_Equipment_x0020_Supply_x0020_Cabinet>
+    <Part_Description>TEST TEST TEST</Part_Description>
+    <Part_Number>TEST TEST TEST</Part_Number>
+    <Quantity>2</Quantity>
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Station_x0020_7_x0020_-_x0020_Medical_x0020_Equipment_x0020_Supply_x0020_Cabinet>
+  <Station_x0020_7_x0020_-_x0020_Medical_x0020_Equipment_x0020_Supply_x0020_Cabinet>
+    <Part_Description />
+    <Part_Number />
+    <Quantity />
+    <Supplied_Total>$0.00</Supplied_Total>
+  </Station_x0020_7_x0020_-_x0020_Medical_x0020_Equipment_x0020_Supply_x0020_Cabinet>
+</Detail></Reports>

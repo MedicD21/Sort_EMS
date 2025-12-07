@@ -109,6 +109,7 @@ export default function ItemManagementPage() {
 
     // Ordering Information
     minimum_order_quantity: "",
+    max_reorder_quantity_per_station: "",
     order_unit: "",
     lead_time_days: "",
     preferred_vendor: "",
@@ -164,6 +165,8 @@ export default function ItemManagementPage() {
         supplier_website: item.supplier_website || "",
         supplier_account_number: item.supplier_account_number || "",
         minimum_order_quantity: item.minimum_order_quantity?.toString() || "",
+        max_reorder_quantity_per_station:
+          item.max_reorder_quantity_per_station?.toString() || "",
         order_unit: item.order_unit || "",
         lead_time_days: item.lead_time_days?.toString() || "",
         preferred_vendor: item.preferred_vendor || "",
@@ -193,6 +196,7 @@ export default function ItemManagementPage() {
         supplier_website: "",
         supplier_account_number: "",
         minimum_order_quantity: "",
+        max_reorder_quantity_per_station: "",
         order_unit: "",
         lead_time_days: "",
         preferred_vendor: "",
@@ -241,6 +245,10 @@ export default function ItemManagementPage() {
         minimum_order_quantity: formData.minimum_order_quantity
           ? parseInt(formData.minimum_order_quantity)
           : undefined,
+        max_reorder_quantity_per_station:
+          formData.max_reorder_quantity_per_station
+            ? parseInt(formData.max_reorder_quantity_per_station)
+            : undefined,
         order_unit: formData.order_unit || undefined,
         lead_time_days: formData.lead_time_days
           ? parseInt(formData.lead_time_days)
@@ -1079,6 +1087,24 @@ export default function ItemManagementPage() {
                     });
                   }}
                   inputProps={{ pattern: "[0-9]*" }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Max Reorder Qty Per Station"
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.max_reorder_quantity_per_station}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "");
+                    setFormData({
+                      ...formData,
+                      max_reorder_quantity_per_station: val,
+                    });
+                  }}
+                  inputProps={{ pattern: "[0-9]*" }}
+                  helperText="Limits suggested reorder quantity per station"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>

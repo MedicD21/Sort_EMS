@@ -30,6 +30,7 @@ import {
   List,
   Card,
   CardContent,
+  Link,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -39,6 +40,8 @@ import {
   Receipt as ReceiptIcon,
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
+  TrackChanges as TrackingIcon,
+  OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -51,16 +54,24 @@ import {
   locationsApi,
   type Location as LocationType,
   type ReceiveOrderItem,
+  type TrackingUpdate,
 } from "../services/apiService";
 
-type OrderStatus = "pending" | "ordered" | "partial" | "received" | "cancelled";
+type OrderStatus =
+  | "pending"
+  | "ordered"
+  | "shipped"
+  | "partial"
+  | "received"
+  | "cancelled";
 
 const statusColors: Record<
   OrderStatus,
-  "warning" | "info" | "success" | "error" | "default"
+  "warning" | "info" | "success" | "error" | "default" | "primary"
 > = {
   pending: "warning",
   ordered: "info",
+  shipped: "primary",
   partial: "default",
   received: "success",
   cancelled: "error",
@@ -69,10 +80,21 @@ const statusColors: Record<
 const statusLabels: Record<OrderStatus, string> = {
   pending: "Pending",
   ordered: "Ordered",
+  shipped: "Shipped",
   partial: "Partial",
   received: "Received",
   cancelled: "Cancelled",
 };
+
+const carrierOptions = [
+  { value: "ups", label: "UPS" },
+  { value: "fedex", label: "FedEx" },
+  { value: "usps", label: "USPS" },
+  { value: "dhl", label: "DHL" },
+  { value: "amazon", label: "Amazon" },
+  { value: "ontrac", label: "OnTrac" },
+  { value: "other", label: "Other" },
+];
 
 interface OrderItemEntry {
   item: Item | null;
@@ -90,6 +112,7 @@ const PurchaseOrdersPage = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [receiveDialogOpen, setReceiveDialogOpen] = useState(false);
+  const [trackingDialogOpen, setTrackingDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PurchaseOrder | null>(
     null
   );
@@ -112,6 +135,13 @@ const PurchaseOrdersPage = () => {
       locationId: string;
     }>
   >([]);
+
+  // Tracking form state
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [trackingCarrier, setTrackingCarrier] = useState<string>("");
+  const [trackingCarrierOther, setTrackingCarrierOther] = useState("");
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [shippingNotes, setShippingNotes] = useState("");
 
   // Snackbar
   const [snackbar, setSnackbar] = useState<{
@@ -220,6 +250,28 @@ const PurchaseOrdersPage = () => {
       setSnackbar({
         open: true,
         message: error.message || "Failed to receive items",
+        severity: "error",
+      });
+    },
+  });
+
+  const trackingMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: TrackingUpdate }) =>
+      ordersApi.updateTracking(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
+      setSnackbar({
+        open: true,
+        message: "Tracking information updated",
+        severity: "success",
+      });
+      setTrackingDialogOpen(false);
+      setSelectedOrder(null);
+    },
+    onError: (error: Error) => {
+      setSnackbar({
+        open: true,
+        message: error.message || "Failed to update tracking",
         severity: "error",
       });
     },
@@ -350,6 +402,32 @@ const PurchaseOrdersPage = () => {
       }));
     setReceiveItems(itemsToReceive);
     setReceiveDialogOpen(true);
+  };
+
+  const handleOpenTracking = (order: PurchaseOrder) => {
+    setSelectedOrder(order);
+    // Initialize tracking form with existing values
+    setTrackingNumber(order.tracking_number || "");
+    setTrackingCarrier(order.carrier || "");
+    setTrackingCarrierOther(order.carrier_other || "");
+    setTrackingUrl(order.tracking_url || "");
+    setShippingNotes(order.shipping_notes || "");
+    setTrackingDialogOpen(true);
+  };
+
+  const handleTrackingSubmit = () => {
+    if (!selectedOrder) return;
+
+    const data: TrackingUpdate = {
+      tracking_number: trackingNumber || undefined,
+      carrier: (trackingCarrier as TrackingUpdate["carrier"]) || undefined,
+      carrier_other:
+        trackingCarrier === "other" ? trackingCarrierOther : undefined,
+      tracking_url: trackingUrl || undefined,
+      shipping_notes: shippingNotes || undefined,
+    };
+
+    trackingMutation.mutate({ id: selectedOrder.id, data });
   };
 
   const handleReceiveSubmit = () => {
@@ -498,6 +576,7 @@ const PurchaseOrdersPage = () => {
               <TableCell>PO Number</TableCell>
               <TableCell>Vendor</TableCell>
               <TableCell>Status</TableCell>
+              <TableCell>Tracking</TableCell>
               <TableCell>Order Date</TableCell>
               <TableCell>Expected Delivery</TableCell>
               <TableCell align="right">Items</TableCell>
@@ -508,13 +587,13 @@ const PurchaseOrdersPage = () => {
           <TableBody>
             {ordersLoading ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : filteredOrders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={9} align="center">
                   No purchase orders found
                 </TableCell>
               </TableRow>
@@ -533,6 +612,52 @@ const PurchaseOrdersPage = () => {
                       color={statusColors[order.status as OrderStatus]}
                       size="small"
                     />
+                  </TableCell>
+                  <TableCell>
+                    {order.tracking_number ? (
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                      >
+                        {order.tracking_link ? (
+                          <Link
+                            href={order.tracking_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                            }}
+                          >
+                            {order.tracking_number}
+                            <OpenInNewIcon
+                              fontSize="small"
+                              sx={{ fontSize: 14 }}
+                            />
+                          </Link>
+                        ) : (
+                          <Typography variant="body2">
+                            {order.tracking_number}
+                          </Typography>
+                        )}
+                        <Chip
+                          label={
+                            carrierOptions.find(
+                              (c) => c.value === order.carrier
+                            )?.label ||
+                            order.carrier_other ||
+                            ""
+                          }
+                          size="small"
+                          variant="outlined"
+                          sx={{ ml: 0.5, height: 20, fontSize: "0.7rem" }}
+                        />
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        —
+                      </Typography>
+                    )}
                   </TableCell>
                   <TableCell>{formatDate(order.order_date)}</TableCell>
                   <TableCell>
@@ -553,6 +678,18 @@ const PurchaseOrdersPage = () => {
                         <ViewIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
+                    {(order.status === "ordered" ||
+                      order.status === "shipped") && (
+                      <Tooltip title="Add/Edit Tracking">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={() => handleOpenTracking(order)}
+                        >
+                          <TrackingIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
                     {order.status === "pending" && (
                       <Tooltip title="Mark as Ordered">
                         <IconButton
@@ -565,6 +702,7 @@ const PurchaseOrdersPage = () => {
                       </Tooltip>
                     )}
                     {(order.status === "ordered" ||
+                      order.status === "shipped" ||
                       order.status === "partial") && (
                       <Tooltip title="Receive Items">
                         <IconButton
@@ -806,6 +944,79 @@ const PurchaseOrdersPage = () => {
                 </Grid>
               </Grid>
 
+              {/* Tracking Information Section */}
+              {(selectedOrder.tracking_number ||
+                selectedOrder.status === "shipped") && (
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 2, mb: 3, bgcolor: "action.hover" }}
+                >
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <TrackingIcon /> Tracking Information
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Tracking Number
+                      </Typography>
+                      {selectedOrder.tracking_link ? (
+                        <Link
+                          href={selectedOrder.tracking_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          {selectedOrder.tracking_number || "—"}
+                          <OpenInNewIcon fontSize="small" />
+                        </Link>
+                      ) : (
+                        <Typography>
+                          {selectedOrder.tracking_number || "—"}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="text.secondary">
+                        Carrier
+                      </Typography>
+                      <Typography>
+                        {carrierOptions.find(
+                          (c) => c.value === selectedOrder.carrier
+                        )?.label ||
+                          selectedOrder.carrier_other ||
+                          "—"}
+                      </Typography>
+                    </Grid>
+                    {selectedOrder.shipped_date && (
+                      <Grid item xs={6}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Shipped Date
+                        </Typography>
+                        <Typography>
+                          {formatDate(selectedOrder.shipped_date)}
+                        </Typography>
+                      </Grid>
+                    )}
+                    {selectedOrder.shipping_notes && (
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                          Shipping Notes
+                        </Typography>
+                        <Typography>{selectedOrder.shipping_notes}</Typography>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Paper>
+              )}
+
               <Typography variant="h6" gutterBottom>
                 Items
               </Typography>
@@ -968,6 +1179,115 @@ const PurchaseOrdersPage = () => {
             disabled={receiveMutation.isPending || receiveItems.length === 0}
           >
             {receiveMutation.isPending ? "Processing..." : "Receive Items"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Tracking Dialog */}
+      <Dialog
+        open={trackingDialogOpen}
+        onClose={() => setTrackingDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          Tracking Information - {selectedOrder?.po_number}
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ pt: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Tracking Number"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="Enter tracking number"
+                />
+              </Grid>
+              <Grid item xs={trackingCarrier === "other" ? 6 : 12}>
+                <FormControl fullWidth>
+                  <InputLabel>Carrier</InputLabel>
+                  <Select
+                    value={trackingCarrier}
+                    label="Carrier"
+                    onChange={(e) => setTrackingCarrier(e.target.value)}
+                  >
+                    <MenuItem value="">
+                      <em>Select carrier</em>
+                    </MenuItem>
+                    {carrierOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              {trackingCarrier === "other" && (
+                <Grid item xs={6}>
+                  <TextField
+                    fullWidth
+                    label="Carrier Name"
+                    value={trackingCarrierOther}
+                    onChange={(e) => setTrackingCarrierOther(e.target.value)}
+                    placeholder="Enter carrier name"
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Custom Tracking URL (optional)"
+                  value={trackingUrl}
+                  onChange={(e) => setTrackingUrl(e.target.value)}
+                  placeholder="https://..."
+                  helperText="Leave blank to use carrier's default tracking page"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Shipping Notes"
+                  value={shippingNotes}
+                  onChange={(e) => setShippingNotes(e.target.value)}
+                  placeholder="Any additional notes about the shipment..."
+                />
+              </Grid>
+            </Grid>
+
+            {selectedOrder?.tracking_link && (
+              <Box
+                sx={{ mt: 2, p: 2, bgcolor: "action.hover", borderRadius: 1 }}
+              >
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Current Tracking Link:
+                </Typography>
+                <Link
+                  href={selectedOrder.tracking_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                >
+                  {selectedOrder.tracking_link}
+                  <OpenInNewIcon fontSize="small" />
+                </Link>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setTrackingDialogOpen(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleTrackingSubmit}
+            disabled={trackingMutation.isPending}
+            startIcon={<TrackingIcon />}
+          >
+            {trackingMutation.isPending ? "Saving..." : "Save Tracking"}
           </Button>
         </DialogActions>
       </Dialog>

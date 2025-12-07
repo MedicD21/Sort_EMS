@@ -46,6 +46,7 @@ export interface Item {
   description?: string;
   sku: string;
   category?: string;
+  category_id?: string;
   category_name?: string;
   unit_of_measure: string;
   unit_cost?: number;
@@ -59,6 +60,28 @@ export interface Item {
   expiration_date?: string;
   expiring_soon_count?: number;
   expired_count?: number;
+  // Supplier info
+  supplier_name?: string;
+  supplier_contact?: string;
+  supplier_email?: string;
+  supplier_phone?: string;
+  supplier_website?: string;
+  supplier_account_number?: string;
+  // Ordering info
+  minimum_order_quantity?: number;
+  max_reorder_quantity_per_station?: number;
+  order_unit?: string;
+  lead_time_days?: number;
+  preferred_vendor?: string;
+  alternate_vendor?: string;
+  // Manufacturer
+  manufacturer?: string;
+  manufacturer_part_number?: string;
+  barcode?: string;
+  // Flags
+  is_controlled_substance?: boolean;
+  requires_prescription?: boolean;
+  requires_expiration_tracking?: boolean;
 }
 
 export const itemsApi = {
@@ -486,13 +509,27 @@ export interface PurchaseOrder {
   po_number: string;
   vendor_id: string;
   vendor_name?: string;
-  status: "pending" | "ordered" | "partial" | "received" | "cancelled";
+  status:
+    | "pending"
+    | "ordered"
+    | "shipped"
+    | "partial"
+    | "received"
+    | "cancelled";
   order_date: string;
   expected_delivery_date?: string;
   received_date?: string;
   total_cost?: number;
   items: PurchaseOrderItem[];
   created_at: string;
+  // Tracking fields
+  tracking_number?: string;
+  carrier?: "ups" | "fedex" | "usps" | "dhl" | "amazon" | "ontrac" | "other";
+  carrier_other?: string;
+  shipped_date?: string;
+  tracking_url?: string;
+  tracking_link?: string;
+  shipping_notes?: string;
 }
 
 export interface OrderItemCreate {
@@ -509,9 +546,35 @@ export interface CreateOrder {
 }
 
 export interface UpdateOrder {
-  status?: "pending" | "ordered" | "partial" | "received" | "cancelled";
+  status?:
+    | "pending"
+    | "ordered"
+    | "shipped"
+    | "partial"
+    | "received"
+    | "cancelled";
   expected_delivery_date?: string;
   received_date?: string;
+}
+
+export interface TrackingUpdate {
+  tracking_number?: string;
+  carrier?: "ups" | "fedex" | "usps" | "dhl" | "amazon" | "ontrac" | "other";
+  carrier_other?: string;
+  shipped_date?: string;
+  tracking_url?: string;
+  shipping_notes?: string;
+}
+
+export interface TrackingInfo {
+  tracking_number?: string;
+  carrier?: string;
+  carrier_other?: string;
+  carrier_display?: string;
+  shipped_date?: string;
+  tracking_url?: string;
+  tracking_link?: string;
+  shipping_notes?: string;
 }
 
 export interface ReceiveOrderItem {
@@ -555,6 +618,13 @@ export const ordersApi = {
 
   update: (id: string, data: UpdateOrder) =>
     apiClient.put<PurchaseOrder>(`/api/v1/orders/${id}`, data),
+
+  // Tracking API
+  getTracking: (id: string) =>
+    apiClient.get<TrackingInfo>(`/api/v1/orders/${id}/tracking`),
+
+  updateTracking: (id: string, data: TrackingUpdate) =>
+    apiClient.put<PurchaseOrder>(`/api/v1/orders/${id}/tracking`, data),
 
   receive: (id: string, data: ReceiveOrder) =>
     apiClient.post<{
@@ -684,6 +754,143 @@ export interface CostAnalysisResponse {
   value_distribution: Record<string, number>;
 }
 
+// New report interfaces
+export interface ProductLifeProjection {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  current_stock: number;
+  average_daily_usage: number;
+  projected_days_remaining: number;
+  projected_reorder_date?: string;
+  lead_time_days: number;
+  recommended_reorder_date?: string;
+  status: "Critical" | "Low" | "Normal" | "Overstocked";
+}
+
+export interface COGItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  unit_cost: number;
+  total_used: number;
+  total_cost_used: number;
+  period_days: number;
+  monthly_cost_rate: number;
+  yearly_projected_cost: number;
+}
+
+export interface COGReport {
+  period_days: number;
+  total_items_used: number;
+  total_cost_of_goods_used: number;
+  average_daily_cog: number;
+  projected_monthly_cog: number;
+  projected_yearly_cog: number;
+  by_category: {
+    category_id: string;
+    category_name: string;
+    total_items_used: number;
+    total_cost: number;
+  }[];
+  top_cost_items: COGItem[];
+}
+
+export interface UsageHistoryEntry {
+  date: string;
+  total_used: number;
+  total_received: number;
+  net_change: number;
+  movements_count: number;
+}
+
+export interface DetailedUsageReport {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  period_days: number;
+  total_used: number;
+  total_received: number;
+  average_daily_usage: number;
+  peak_usage_day?: string;
+  peak_usage_amount: number;
+  trend: "Increasing" | "Decreasing" | "Stable";
+  daily_history: UsageHistoryEntry[];
+}
+
+export interface ExpirationAlert {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  location_id: string;
+  location_name: string;
+  expiration_date: string;
+  days_until_expiration: number;
+  quantity: number;
+  estimated_value: number;
+  status: "Expired" | "Critical" | "Warning" | "OK";
+}
+
+export interface ExpirationReport {
+  total_expiring_items: number;
+  total_expired: number;
+  total_critical: number;
+  total_warning: number;
+  total_at_risk_value: number;
+  items: ExpirationAlert[];
+}
+
+export interface TurnoverItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  current_stock: number;
+  total_used: number;
+  total_received: number;
+  turnover_ratio: number;
+  days_of_supply: number;
+  avg_daily_usage: number;
+  efficiency: "Excellent" | "Good" | "Fair" | "Slow Moving";
+}
+
+export interface TurnoverReport {
+  period_days: number;
+  total_items_analyzed: number;
+  average_turnover_ratio: number;
+  slow_moving_items: number;
+  high_turnover_items: number;
+  items: TurnoverItem[];
+}
+
+export interface ForecastItem {
+  item_id: string;
+  item_code: string;
+  item_name: string;
+  category: string;
+  current_stock: number;
+  projected_usage: number;
+  projected_stock_at_end: number;
+  par_level: number;
+  reorder_point: number;
+  quantity_to_order: number;
+  lead_time_days: number;
+  suggested_reorder_date: string;
+  unit_cost: number;
+  projected_order_cost: number;
+  urgency: "High" | "Medium" | "Low";
+}
+
+export interface ReorderForecast {
+  forecast_period_days: number;
+  total_items_needing_reorder: number;
+  total_projected_cost: number;
+  items: ForecastItem[];
+}
+
 export const reportsApi = {
   lowStock: (params?: { location_id?: string; category_id?: string }) =>
     apiClient.get<LowStockItem[]>("/api/v1/reports/low-stock", { params }),
@@ -713,6 +920,52 @@ export const reportsApi = {
 
   costAnalysis: (params?: { category_id?: string; location_id?: string }) =>
     apiClient.get<CostAnalysisResponse>("/api/v1/reports/cost-analysis", {
+      params,
+    }),
+
+  // New comprehensive reports
+  productLifeProjection: (params?: {
+    days_history?: number;
+    category_id?: string;
+    include_zero_stock?: boolean;
+  }) =>
+    apiClient.get<ProductLifeProjection[]>(
+      "/api/v1/reports/product-life-projection",
+      { params }
+    ),
+
+  costOfGoods: (params?: { days?: number; category_id?: string }) =>
+    apiClient.get<COGReport>("/api/v1/reports/cost-of-goods", { params }),
+
+  usageHistoryDetail: (params?: {
+    days?: number;
+    item_id?: string;
+    category_id?: string;
+    limit?: number;
+  }) =>
+    apiClient.get<DetailedUsageReport[]>(
+      "/api/v1/reports/usage-history-detail",
+      {
+        params,
+      }
+    ),
+
+  expirationTracking: (params?: {
+    days_ahead?: number;
+    include_expired?: boolean;
+    location_id?: string;
+  }) =>
+    apiClient.get<ExpirationReport>("/api/v1/reports/expiration-tracking", {
+      params,
+    }),
+
+  inventoryTurnover: (params?: { days?: number; category_id?: string }) =>
+    apiClient.get<TurnoverReport>("/api/v1/reports/inventory-turnover", {
+      params,
+    }),
+
+  reorderForecast: (params?: { days_ahead?: number; category_id?: string }) =>
+    apiClient.get<ReorderForecast>("/api/v1/reports/reorder-forecast", {
       params,
     }),
 };

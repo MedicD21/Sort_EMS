@@ -1,7 +1,7 @@
 """
 Purchase Order models for ordering and restocking
 """
-from sqlalchemy import Column, String, ForeignKey, DateTime, Numeric, Integer, Boolean, Enum as SQLEnum
+from sqlalchemy import Column, String, ForeignKey, DateTime, Numeric, Integer, Boolean, Enum as SQLEnum, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import enum
@@ -13,9 +13,21 @@ class OrderStatus(str, enum.Enum):
     """Purchase order status enumeration"""
     PENDING = "pending"
     ORDERED = "ordered"
+    SHIPPED = "shipped"
     PARTIAL = "partial"
     RECEIVED = "received"
     CANCELLED = "cancelled"
+
+
+class ShippingCarrier(str, enum.Enum):
+    """Common shipping carriers"""
+    UPS = "ups"
+    FEDEX = "fedex"
+    USPS = "usps"
+    DHL = "dhl"
+    AMAZON = "amazon"
+    ONTRAC = "ontrac"
+    OTHER = "other"
 
 
 class Vendor(BaseModel):
@@ -60,9 +72,34 @@ class PurchaseOrder(BaseModel):
         nullable=True
     )
     
+    # Tracking Information
+    tracking_number = Column(String(100), nullable=True, index=True)
+    carrier = Column(SQLEnum(ShippingCarrier), nullable=True)
+    carrier_other = Column(String(100), nullable=True)  # For "other" carrier name
+    shipped_date = Column(DateTime, nullable=True)
+    tracking_url = Column(String(500), nullable=True)
+    shipping_notes = Column(Text, nullable=True)
+    
     # Relationships
     vendor = relationship("Vendor", back_populates="purchase_orders")
     items = relationship("PurchaseOrderItem", back_populates="purchase_order")
+    
+    @property
+    def tracking_link(self):
+        """Generate tracking URL based on carrier"""
+        if not self.tracking_number:
+            return None
+        if self.tracking_url:
+            return self.tracking_url
+        # Auto-generate tracking URLs for known carriers
+        tracking_urls = {
+            ShippingCarrier.UPS: f"https://www.ups.com/track?tracknum={self.tracking_number}",
+            ShippingCarrier.FEDEX: f"https://www.fedex.com/fedextrack/?trknbr={self.tracking_number}",
+            ShippingCarrier.USPS: f"https://tools.usps.com/go/TrackConfirmAction?tLabels={self.tracking_number}",
+            ShippingCarrier.DHL: f"https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id={self.tracking_number}",
+            ShippingCarrier.AMAZON: f"https://www.amazon.com/progress-tracker/package?trackingId={self.tracking_number}",
+        }
+        return tracking_urls.get(self.carrier)
     
     def __repr__(self):
         return f"<PurchaseOrder {self.po_number} - {self.status}>"

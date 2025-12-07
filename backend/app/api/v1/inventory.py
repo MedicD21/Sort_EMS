@@ -144,7 +144,7 @@ async def get_current_inventory(
             quantity_allocated=inv.quantity_allocated,
             quantity_available=quantity_available,
             last_counted_at=inv.last_counted_at,
-            last_counted_by_id=inv.last_counted_by_id,
+            last_counted_by_id=inv.last_counted_by,
             item_name=item.name,
             item_code=item.item_code,
             location_name=location.name,

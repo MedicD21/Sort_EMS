@@ -12,13 +12,24 @@ from uuid import UUID
 from app.core.database import get_db
 from app.api.v1.auth import get_current_user
 from app.models.user import User
-from app.models.order import PurchaseOrder, PurchaseOrderItem, OrderStatus, Vendor
+from app.models.order import PurchaseOrder, PurchaseOrderItem, OrderStatus, Vendor, ShippingCarrier
 from app.models.item import Item
 from app.models.inventory import InventoryCurrent
 from app.models.rfid import InventoryMovement, MovementType
 from app.models.audit import AuditLog, AuditAction
 
 router = APIRouter()
+
+# Carrier display names
+CARRIER_DISPLAY_NAMES = {
+    "ups": "UPS",
+    "fedex": "FedEx",
+    "usps": "USPS",
+    "dhl": "DHL",
+    "amazon": "Amazon",
+    "ontrac": "OnTrac",
+    "other": "Other"
+}
 
 
 # Pydantic schemas
@@ -74,6 +85,16 @@ class PurchaseOrderUpdate(PydanticBase):
     received_date: Optional[datetime] = None
 
 
+class TrackingUpdate(PydanticBase):
+    """Schema for updating tracking information"""
+    tracking_number: Optional[str] = None
+    carrier: Optional[str] = None  # ups, fedex, usps, dhl, amazon, ontrac, other
+    carrier_other: Optional[str] = None  # Name if carrier is "other"
+    shipped_date: Optional[datetime] = None
+    tracking_url: Optional[str] = None  # Custom tracking URL
+    shipping_notes: Optional[str] = None
+
+
 class ReceiveOrderItem(PydanticBase):
     item_id: UUID
     quantity_received: int = Field(gt=0)
@@ -82,6 +103,18 @@ class ReceiveOrderItem(PydanticBase):
 
 class ReceiveOrderRequest(PydanticBase):
     items: List[ReceiveOrderItem]
+
+
+class TrackingInfo(PydanticBase):
+    """Tracking information response"""
+    tracking_number: Optional[str] = None
+    carrier: Optional[str] = None
+    carrier_other: Optional[str] = None
+    carrier_display: Optional[str] = None  # Friendly name
+    shipped_date: Optional[datetime] = None
+    tracking_url: Optional[str] = None
+    tracking_link: Optional[str] = None  # Auto-generated link
+    shipping_notes: Optional[str] = None
 
 
 class PurchaseOrderResponse(PydanticBase):
@@ -96,6 +129,14 @@ class PurchaseOrderResponse(PydanticBase):
     total_cost: Optional[float] = None
     items: List[OrderItemResponse] = []
     created_at: datetime
+    # Tracking fields
+    tracking_number: Optional[str] = None
+    carrier: Optional[str] = None
+    carrier_other: Optional[str] = None
+    shipped_date: Optional[datetime] = None
+    tracking_url: Optional[str] = None
+    tracking_link: Optional[str] = None
+    shipping_notes: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -138,7 +179,7 @@ async def create_vendor(
         action=AuditAction.CREATE,
         entity_type="vendor",
         entity_id=vendor.id,
-        description=f"Created vendor: {vendor.name}",
+        changes={"action": "created", "name": vendor.name},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -192,7 +233,7 @@ async def update_vendor(
         action=AuditAction.UPDATE,
         entity_type="vendor",
         entity_id=vendor.id,
-        description=f"Updated vendor: {vendor.name}",
+        changes={"action": "updated", "name": vendor.name},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -230,7 +271,7 @@ async def delete_vendor(
         action=AuditAction.DELETE,
         entity_type="vendor",
         entity_id=vendor.id,
-        description=action_desc,
+        changes={"action": action_desc},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -267,6 +308,7 @@ async def list_purchase_orders(
     # Enrich with vendor names and item details
     result = []
     for order in orders:
+        carrier_value = order.carrier.value if order.carrier else None
         order_dict = {
             "id": order.id,
             "po_number": order.po_number,
@@ -278,6 +320,14 @@ async def list_purchase_orders(
             "received_date": order.received_date,
             "total_cost": float(order.total_cost) if order.total_cost else None,
             "created_at": order.created_at,
+            # Tracking info
+            "tracking_number": order.tracking_number,
+            "carrier": carrier_value,
+            "carrier_other": order.carrier_other,
+            "shipped_date": order.shipped_date,
+            "tracking_url": order.tracking_url,
+            "tracking_link": order.tracking_link,
+            "shipping_notes": order.shipping_notes,
             "items": []
         }
         
@@ -309,6 +359,7 @@ async def get_purchase_order(
     if not order:
         raise HTTPException(status_code=404, detail="Purchase order not found")
     
+    carrier_value = order.carrier.value if order.carrier else None
     order_dict = {
         "id": order.id,
         "po_number": order.po_number,
@@ -320,6 +371,14 @@ async def get_purchase_order(
         "received_date": order.received_date,
         "total_cost": float(order.total_cost) if order.total_cost else None,
         "created_at": order.created_at,
+        # Tracking info
+        "tracking_number": order.tracking_number,
+        "carrier": carrier_value,
+        "carrier_other": order.carrier_other,
+        "shipped_date": order.shipped_date,
+        "tracking_url": order.tracking_url,
+        "tracking_link": order.tracking_link,
+        "shipping_notes": order.shipping_notes,
         "items": []
     }
     
@@ -398,7 +457,7 @@ async def create_purchase_order(
         action=AuditAction.CREATE,
         entity_type="purchase_order",
         entity_id=purchase_order.id,
-        description=f"Created PO {order_data.po_number} for vendor {vendor.name}",
+        changes={"po_number": order_data.po_number, "vendor": vendor.name},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -433,7 +492,7 @@ async def update_purchase_order(
         action=AuditAction.UPDATE,
         entity_type="purchase_order",
         entity_id=order.id,
-        description=f"Updated PO {order.po_number}",
+        changes={"po_number": order.po_number, "updates": update_data},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -442,6 +501,101 @@ async def update_purchase_order(
     db.refresh(order)
     
     return await get_purchase_order(order.id, db, current_user)
+
+
+@router.put("/{order_id}/tracking", response_model=PurchaseOrderResponse)
+async def update_order_tracking(
+    order_id: UUID,
+    tracking_data: TrackingUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Update tracking information for a purchase order"""
+    order = db.query(PurchaseOrder).filter(PurchaseOrder.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Purchase order not found")
+    
+    if order.status == OrderStatus.CANCELLED:
+        raise HTTPException(status_code=400, detail="Cannot update tracking for cancelled order")
+    
+    # Update tracking fields
+    if tracking_data.tracking_number is not None:
+        order.tracking_number = tracking_data.tracking_number
+    
+    if tracking_data.carrier is not None:
+        try:
+            order.carrier = ShippingCarrier(tracking_data.carrier)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid carrier. Must be one of: ups, fedex, usps, dhl, amazon, ontrac, other"
+            )
+    
+    if tracking_data.carrier_other is not None:
+        order.carrier_other = tracking_data.carrier_other
+    
+    if tracking_data.shipped_date is not None:
+        order.shipped_date = tracking_data.shipped_date
+    
+    if tracking_data.tracking_url is not None:
+        order.tracking_url = tracking_data.tracking_url
+    
+    if tracking_data.shipping_notes is not None:
+        order.shipping_notes = tracking_data.shipping_notes
+    
+    # Auto-update status to "shipped" if tracking is added and order is "ordered"
+    if order.tracking_number and order.status == OrderStatus.ORDERED:
+        order.status = OrderStatus.SHIPPED
+        if not order.shipped_date:
+            order.shipped_date = datetime.utcnow()
+    
+    # Create audit log
+    audit_log = AuditLog(
+        user_id=current_user.id,
+        action=AuditAction.UPDATE,
+        entity_type="purchase_order",
+        entity_id=order.id,
+        changes={
+            "tracking_number": tracking_data.tracking_number,
+            "carrier": tracking_data.carrier,
+            "action": "tracking_updated"
+        },
+        ip_address="127.0.0.1"
+    )
+    db.add(audit_log)
+    
+    db.commit()
+    db.refresh(order)
+    
+    return await get_purchase_order(order.id, db, current_user)
+
+
+@router.get("/{order_id}/tracking", response_model=TrackingInfo)
+async def get_order_tracking(
+    order_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get tracking information for a purchase order"""
+    order = db.query(PurchaseOrder).filter(PurchaseOrder.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Purchase order not found")
+    
+    carrier_value = order.carrier.value if order.carrier else None
+    carrier_display = CARRIER_DISPLAY_NAMES.get(carrier_value, None) if carrier_value else None
+    if carrier_value == "other" and order.carrier_other:
+        carrier_display = order.carrier_other
+    
+    return TrackingInfo(
+        tracking_number=order.tracking_number,
+        carrier=carrier_value,
+        carrier_other=order.carrier_other,
+        carrier_display=carrier_display,
+        shipped_date=order.shipped_date,
+        tracking_url=order.tracking_url,
+        tracking_link=order.tracking_link,
+        shipping_notes=order.shipping_notes
+    )
 
 
 @router.post("/{order_id}/receive")
@@ -544,7 +698,7 @@ async def receive_purchase_order(
         action=AuditAction.UPDATE,
         entity_type="purchase_order",
         entity_id=order.id,
-        description=f"Received items for PO {order.po_number}",
+        changes={"action": "received_items", "po_number": order.po_number},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -586,7 +740,7 @@ async def cancel_purchase_order(
         action=AuditAction.DELETE,
         entity_type="purchase_order",
         entity_id=order.id,
-        description=f"Cancelled PO {order.po_number}",
+        changes={"action": "cancelled", "po_number": order.po_number},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)
@@ -684,6 +838,11 @@ async def get_reorder_suggestions(
         suggested_qty = int(shortage * 1.1)
         if suggested_qty < 1:
             suggested_qty = 1
+        
+        # Apply max reorder quantity per station limit if set
+        if item.max_reorder_quantity_per_station and locations_below > 0:
+            max_total = item.max_reorder_quantity_per_station * locations_below
+            suggested_qty = min(suggested_qty, max_total)
         
         # Determine urgency
         stock_ratio = total_stock / total_reorder if total_reorder > 0 else 0
@@ -837,7 +996,7 @@ async def create_po_from_suggestions(
         action=AuditAction.CREATE,
         entity_type="purchase_order",
         entity_id=purchase_order.id,
-        description=f"Created PO {po_number} from reorder suggestions ({len(selected_suggestions)} items)",
+        changes={"po_number": po_number, "source": "reorder_suggestions", "items_count": len(selected_suggestions)},
         ip_address="127.0.0.1"
     )
     db.add(audit_log)

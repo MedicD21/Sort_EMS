@@ -30,6 +30,7 @@ class ItemBase(BaseModel):
     supplier_account_number: Optional[str] = None
     # Ordering information
     minimum_order_quantity: Optional[int] = None
+    max_reorder_quantity_per_station: Optional[int] = None
     order_unit: Optional[str] = None
     lead_time_days: Optional[int] = None
     preferred_vendor: Optional[str] = None
@@ -70,6 +71,7 @@ class ItemUpdate(BaseModel):
     supplier_account_number: Optional[str] = None
     # Ordering information
     minimum_order_quantity: Optional[int] = None
+    max_reorder_quantity_per_station: Optional[int] = None
     order_unit: Optional[str] = None
     lead_time_days: Optional[int] = None
     preferred_vendor: Optional[str] = None
