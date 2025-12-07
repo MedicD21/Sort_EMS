@@ -1,7 +1,7 @@
 """
 Authentication API Routes
 """
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -23,12 +23,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=F
 class DevUser:
     """Fake user for development mode"""
     def __init__(self):
-        self.id = uuid4()
+        self.id = str(uuid4())
         self.username = "dev_user"
         self.email = "dev@example.com"
-        self.full_name = "Development User"
+        self.first_name = "Development"
+        self.last_name = "User"
         self.role = "admin"
         self.is_active = True
+        self.last_login = datetime.utcnow()
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
 
 
 async def get_current_user(

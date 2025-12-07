@@ -26,17 +26,12 @@ import {
   Chip,
   CircularProgress,
 } from "@mui/material";
-import { Edit, Delete, Add, Save } from "@mui/icons-material";
+import { Delete, Add, Save } from "@mui/icons-material";
 import {
   usersApi,
-  User,
-  authApi,
+  type User,
   configApi,
-  SystemConfig,
-  AutoOrderConfig,
-  StationRequestConfig,
-  StockAlertConfig,
-  TransferRestrictionsConfig,
+  type SystemConfig,
 } from "../services/apiService";
 
 interface TabPanelProps {
@@ -68,7 +63,8 @@ export default function SettingsPage() {
 
   // Profile form
   const [profileForm, setProfileForm] = useState({
-    full_name: "",
+    first_name: "",
+    last_name: "",
     email: "",
   });
 
@@ -85,7 +81,8 @@ export default function SettingsPage() {
     username: "",
     email: "",
     password: "",
-    full_name: "",
+    first_name: "",
+    last_name: "",
     is_active: true,
   });
 
@@ -100,7 +97,7 @@ export default function SettingsPage() {
       setConfigLoading(true);
       const response = await configApi.get();
       setSystemConfig(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching system config:", err);
     } finally {
       setConfigLoading(false);
@@ -112,10 +109,11 @@ export default function SettingsPage() {
       const response = await usersApi.me.profile();
       setCurrentUser(response.data);
       setProfileForm({
-        full_name: response.data.full_name || "",
+        first_name: response.data.first_name || "",
+        last_name: response.data.last_name || "",
         email: response.data.email || "",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching profile:", err);
     }
   };
@@ -125,7 +123,7 @@ export default function SettingsPage() {
       setLoading(true);
       const response = await usersApi.list();
       setUsers(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching users:", err);
     } finally {
       setLoading(false);
@@ -136,11 +134,12 @@ export default function SettingsPage() {
     try {
       setError(null);
       setSuccess(null);
-      await usersApi.updateProfile(profileForm);
+      await usersApi.me.updateProfile(profileForm);
       setSuccess("Profile updated successfully");
       fetchCurrentUser();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to update profile");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "Failed to update profile");
       console.error("Error updating profile:", err);
     }
   };
@@ -154,7 +153,7 @@ export default function SettingsPage() {
     try {
       setError(null);
       setSuccess(null);
-      await usersApi.changePassword({
+      await usersApi.me.changePassword({
         current_password: passwordForm.current_password,
         new_password: passwordForm.new_password,
       });
@@ -164,8 +163,9 @@ export default function SettingsPage() {
         new_password: "",
         confirm_password: "",
       });
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to change password");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "Failed to change password");
       console.error("Error changing password:", err);
     }
   };
@@ -180,24 +180,26 @@ export default function SettingsPage() {
         username: "",
         email: "",
         password: "",
-        full_name: "",
+        first_name: "",
+        last_name: "",
         is_active: true,
       });
       fetchUsers();
-    } catch (err: any) {
-      setError(err.response?.data?.detail || "Failed to create user");
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || "Failed to create user");
       console.error("Error creating user:", err);
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeleteUser = async (userId: string) => {
     if (!window.confirm("Are you sure you want to delete this user?")) {
       return;
     }
 
     try {
       setError(null);
-      await usersApi.delete(userId.toString());
+      await usersApi.delete(userId);
       setSuccess("User deleted successfully");
       fetchUsers();
     } catch (err: any) {
@@ -270,10 +272,19 @@ export default function SettingsPage() {
               />
               <TextField
                 fullWidth
-                label="Full Name"
-                value={profileForm.full_name}
+                label="First Name"
+                value={profileForm.first_name}
                 onChange={(e) =>
-                  setProfileForm({ ...profileForm, full_name: e.target.value })
+                  setProfileForm({ ...profileForm, first_name: e.target.value })
+                }
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                fullWidth
+                label="Last Name"
+                value={profileForm.last_name}
+                onChange={(e) =>
+                  setProfileForm({ ...profileForm, last_name: e.target.value })
                 }
                 sx={{ mb: 2 }}
               />
@@ -301,7 +312,8 @@ export default function SettingsPage() {
                   Account Information
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Role: {currentUser?.is_admin ? "Administrator" : "User"}
+                  Role:{" "}
+                  {currentUser?.role === "admin" ? "Administrator" : "User"}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   Status:{" "}
@@ -372,7 +384,7 @@ export default function SettingsPage() {
 
         {/* Users Tab */}
         <TabPanel value={tabValue} index={2}>
-          {currentUser?.is_admin ? (
+          {currentUser?.role === "admin" ? (
             <>
               <Box sx={{ mb: 2, display: "flex", justifyContent: "flex-end" }}>
                 <Button
@@ -394,7 +406,7 @@ export default function SettingsPage() {
                     <TableHead>
                       <TableRow>
                         <TableCell>Username</TableCell>
-                        <TableCell>Full Name</TableCell>
+                        <TableCell>Name</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Role</TableCell>
                         <TableCell>Status</TableCell>
@@ -405,12 +417,17 @@ export default function SettingsPage() {
                       {users.map((user) => (
                         <TableRow key={user.id}>
                           <TableCell>{user.username}</TableCell>
-                          <TableCell>{user.full_name || "—"}</TableCell>
+                          <TableCell>
+                            {`${user.first_name} ${user.last_name}`.trim() ||
+                              "—"}
+                          </TableCell>
                           <TableCell>{user.email || "—"}</TableCell>
                           <TableCell>
                             <Chip
-                              label={user.is_admin ? "Admin" : "User"}
-                              color={user.is_admin ? "primary" : "default"}
+                              label={user.role === "admin" ? "Admin" : "User"}
+                              color={
+                                user.role === "admin" ? "primary" : "default"
+                              }
                               size="small"
                             />
                           </TableCell>
@@ -445,7 +462,7 @@ export default function SettingsPage() {
 
         {/* System Configuration Tab */}
         <TabPanel value={tabValue} index={3}>
-          {currentUser?.is_admin ? (
+          {currentUser?.role === "admin" ? (
             <>
               {configLoading ? (
                 <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
@@ -681,14 +698,26 @@ export default function SettingsPage() {
                 required
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label="Full Name"
-                value={newUser.full_name}
+                label="First Name"
+                value={newUser.first_name}
                 onChange={(e) =>
-                  setNewUser({ ...newUser, full_name: e.target.value })
+                  setNewUser({ ...newUser, first_name: e.target.value })
                 }
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Last Name"
+                value={newUser.last_name}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, last_name: e.target.value })
+                }
+                required
               />
             </Grid>
             <Grid item xs={12}>

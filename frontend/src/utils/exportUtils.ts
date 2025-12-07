@@ -186,7 +186,7 @@ const downloadFile = (content: string, filename: string, mimeType: string) => {
 };
 
 // Pre-configured export functions for common reports
-export const exportLowStockReport = (data: unknown[]) => {
+export const exportLowStockReport = (_data: unknown[]) => {
   const columns = [
     { key: "item_code", header: "Item Code" },
     { key: "item_name", header: "Item Name" },
@@ -200,7 +200,7 @@ export const exportLowStockReport = (data: unknown[]) => {
   return { columns, filename: "low-stock-report" };
 };
 
-export const exportUsageReport = (data: unknown[]) => {
+export const exportUsageReport = (_data: unknown[]) => {
   const columns = [
     { key: "item_code", header: "Item Code" },
     { key: "item_name", header: "Item Name" },
@@ -213,7 +213,7 @@ export const exportUsageReport = (data: unknown[]) => {
   return { columns, filename: "usage-report" };
 };
 
-export const exportInventorySummary = (data: unknown[]) => {
+export const exportInventorySummary = (_data: unknown[]) => {
   const columns = [
     { key: "item_code", header: "Item Code" },
     { key: "item_name", header: "Item Name" },
@@ -226,7 +226,7 @@ export const exportInventorySummary = (data: unknown[]) => {
   return { columns, filename: "inventory-summary" };
 };
 
-export const exportReorderSuggestions = (data: unknown[]) => {
+export const exportReorderSuggestions = (_data: unknown[]) => {
   const columns = [
     { key: "item_code", header: "Item Code" },
     { key: "item_name", header: "Item Name" },
@@ -242,7 +242,7 @@ export const exportReorderSuggestions = (data: unknown[]) => {
   return { columns, filename: "reorder-suggestions" };
 };
 
-export const exportPurchaseOrders = (data: unknown[]) => {
+export const exportPurchaseOrders = (_data: unknown[]) => {
   const columns = [
     { key: "po_number", header: "PO Number" },
     { key: "vendor_name", header: "Vendor" },
@@ -254,7 +254,7 @@ export const exportPurchaseOrders = (data: unknown[]) => {
   return { columns, filename: "purchase-orders" };
 };
 
-export const exportAuditLog = (data: unknown[]) => {
+export const exportAuditLog = (_data: unknown[]) => {
   const columns = [
     { key: "timestamp", header: "Timestamp" },
     { key: "user_name", header: "User" },

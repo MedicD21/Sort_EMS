@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Paper,
@@ -28,9 +28,6 @@ import {
   Autocomplete,
   Divider,
   List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
   Card,
   CardContent,
 } from "@mui/material";
@@ -46,15 +43,14 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ordersApi,
-  PurchaseOrder,
-  Vendor,
-  CreateOrder,
-  OrderItemCreate,
+  type PurchaseOrder,
+  type Vendor,
+  type CreateOrder,
   itemsApi,
-  Item,
+  type Item,
   locationsApi,
-  Location,
-  ReceiveOrderItem,
+  type Location as LocationType,
+  type ReceiveOrderItem,
 } from "../services/apiService";
 
 type OrderStatus = "pending" | "ordered" | "partial" | "received" | "cancelled";
@@ -129,7 +125,7 @@ const PurchaseOrdersPage = () => {
     data: orders = [],
     isLoading: ordersLoading,
     refetch: refetchOrders,
-  } = useQuery({
+  } = useQuery<PurchaseOrder[]>({
     queryKey: ["purchaseOrders", filterStatus, filterVendor],
     queryFn: async () => {
       const params: Record<string, string | undefined> = {};
@@ -140,7 +136,7 @@ const PurchaseOrdersPage = () => {
     },
   });
 
-  const { data: vendors = [] } = useQuery({
+  const { data: vendors = [] } = useQuery<Vendor[]>({
     queryKey: ["vendors"],
     queryFn: async () => {
       const response = await ordersApi.vendors.list(true);
@@ -148,7 +144,7 @@ const PurchaseOrdersPage = () => {
     },
   });
 
-  const { data: items = [] } = useQuery({
+  const { data: items = [] } = useQuery<Item[]>({
     queryKey: ["items"],
     queryFn: async () => {
       const response = await itemsApi.list({ limit: 1000 });
@@ -156,7 +152,7 @@ const PurchaseOrdersPage = () => {
     },
   });
 
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<LocationType[]>({
     queryKey: ["locations"],
     queryFn: async () => {
       const response = await locationsApi.list();
@@ -208,7 +204,9 @@ const PurchaseOrdersPage = () => {
   const receiveMutation = useMutation({
     mutationFn: ({ id, items }: { id: string; items: ReceiveOrderItem[] }) =>
       ordersApi.receive(id, { items }),
-    onSuccess: (response) => {
+    onSuccess: (response: {
+      data: { message: string; order_status: string; fully_received: boolean };
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
       queryClient.invalidateQueries({ queryKey: ["inventory"] });
       const msg = response.data.fully_received
@@ -389,7 +387,7 @@ const PurchaseOrdersPage = () => {
   };
 
   // Filter orders by search term
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter((order: PurchaseOrder) => {
     const matchesSearch =
       searchTerm === "" ||
       order.po_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -464,7 +462,7 @@ const PurchaseOrdersPage = () => {
                 onChange={(e) => setFilterVendor(e.target.value)}
               >
                 <MenuItem value="all">All Vendors</MenuItem>
-                {vendors.map((v) => (
+                {vendors.map((v: Vendor) => (
                   <MenuItem key={v.id} value={v.id}>
                     {v.name}
                   </MenuItem>
@@ -521,7 +519,7 @@ const PurchaseOrdersPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredOrders.map((order) => (
+              filteredOrders.map((order: PurchaseOrder) => (
                 <TableRow key={order.id} hover>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
@@ -531,8 +529,8 @@ const PurchaseOrdersPage = () => {
                   <TableCell>{order.vendor_name || "-"}</TableCell>
                   <TableCell>
                     <Chip
-                      label={statusLabels[order.status]}
-                      color={statusColors[order.status]}
+                      label={statusLabels[order.status as OrderStatus]}
+                      color={statusColors[order.status as OrderStatus]}
                       size="small"
                     />
                   </TableCell>
@@ -941,7 +939,7 @@ const PurchaseOrdersPage = () => {
                             setReceiveItems(updated);
                           }}
                         >
-                          {locations.map((loc) => (
+                          {locations.map((loc: LocationType) => (
                             <MenuItem key={loc.id} value={loc.id}>
                               {loc.name}
                             </MenuItem>

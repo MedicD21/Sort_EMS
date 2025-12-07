@@ -39,29 +39,38 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ordersApi,
-  ReorderSuggestion,
-  Vendor,
+  type ReorderSuggestion,
+  type Vendor,
   categoriesApi,
-  Category,
+  type Category,
 } from "../services/apiService";
 
-const urgencyConfig = {
+type UrgencyLevel = "critical" | "high" | "medium" | "low";
+
+const urgencyConfig: Record<
+  UrgencyLevel,
+  {
+    color: "error" | "warning" | "info" | "default";
+    icon: React.ReactElement | null;
+    label: string;
+  }
+> = {
   critical: {
-    color: "error" as const,
+    color: "error",
     icon: <ErrorIcon fontSize="small" />,
     label: "Critical",
   },
   high: {
-    color: "warning" as const,
+    color: "warning",
     icon: <WarningIcon fontSize="small" />,
     label: "High",
   },
   medium: {
-    color: "info" as const,
+    color: "info",
     icon: <InfoIcon fontSize="small" />,
     label: "Medium",
   },
-  low: { color: "default" as const, icon: null, label: "Low" },
+  low: { color: "default", icon: null, label: "Low" },
 };
 
 const ReorderSuggestionsPage = () => {
@@ -83,7 +92,7 @@ const ReorderSuggestionsPage = () => {
     data: suggestions = [],
     isLoading,
     refetch,
-  } = useQuery({
+  } = useQuery<ReorderSuggestion[]>({
     queryKey: [
       "reorderSuggestions",
       filterVendor,
@@ -102,7 +111,7 @@ const ReorderSuggestionsPage = () => {
     },
   });
 
-  const { data: vendors = [] } = useQuery({
+  const { data: vendors = [] } = useQuery<Vendor[]>({
     queryKey: ["vendors"],
     queryFn: async () => {
       const response = await ordersApi.vendors.list(true);
@@ -110,7 +119,7 @@ const ReorderSuggestionsPage = () => {
     },
   });
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["categories"],
     queryFn: async () => {
       const response = await categoriesApi.list({ active_only: true });
@@ -122,7 +131,9 @@ const ReorderSuggestionsPage = () => {
   const createPOMutation = useMutation({
     mutationFn: (data: { item_ids: string[]; vendor_id: string }) =>
       ordersApi.suggestions.createPOFromSuggestions(data),
-    onSuccess: (response) => {
+    onSuccess: (response: {
+      data: { po_number: string; items_count: number };
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["purchaseOrders"] });
       queryClient.invalidateQueries({ queryKey: ["reorderSuggestions"] });
       setSnackbar({
@@ -145,7 +156,7 @@ const ReorderSuggestionsPage = () => {
   // Handlers
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItems(suggestions.map((s) => s.item_id));
+      setSelectedItems(suggestions.map((s: ReorderSuggestion) => s.item_id));
     } else {
       setSelectedItems([]);
     }
@@ -189,16 +200,21 @@ const ReorderSuggestionsPage = () => {
   // Calculate summary stats
   const totalSuggestions = suggestions.length;
   const criticalCount = suggestions.filter(
-    (s) => s.urgency === "critical"
+    (s: ReorderSuggestion) => s.urgency === "critical"
   ).length;
-  const highCount = suggestions.filter((s) => s.urgency === "high").length;
+  const highCount = suggestions.filter(
+    (s: ReorderSuggestion) => s.urgency === "high"
+  ).length;
   const totalEstimatedCost = suggestions.reduce(
-    (sum, s) => sum + (s.estimated_cost || 0),
+    (sum: number, s: ReorderSuggestion) => sum + (s.estimated_cost || 0),
     0
   );
   const selectedEstimatedCost = suggestions
-    .filter((s) => selectedItems.includes(s.item_id))
-    .reduce((sum, s) => sum + (s.estimated_cost || 0), 0);
+    .filter((s: ReorderSuggestion) => selectedItems.includes(s.item_id))
+    .reduce(
+      (sum: number, s: ReorderSuggestion) => sum + (s.estimated_cost || 0),
+      0
+    );
 
   const formatCurrency = (value?: number) => {
     if (value === undefined || value === null) return "-";
@@ -289,7 +305,7 @@ const ReorderSuggestionsPage = () => {
                 onChange={(e) => setFilterCategory(e.target.value)}
               >
                 <MenuItem value="all">All Categories</MenuItem>
-                {categories.map((cat) => (
+                {categories.map((cat: Category) => (
                   <MenuItem key={cat.id} value={cat.id}>
                     {cat.name}
                   </MenuItem>
@@ -306,7 +322,7 @@ const ReorderSuggestionsPage = () => {
                 onChange={(e) => setFilterVendor(e.target.value)}
               >
                 <MenuItem value="all">All Vendors</MenuItem>
-                {vendors.map((v) => (
+                {vendors.map((v: Vendor) => (
                   <MenuItem key={v.id} value={v.id}>
                     {v.name}
                   </MenuItem>
@@ -387,8 +403,9 @@ const ReorderSuggestionsPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              suggestions.map((suggestion) => {
-                const config = urgencyConfig[suggestion.urgency];
+              suggestions.map((suggestion: ReorderSuggestion) => {
+                const config =
+                  urgencyConfig[suggestion.urgency as UrgencyLevel];
                 const stockPercent =
                   suggestion.total_reorder_level > 0
                     ? (suggestion.current_total_stock /
@@ -505,7 +522,7 @@ const ReorderSuggestionsPage = () => {
               label="Select Vendor"
               onChange={(e) => setSelectedVendorForPO(e.target.value)}
             >
-              {vendors.map((v) => (
+              {vendors.map((v: Vendor) => (
                 <MenuItem key={v.id} value={v.id}>
                   {v.name}
                 </MenuItem>
