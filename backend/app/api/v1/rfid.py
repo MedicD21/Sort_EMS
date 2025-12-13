@@ -60,6 +60,25 @@ class ScanRequest(BaseModel):
     scanner_location_id: Optional[UUID] = None  # Current scanner location
     scan_type: str = "barcode"  # "rfid" or "barcode"
 
+    @classmethod
+    def validate_tag_id(cls, tag_id: str) -> str:
+        """Validate and clean tag ID"""
+        if not tag_id or not tag_id.strip():
+            raise ValueError("Tag ID cannot be empty")
+        # Remove whitespace and convert to uppercase for consistency
+        clean_id = tag_id.strip().upper()
+        # Validate length (EPC tags are typically 24-96 bits hex = 6-24 chars)
+        if len(clean_id) > 255:
+            raise ValueError("Tag ID too long (max 255 characters)")
+        # Basic hex validation for RFID tags (can be extended)
+        if len(clean_id) <= 48:  # Likely an EPC tag
+            # Allow hex characters and some common barcode characters
+            allowed = set("0123456789ABCDEF-")
+            if not all(c in allowed for c in clean_id):
+                # Not pure hex, might be barcode - allow alphanumeric
+                pass
+        return clean_id
+
 
 class ScanResponse(BaseModel):
     """Response to scanner with item information"""

@@ -97,8 +97,8 @@ function TabPanel(props: {
 }
 
 export default function ScannerPage() {
-  // Debug: Show API base URL and loaded locations
-  const [showDebug, setShowDebug] = useState(true);
+  // Debug: Show API base URL and loaded locations (set to false for production)
+  const [showDebug, setShowDebug] = useState(false);
   const [locationsError, setLocationsError] = useState<string | null>(null);
   const [locationsRaw, setLocationsRaw] = useState<any>(null);
   // Import config for API base URL

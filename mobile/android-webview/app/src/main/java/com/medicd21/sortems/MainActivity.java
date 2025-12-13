@@ -221,6 +221,10 @@ public class MainActivity extends AppCompatActivity {
         private static final String USB_PERMISSION_ACTION = "com.medicd21.sortems.USB_PERMISSION";
         private static final int DIAG_READ_LOOPS = 1;
         private static final int USB_VENDOR_ZEBRA = 0x05E0;
+
+        // Duplicate detection: track recently seen tags with timestamps
+        private final java.util.Map<String, Long> recentTags = new java.util.concurrent.ConcurrentHashMap<>();
+        private static final long DUPLICATE_WINDOW_MS = 2000; // 2 seconds
         private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -260,18 +264,32 @@ public class MainActivity extends AppCompatActivity {
                     if (reader != null) {
                         try {
                             if (reader.Actions.Inventory != null) {
-                                try { reader.Actions.Inventory.stop(); } catch (Exception ignored) {}
+                                try {
+                                    reader.Actions.Inventory.stop();
+                                    Log.d(TAG, "Stopped any previous inventory operation");
+                                } catch (InvalidUsageException e) {
+                                    Log.w(TAG, "No inventory to stop: " + e.getMessage());
+                                } catch (OperationFailureException e) {
+                                    Log.w(TAG, "Failed to stop inventory: " + e.getResults());
+                                }
                             }
-                            try { reader.Actions.purgeTags(); } catch (Exception ignored) {}
+                            try {
+                                reader.Actions.purgeTags();
+                                Log.d(TAG, "Purged tag buffer");
+                            } catch (InvalidUsageException e) {
+                                Log.w(TAG, "Cannot purge tags: " + e.getMessage());
+                            } catch (OperationFailureException e) {
+                                Log.w(TAG, "Failed to purge tags: " + e.getResults());
+                            }
+
+                            // Enable continuous inventory mode
+                            inventoryActive = true;
                             reader.Actions.Inventory.perform();
-                            Log.d(TAG, "RFID inventory started");
-                            if (statusCb != null) statusCb.accept("Connected to " + primary.getName() + " (" + primary.getTransport() + ")", true);
-                            int initial = drainOnce();
-                            if (statusCb != null) statusCb.accept("Initial read count: " + initial, initial > 0);
-                            // Stop after initial one-shot to avoid in-progress errors
-                            try { reader.Actions.Inventory.stop(); } catch (Exception ignored) {}
-                            inventoryActive = false;
-                            startPolling(); // will keep draining buffer if any
+                            Log.d(TAG, "RFID continuous inventory started");
+                            if (statusCb != null) statusCb.accept("Connected to " + primary.getName() + " (" + primary.getTransport() + ") - Scanning...", true);
+
+                            // Start polling to drain the tag buffer continuously
+                            startPolling();
                         } catch (OperationFailureException ofe) {
                             Log.e(TAG, "RFID inventory start failed: " + ofe.getResults(), ofe);
                             if (statusCb != null) statusCb.accept("RFID start failed: " + ofe.getResults(), false);
@@ -424,37 +442,110 @@ public class MainActivity extends AppCompatActivity {
             return bt != null ? bt : usb;
         }
 
-        private void ensureConnectedTo(ReaderDevice target) throws InvalidUsageException, OperationFailureException {
+        private void ensureConnectedTo(ReaderDevice target) {
             if (target == null) return;
             if (reader != null && reader.isConnected()) {
                 try {
                     String current = reader.getHostName();
                     if (current != null && current.equals(target.getName())) {
-                        Log.d(TAG, "Already on reader " + current);
+                        Log.d(TAG, "Already connected to reader " + current);
                         return;
                     }
-                } catch (Exception ignored) {}
+                } catch (InvalidUsageException e) {
+                    Log.w(TAG, "Cannot get hostname: " + e.getMessage());
+                } catch (OperationFailureException e) {
+                    Log.w(TAG, "Failed to get hostname: " + e.getResults());
+                }
             }
-            // Disconnect current
+            // Disconnect current reader if connected
             try {
                 if (reader != null && reader.isConnected()) {
+                    Log.d(TAG, "Disconnecting from current reader");
                     reader.disconnect();
                 }
-            } catch (Exception ignored) {}
-            reader = target.getRFIDReader();
-            reader.connect();
-            lastReader = target;
-            reader.Events.addEventsListener(this);
-            reader.Events.setHandheldEvent(true);
-            reader.Events.setTagReadEvent(true);
-            reader.Events.setAttachTagDataWithReadEvent(true);
-            reader.Events.setInventoryStartEvent(true);
-            reader.Events.setInventoryStopEvent(true);
-            reader.Config.setBatchMode(BATCH_MODE.DISABLE);
-            reader.Config.setUniqueTagReport(true);
-            reader.Actions.PreFilters.deleteAll();
-            reader.Actions.TagAccess.OperationSequence.deleteAll();
-            reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.RFID_MODE, true);
+            } catch (InvalidUsageException e) {
+                Log.w(TAG, "Cannot disconnect: " + e.getMessage());
+            } catch (OperationFailureException e) {
+                Log.w(TAG, "Failed to disconnect: " + e.getResults());
+            }
+
+            // Retry connection with exponential backoff
+            int maxRetries = 3;
+            int retryDelay = 500; // Start with 500ms
+            InvalidUsageException lastInvalidUsageEx = null;
+            OperationFailureException lastOperationFailEx = null;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    Log.d(TAG, "Connection attempt " + attempt + "/" + maxRetries + " to " + target.getName());
+                    reader = target.getRFIDReader();
+                    reader.connect();
+                    lastReader = target;
+                    Log.d(TAG, "Successfully connected to " + target.getName());
+                    break; // Success, exit retry loop
+                } catch (InvalidUsageException e) {
+                    lastInvalidUsageEx = e;
+                    Log.w(TAG, "Connection attempt " + attempt + " failed: " + e.getMessage());
+                    if (attempt < maxRetries) {
+                        try {
+                            Thread.sleep(retryDelay);
+                            retryDelay *= 2; // Exponential backoff
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw e;
+                        }
+                    }
+                } catch (OperationFailureException e) {
+                    lastOperationFailEx = e;
+                    Log.w(TAG, "Connection attempt " + attempt + " failed: " + e.getResults());
+                    if (attempt < maxRetries) {
+                        try {
+                            Thread.sleep(retryDelay);
+                            retryDelay *= 2; // Exponential backoff
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            throw e;
+                        }
+                    }
+                }
+            }
+
+            // If all retries failed, throw RuntimeException with the cause
+            if (reader == null || !reader.isConnected()) {
+                String errorMsg = "Failed to connect to RFID reader after " + maxRetries + " attempts";
+                Log.e(TAG, errorMsg);
+
+                if (lastInvalidUsageEx != null) {
+                    throw new RuntimeException(errorMsg + ": " + lastInvalidUsageEx.getMessage(), lastInvalidUsageEx);
+                }
+                if (lastOperationFailEx != null) {
+                    throw new RuntimeException(errorMsg + ": " + lastOperationFailEx.getResults(), lastOperationFailEx);
+                }
+                // If we get here, something unexpected happened
+                throw new RuntimeException(errorMsg + ": Unknown error");
+            }
+            // Configure reader settings
+            try {
+                reader.Events.addEventsListener(this);
+                reader.Events.setHandheldEvent(true);
+                reader.Events.setTagReadEvent(true);
+                reader.Events.setAttachTagDataWithReadEvent(true);
+                reader.Events.setInventoryStartEvent(true);
+                reader.Events.setInventoryStopEvent(true);
+                reader.Config.setBatchMode(BATCH_MODE.DISABLE);
+                reader.Config.setUniqueTagReport(true);
+                reader.Actions.PreFilters.deleteAll();
+                reader.Actions.TagAccess.OperationSequence.deleteAll();
+                reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.RFID_MODE, true);
+                Log.d(TAG, "Reader basic configuration completed");
+            } catch (InvalidUsageException e) {
+                Log.e(TAG, "Failed to configure reader basic settings: " + e.getMessage(), e);
+                throw new RuntimeException("Failed to configure RFID reader: " + e.getMessage(), e);
+            } catch (OperationFailureException e) {
+                Log.e(TAG, "Failed to configure reader basic settings: " + e.getResults(), e);
+                throw new RuntimeException("Failed to configure RFID reader: " + e.getResults(), e);
+            }
+
             // RF config
             try {
                 short[] ants = reader.Config.Antennas.getAvailableAntennas();
@@ -473,7 +564,11 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 rfConfig.setTransmitPowerIndex(30); // fallback
                             }
-                        } catch (Exception ignored) {
+                        } catch (InvalidUsageException e) {
+                            Log.w(TAG, "Cannot get power levels: " + e.getMessage());
+                            rfConfig.setTransmitPowerIndex(30);
+                        } catch (OperationFailureException e) {
+                            Log.w(TAG, "Failed to get power levels: " + e.getResults());
                             rfConfig.setTransmitPowerIndex(30);
                         }
                         reader.Config.Antennas.setAntennaRfConfig(antId, rfConfig);
@@ -496,7 +591,11 @@ public class MainActivity extends AppCompatActivity {
                     sing.Action.setInventoryState(INVENTORY_STATE.INVENTORY_STATE_A);
                     sing.Action.setSLFlag(com.zebra.rfid.api3.SL_FLAG.SL_ALL);
                     reader.Config.Antennas.setSingulationControl(1, sing);
-                } catch (Exception ignored) {}
+                } catch (InvalidUsageException e) {
+                    Log.w(TAG, "Cannot configure singulation: " + e.getMessage());
+                } catch (OperationFailureException e) {
+                    Log.w(TAG, "Failed to configure singulation: " + e.getResults());
+                }
             } catch (Exception ex) {
                 Log.w(TAG, "RF config tweak failed", ex);
             }
@@ -530,8 +629,13 @@ public class MainActivity extends AppCompatActivity {
                 if (tags != null) {
                     for (TagData tag : tags) {
                         if (tag != null && tag.getTagID() != null) {
-                            tagListener.accept(tag.getTagID());
-                            Log.d(TAG, "RFID tag: " + tag.getTagID());
+                            String tagId = tag.getTagID();
+                            if (shouldReportTag(tagId)) {
+                                tagListener.accept(tagId);
+                                Log.d(TAG, "RFID tag: " + tagId);
+                            } else {
+                                Log.v(TAG, "Duplicate tag filtered in event: " + tagId);
+                            }
                         }
                     }
                 }
@@ -567,6 +671,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Check if tag was recently seen (duplicate detection)
+         * Returns true if tag should be reported, false if it's a duplicate
+         */
+        private boolean shouldReportTag(String tagId) {
+            long now = System.currentTimeMillis();
+            Long lastSeen = recentTags.get(tagId);
+
+            if (lastSeen != null && (now - lastSeen) < DUPLICATE_WINDOW_MS) {
+                // Tag seen recently, it's a duplicate
+                return false;
+            }
+
+            // Update timestamp and report tag
+            recentTags.put(tagId, now);
+
+            // Clean up old entries (simple cleanup on each check)
+            recentTags.entrySet().removeIf(entry -> (now - entry.getValue()) > DUPLICATE_WINDOW_MS * 2);
+
+            return true;
+        }
+
         private int drainOnce() {
             int count = 0;
             try {
@@ -582,9 +708,14 @@ public class MainActivity extends AppCompatActivity {
                 if (tags != null) {
                     for (TagData tag : tags) {
                         if (tag != null && tag.getTagID() != null) {
-                            count++;
-                            tagListener.accept(tag.getTagID());
-                            Log.d(TAG, "RFID tag: " + tag.getTagID());
+                            String tagId = tag.getTagID();
+                            if (shouldReportTag(tagId)) {
+                                count++;
+                                tagListener.accept(tagId);
+                                Log.d(TAG, "RFID tag: " + tagId);
+                            } else {
+                                Log.v(TAG, "Duplicate tag filtered: " + tagId);
+                            }
                         }
                     }
                 }
@@ -602,7 +733,11 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             com.zebra.rfid.api3.TagStorageSettings ts = reader.Config.getTagStorageSettings();
                             statusListener.accept("Diag: tagStore max=" + ts.getMaxTagCount(), true);
-                        } catch (Exception ignored) {}
+                        } catch (InvalidUsageException e) {
+                            Log.w(TAG, "Cannot get tag storage settings: " + e.getMessage());
+                        } catch (OperationFailureException e) {
+                            Log.w(TAG, "Failed to get tag storage settings: " + e.getResults());
+                        }
                     }
                     for (int i = 0; i < DIAG_READ_LOOPS; i++) {
                         int c;
@@ -616,7 +751,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                         if (statusListener != null) statusListener.accept("Diag read loop " + (i + 1) + "/" + DIAG_READ_LOOPS + ": " + c + " tags", c > 0);
                         if (c > 0) break;
-                        try { Thread.sleep(400); } catch (InterruptedException ignored) {}
+                        try {
+                            Thread.sleep(400);
+                        } catch (InterruptedException e) {
+                            Log.d(TAG, "Diagnostic sleep interrupted");
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "Diagnostic reads failed", e);
@@ -639,8 +779,13 @@ public class MainActivity extends AppCompatActivity {
                 if (tags != null) {
                     for (TagData tag : tags) {
                         if (tag != null && tag.getTagID() != null) {
-                            tagListener.accept(tag.getTagID());
-                            Log.d(TAG, "RFID tag: " + tag.getTagID());
+                            String tagId = tag.getTagID();
+                            if (shouldReportTag(tagId)) {
+                                tagListener.accept(tagId);
+                                Log.d(TAG, "RFID tag: " + tagId);
+                            } else {
+                                Log.v(TAG, "Duplicate tag filtered in poll: " + tagId);
+                            }
                         }
                     }
                 }
