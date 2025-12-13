@@ -86,3 +86,38 @@ temp/
 
 # Excel temporary files
 ~$*.xlsx
+
+# Android / Gradle
+.gradle/
+*.gradle.lock
+gradle-app.setting
+local.properties
+*.apk
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+captures/
+.navigation/
+output.json
+*.iml
+.cxx/
+*.hprof
+
+# Android build outputs
+*/build/
+*/*/build/
+*/*/*/build/
+
+# Cordova
+platforms/*/build/
+platforms/android/.gradle/
+platforms/android/app/build/
+platforms/android/gradle/
+plugins/*/node_modules/
+
+# Zebra SDK build artifacts
+Zebra_RFIDAPI3_SDK*/*/build/
+Zebra_RFIDAPI3_SDK*/*/.gradle/
