@@ -1,7 +1,24 @@
 {
-  "name": "sort-ems-mobile",
-  "private": true,
+  "name": "cordova",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cordova": "^13.0.0"
+  },
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  },
   "devDependencies": {
-    "cordova-plugin-datawedge-intent": "file:plugins/cordova-plugin-datawedge-intent"
+    "cordova-android": "^14.0.1"
   }
 }

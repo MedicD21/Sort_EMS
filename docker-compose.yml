@@ -39,7 +39,8 @@ services:
       - ./frontend/vite.config.ts:/app/vite.config.ts
       - ./frontend/tsconfig.json:/app/tsconfig.json
     environment:
-      - VITE_API_URL=http://localhost:8000
+      # Point the dev server at the backend service inside Docker
+      - VITE_API_URL=http://backend:8000
     command: npm run dev -- --host 0.0.0.0
     restart: unless-stopped
     depends_on:

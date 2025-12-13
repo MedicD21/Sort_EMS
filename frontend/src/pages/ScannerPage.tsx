@@ -58,6 +58,7 @@ import {
 import { RFIDScanResult } from "../services/apiService";
 import { rfidApi, locationsApi, Location } from "../services/apiService";
 import { apiClient } from "../services/api";
+import { API_BASE_URL } from "../services/config";
 
 // Types
 interface ScannedItem {
@@ -156,9 +157,38 @@ export default function ScannerPage() {
         setSelectedLocationId(defaultLoc.id);
       }
     } catch (err: any) {
-      setLocationsError(err?.message || JSON.stringify(err));
+      // Log axios error and attempt a direct fetch fallback to surface details
+      console.error("Failed to load locations (axios):", err);
+      let fallbackMsg = "";
+      try {
+        const fetchResp = await fetch(
+          `${API_BASE_URL}/api/v1/locations/?limit=100`
+        );
+        fallbackMsg = `fetch status ${fetchResp.status}`;
+        if (fetchResp.ok) {
+          const data = await fetchResp.json();
+          setLocations(data);
+          setLocationsRaw(data);
+          const defaultLoc = data.find((loc: Location) =>
+            loc.name.toLowerCase().includes("station 4 cabinet")
+          );
+          if (defaultLoc) {
+            setSelectedLocationId(defaultLoc.id);
+          }
+          setLocationsError(
+            `Axios failed (${err?.message || "unknown"}); fetch succeeded`
+          );
+          return;
+        }
+      } catch (fetchErr: any) {
+        fallbackMsg += `; fetch error ${fetchErr?.message || fetchErr}`;
+        console.error("Fallback fetch failed:", fetchErr);
+      }
+
+      setLocationsError(
+        `Network error: ${err?.message || JSON.stringify(err)} ${fallbackMsg}`
+      );
       setLocationsRaw(err?.response?.data || null);
-      console.error("Failed to load locations:", err);
     }
   };
 

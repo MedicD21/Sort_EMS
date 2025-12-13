@@ -147,7 +147,7 @@ export interface Location {
 
 export const locationsApi = {
   list: (params?: { skip?: number; limit?: number }) =>
-    apiClient.get<Location[]>("/api/v1/locations", { params }),
+    apiClient.get<Location[]>("/api/v1/locations/", { params }),
 
   get: (id: string) => apiClient.get<Location>(`/api/v1/locations/${id}`),
 

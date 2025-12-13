@@ -1,44 +1,34 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sort EMS Mobile Wrapper</title>
-    <style>
-      body {
-        margin: 0;
-        font-family: sans-serif;
-        background: #111;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-      }
-    </style>
-  </head>
-  <body>
-    <div>
-      <h2>Sort EMS Mobile Wrapper</h2>
-      <p>Loading web app...</p>
-    </div>
-
-    <script>
-      // Development default: remote URL of the running frontend dev server
-      // Change this value to use a packaged build instead.
-      const REMOTE_URL = "http://192.168.1.37:3001/";
-
-      // If running inside Cordova, we redirect the WebView to the remote URL.
-      // In production you may want to load local files instead.
-      if (
-        window.location.protocol === "file:" ||
-        window.location.hostname === "localhost"
-      ) {
-        window.location.href = REMOTE_URL;
-      } else {
-        // Not inside Cordova; still try remote dev server for testing in browser
-        window.location.href = REMOTE_URL;
-      }
-    </script>
-  </body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sort EMS Mobile Wrapper</title>
+  <style>body{margin:0;font-family:sans-serif;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;}</style>
+</head>
+<body>
+  <div>
+    <h2>Sort EMS Mobile Wrapper</h2>
+    <p>Loading web app...</p>
+    <p style="font-size:12px;opacity:0.7">Add <code>?devserver=1</code> to force the remote dev server.</p>
+  </div>
+  <script>
+    const DEV_REMOTE_URL = "http://192.168.1.37:3001/";
+    const LOCAL_APP_PATH = "file:///android_asset/www/app/index.html";
+    const params = new URLSearchParams(window.location.search);
+    const devOverride = params.get("devserver") === "1";
+    const remoteOverride = params.get("remote");
+    const remoteUrl = remoteOverride || DEV_REMOTE_URL;
+    const redirect = (url) => window.location.replace(url);
+    const loadApp = () => {
+      if (devOverride) { redirect(remoteUrl); return; }
+      redirect(LOCAL_APP_PATH);
+    };
+    if (typeof window.cordova !== "undefined") {
+      document.addEventListener("deviceready", loadApp, false);
+    } else {
+      loadApp();
+    }
+  </script>
+</body>
 </html>
